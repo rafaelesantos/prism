@@ -23,6 +23,10 @@ public extension BinaryFloatingPoint {
     var string: String {
         String(double)
     }
+    
+    var int64: Int64 {
+        Int64(self)
+    }
 
     func formatted(decimals: Int = 2, locale: Locale = .current) -> String? {
         let formatter = NumberFormatter()
@@ -38,5 +42,11 @@ public extension BinaryFloatingPoint {
         formatter.numberStyle = .currency
         formatter.locale = locale
         return formatter.string(from: NSNumber(value: double))
+    }
+    
+    public var largeNormalized: Int64 {
+        let scale: Double = 100_000_000
+        let normalized = Int64((double * scale).rounded())
+        return normalized
     }
 }
