@@ -5,6 +5,9 @@
 //  Created by Rafael Escaleira on 15/06/25.
 //
 
+import Foundation
+import SwiftUI
+
 enum RyzeDefaultTextFieldMask: RyzeTextFieldMask {
     case phoneNumber
     case cpf

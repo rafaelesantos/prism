@@ -5,16 +5,16 @@
 //  Created by Rafael Escaleira on 06/06/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public struct RyzeLazyList: RyzeView {
     @Environment(\.theme) var theme
     let content: any View
-    
+
     public init(@ViewBuilder content: () -> some View) {
         self.content = content()
     }
-    
+
     public var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: theme.spacing.medium) {
@@ -23,7 +23,7 @@ public struct RyzeLazyList: RyzeView {
             .ryzePadding()
         }
     }
-    
+
     public static func mocked() -> some View {
         RyzeLazyList {
             RyzeText.mocked()

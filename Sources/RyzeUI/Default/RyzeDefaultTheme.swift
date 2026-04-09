@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
-import SwiftUI
 import RyzeFoundation
+import SwiftUI
 
 struct RyzeDefaultTheme: RyzeThemeProtocol {
     var color: RyzeColorProtocol
@@ -17,7 +17,7 @@ struct RyzeDefaultTheme: RyzeThemeProtocol {
     var animation: Animation?
     var feedback: SensoryFeedback
     var colorScheme: ColorScheme?
-    
+
     init(
         color: RyzeColorProtocol = RyzeDefaultColor(),
         spacing: RyzeSpacingProtocol = RyzeDefaultSpacing(),

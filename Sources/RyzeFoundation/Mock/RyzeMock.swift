@@ -10,9 +10,9 @@ public protocol RyzeMock {
     static var mocks: [Self] { get }
 }
 
-public extension RyzeMock {
-    static var mocks: [Self] {
-        (1 ... 10).map { _ in
+extension RyzeMock {
+    public static var mocks: [Self] {
+        (1...10).map { _ in
             mock
         }
     }

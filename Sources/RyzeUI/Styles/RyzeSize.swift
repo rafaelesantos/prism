@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 01/07/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public indirect enum RyzeSize {
     case none
@@ -23,7 +23,7 @@ public indirect enum RyzeSize {
     case extraLarge2
     case ultraLarge
     case max
-    
+
     func rawValue(for theme: RyzeSizeProtocol) -> CGFloat? {
         switch self {
         case .none: return nil

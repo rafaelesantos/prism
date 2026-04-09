@@ -5,6 +5,8 @@
 //  Created by Rafael Escaleira on 06/06/25.
 //
 
+import SwiftUI
+
 struct RyzeDefaultSize: RyzeSizeProtocol {
     var ultraSmall: CGFloat
     var ultraSmall2: CGFloat
@@ -20,7 +22,7 @@ struct RyzeDefaultSize: RyzeSizeProtocol {
     var extraLarge2: CGFloat
     var ultraLarge: CGFloat
     var max: CGFloat
-    
+
     init(
         ultraSmall: CGFloat = 12,
         ultraSmall2: CGFloat = 16,

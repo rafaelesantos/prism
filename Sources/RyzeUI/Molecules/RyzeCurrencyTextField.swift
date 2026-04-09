@@ -5,14 +5,14 @@
 //  Created by Rafael Escaleira on 02/09/25.
 //
 
-import SwiftUI
 import RyzeFoundation
+import SwiftUI
 
 public struct RyzeCurrencyTextField: RyzeView {
     @Binding var amount: Double
     @State var text: String = ""
     let locale: RyzeLocale
-    
+
     public init(
         amount: Binding<Double>,
         locale: RyzeLocale = .current
@@ -41,7 +41,7 @@ public struct RyzeCurrencyTextField: RyzeView {
                 if masked != newValue { text = masked }
             }
     }
-    
+
     public static func mocked() -> some View {
         RyzeCurrencyTextField(
             amount: .constant(.zero),

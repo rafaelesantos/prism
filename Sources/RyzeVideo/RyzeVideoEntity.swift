@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 22/07/25.
 //
 
-@_exported import RyzeFoundation
-@_exported import AVFoundation
+import AVFoundation
+import RyzeFoundation
 
 public struct RyzeVideoEntity {
     public var id: UUID { .init() }
@@ -16,7 +16,7 @@ public struct RyzeVideoEntity {
     var resolution: RyzeVideoResolution?
     var type: AVFileType
     var thumb: URL?
-    
+
     public init(
         url: URL,
         title: String,

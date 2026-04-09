@@ -5,17 +5,17 @@
 //  Created by Rafael Escaleira on 26/04/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public struct RyzeHStack: RyzeView {
     @Environment(\.theme) private var theme
-    
+
     let alignment: VerticalAlignment
     let spacing: RyzeSpacing?
     let content: any View
-    
+
     public var accessibility: RyzeAccessibility?
-    
+
     public init(
         _ accessibility: RyzeAccessibility? = nil,
         alignment: VerticalAlignment = .center,
@@ -27,7 +27,7 @@ public struct RyzeHStack: RyzeView {
         self.spacing = spacing
         self.content = content()
     }
-    
+
     public var body: some View {
         HStack(
             alignment: alignment,
@@ -37,7 +37,7 @@ public struct RyzeHStack: RyzeView {
         }
         .ryze(accessibility: accessibility)
     }
-    
+
     public static func mocked() -> some View {
         RyzeHStack(
             alignment: .center,

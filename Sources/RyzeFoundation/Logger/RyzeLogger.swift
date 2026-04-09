@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 24/03/25.
 //
 
-@_exported import os
+import os
 
 public protocol RyzeLogger {
     func log()
@@ -14,7 +14,7 @@ public protocol RyzeLogger {
 public protocol RyzeSystemLogger {
     associatedtype Message: RyzeResourceLogMessage
     var logger: Logger { get }
-    
+
     func info(_ message: Message)
     func warning(_ message: Message)
     func error(_ message: Message)

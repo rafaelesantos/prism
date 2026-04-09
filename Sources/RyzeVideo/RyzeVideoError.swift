@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 22/07/25.
 //
 
-@_exported import RyzeFoundation
+import RyzeFoundation
 
 public enum RyzeVideoError: RyzeError, Sendable {
     case assetNotPlayable
@@ -25,7 +25,7 @@ public enum RyzeVideoError: RyzeError, Sendable {
             return "Missing video or audio tracks"
         case .failedToCreateExportSession:
             return "Failed to create export session"
-        case let .custom(message):
+        case .custom(let message):
             return message
         }
     }

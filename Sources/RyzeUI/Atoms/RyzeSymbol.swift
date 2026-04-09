@@ -5,16 +5,16 @@
 //  Created by Rafael Escaleira on 06/06/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeSymbol: RyzeView {
     @Environment(\.isLoading) var isLoading
-    
+
     let name: String
     let mode: SymbolRenderingMode
     let variants: SymbolVariants
-    
+
     public init(
         _ name: String = "infinity",
         mode: SymbolRenderingMode = .monochrome,
@@ -24,14 +24,14 @@ public struct RyzeSymbol: RyzeView {
         self.mode = mode
         self.variants = variants
     }
-    
+
     public var body: some View {
         Image(systemName: name)
             .symbolRenderingMode(mode)
             .symbolVariant(variants)
             .ryzeSkeleton()
     }
-    
+
     public static func mocked() -> some View {
         RyzeSymbol(
             "wifi",

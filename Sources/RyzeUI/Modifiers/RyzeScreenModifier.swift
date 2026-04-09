@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-fileprivate struct RyzeScreenSizePreferenceKey: @MainActor PreferenceKey {
+private struct RyzeScreenSizePreferenceKey: @MainActor PreferenceKey {
     @MainActor static var defaultValue: CGSize = .zero
-    
+
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
         value = nextValue()
     }
 }
 
-fileprivate struct RyzeScreenScrollOffsetPreferenceKey: @MainActor PreferenceKey {
+private struct RyzeScreenScrollOffsetPreferenceKey: @MainActor PreferenceKey {
     @MainActor static var defaultValue: CGPoint = .zero
-    
+
     static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
         value = nextValue()
     }
@@ -27,9 +27,9 @@ struct RyzeScreenModifier: RyzeViewModifier {
     @State var size: CGSize = .zero
     @State var origin: CGPoint = .zero
     @State var isLargeScreen: Bool = false
-    
+
     let minimumWidthScreen: CGFloat
-    
+
     func body(content: Content) -> some View {
         content
             .environment(\.screenSize, size)
@@ -55,7 +55,7 @@ struct RyzeScreenModifier: RyzeViewModifier {
                 origin = newOrigin
             }
     }
-    
+
     static func mocked() -> some View {
         RyzeHStack.mocked()
             .ryze(width: .max, height: .max)

@@ -5,6 +5,7 @@
 //  Created by Rafael Escaleira on 14/07/25.
 //
 
+import Foundation
 import RyzeFoundation
 
 enum RyzeNetworkLogMessage: RyzeResourceLogMessage {
@@ -71,7 +72,7 @@ enum RyzeNetworkLogMessage: RyzeResourceLogMessage {
         case .sendError: return "log.sendError"
         }
     }
-    
+
     var format: String {
         String(
             localized: .init(key),
@@ -80,42 +81,42 @@ enum RyzeNetworkLogMessage: RyzeResourceLogMessage {
             locale: RyzeLocale.current.rawValue
         )
     }
-    
+
     func formatted(with arguments: CVarArg...) -> String {
         String(format: format, arguments)
     }
-    
+
     var value: String {
         switch self {
-        case let .url(url): return formatted(with: url.absoluteString)
-        case let .headers(headers): return formatted(with: headers.description)
-        case let .body(body): return formatted(with: body)
-        case let .host(host): return formatted(with: host)
-        case let .port(port): return formatted(with: "\(port)")
-        case let .parameters(params): return formatted(with: params)
-        case let .requestStart(url): return formatted(with: url ?? "")
-        case let .cacheHit(key): return formatted(with: key ?? "")
-        case let .cacheMiss(key, error): return formatted(with: key ?? "", error)
-        case let .responseCached(url): return formatted(with: url ?? "")
-        case let .noCache(url): return formatted(with: url ?? "")
-        case let .cacheWithExpiration(url, expiration): return formatted(with: url ?? "", expiration.description)
-        case let .noCacheInterval(url): return formatted(with: url ?? "")
-        case let .cacheStored(url, interval): return formatted(with: url ?? "", interval)
-        case let .invalidURL(url): return formatted(with: url)
-        case let .connecting(host, port, params): return formatted(with: host, port, params)
-        case let .connectionEstablished(host, port): return formatted(with: host, port)
-        case let .connectionClosed(host, port): return formatted(with: host, port)
-        case let .disconnected(host, port): return formatted(with: host, port)
+        case .url(let url): return formatted(with: url.absoluteString)
+        case .headers(let headers): return formatted(with: headers.description)
+        case .body(let body): return formatted(with: body)
+        case .host(let host): return formatted(with: host)
+        case .port(let port): return formatted(with: "\(port)")
+        case .parameters(let params): return formatted(with: params)
+        case .requestStart(let url): return formatted(with: url ?? "")
+        case .cacheHit(let key): return formatted(with: key ?? "")
+        case .cacheMiss(let key, let error): return formatted(with: key ?? "", error)
+        case .responseCached(let url): return formatted(with: url ?? "")
+        case .noCache(let url): return formatted(with: url ?? "")
+        case .cacheWithExpiration(let url, let expiration): return formatted(with: url ?? "", expiration.description)
+        case .noCacheInterval(let url): return formatted(with: url ?? "")
+        case .cacheStored(let url, let interval): return formatted(with: url ?? "", interval)
+        case .invalidURL(let url): return formatted(with: url)
+        case .connecting(let host, let port, let params): return formatted(with: host, port, params)
+        case .connectionEstablished(let host, let port): return formatted(with: host, port)
+        case .connectionClosed(let host, let port): return formatted(with: host, port)
+        case .disconnected(let host, let port): return formatted(with: host, port)
         case .connectionReady: return format
         case .connectionCancelled: return format
-        case let .connectionFailed(error): return formatted(with: error)
-        case let .connectionStateChanged(state): return formatted(with: state ?? "")
-        case let .receiveError(error): return formatted(with: error)
+        case .connectionFailed(let error): return formatted(with: error)
+        case .connectionStateChanged(let state): return formatted(with: state ?? "")
+        case .receiveError(let error): return formatted(with: error)
         case .receptionComplete: return format
-        case let .failedToEncode(message): return formatted(with: message)
-        case let .sendingMessage(message): return formatted(with: message)
-        case let .messageSent(message): return formatted(with: message)
-        case let .sendError(error): return formatted(with: error)
+        case .failedToEncode(let message): return formatted(with: message)
+        case .sendingMessage(let message): return formatted(with: message)
+        case .messageSent(let message): return formatted(with: message)
+        case .sendError(let error): return formatted(with: error)
         }
     }
 }

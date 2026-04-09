@@ -5,18 +5,18 @@
 //  Created by Rafael Escaleira on 27/08/25.
 //
 
-@_exported import Foundation
+import Foundation
 
-public extension Substring {
-    var string: String {
+extension Substring {
+    public var string: String {
         String(self)
     }
-    
-    var int: Int? {
+
+    public var int: Int? {
         Int(self)
     }
-    
-    var double: Double? {
+
+    public var double: Double? {
         Double(self)
     }
 }

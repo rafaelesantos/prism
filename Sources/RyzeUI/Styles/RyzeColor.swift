@@ -5,25 +5,25 @@
 //  Created by Rafael Escaleira on 01/07/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeColor: ShapeStyle, @unchecked Sendable {
     private enum Storage {
         case themed(KeyPath<RyzeColorProtocol, Color>)
         case custom(Color)
     }
-    
+
     private let storage: Storage
-    
+
     init(keyPath: KeyPath<RyzeColorProtocol, Color>) {
         self.storage = .themed(keyPath)
     }
-    
+
     public init(rawValue: Color) {
         self.storage = .custom(rawValue)
     }
-    
+
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         switch storage {
         case .themed(let keyPath):
@@ -32,7 +32,7 @@ public struct RyzeColor: ShapeStyle, @unchecked Sendable {
             return color
         }
     }
-    
+
     public func color(using theme: RyzeColorProtocol) -> Color {
         switch storage {
         case .themed(let keyPath):

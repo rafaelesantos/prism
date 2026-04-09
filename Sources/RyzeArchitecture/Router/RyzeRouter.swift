@@ -5,68 +5,114 @@
 //  Created by Rafael Escaleira on 03/04/25.
 //
 
-@_exported import SwiftUI
+import Observation
 
 @Observable
-public class RyzeRouter<Route: RyzeRoutable>: @unchecked Sendable, Equatable {
-    public var navigationPath = NavigationPath()
-    public var isPresented: Binding<Route?>
-    
-    public var presentRoute: Route?
-    public var fullRoute: Route?
-    
+@MainActor
+public final class RyzeRouter<Route: RyzeRoutable>: Equatable {
+    public var path: [Route]
+    public var presentedRoute: Route?
+    public var fullScreenRoute: Route?
+
+    @ObservationIgnored
+    private let onDismiss: @MainActor @Sendable () -> Void
+
     public var isPresenting: Bool {
-        presentRoute != nil ||
-        fullRoute != nil
+        if presentedRoute != nil {
+            return true
+        }
+
+        return fullScreenRoute != nil
     }
-    
-    public init(isPresented: Binding<Route?> = .constant(.none)) {
-        self.isPresented = isPresented
+
+    public var topRoute: Route? {
+        if let route = path.last {
+            return route
+        }
+
+        if let route = fullScreenRoute {
+            return route
+        }
+
+        return presentedRoute
     }
-    
-    public func makeView(for route: Route, content: @escaping (Route) -> any View) -> some View {
-        route.makeView(content: content)
+
+    public init() {
+        self.path = []
+        self.presentedRoute = nil
+        self.fullScreenRoute = nil
+        self.onDismiss = {}
     }
-    
-    public func route(to destination: Route) {
-        switch destination.navigationStyle {
-        case .push: push(to: destination)
-        case .present: present(to: destination)
-        case .full: full(to: destination)
+
+    public init(
+        path: [Route],
+        presentedRoute: Route? = nil,
+        fullScreenRoute: Route? = nil
+    ) {
+        self.path = path
+        self.presentedRoute = presentedRoute
+        self.fullScreenRoute = fullScreenRoute
+        self.onDismiss = {}
+    }
+
+    public init(
+        path: [Route],
+        presentedRoute: Route? = nil,
+        fullScreenRoute: Route? = nil,
+        onDismiss: @escaping @MainActor @Sendable () -> Void
+    ) {
+        self.path = path
+        self.presentedRoute = presentedRoute
+        self.fullScreenRoute = fullScreenRoute
+        self.onDismiss = onDismiss
+    }
+
+    public func route(
+        to destination: Route,
+        style: RyzeNavigationStyle = .push
+    ) {
+        switch style {
+        case .push: push(destination)
+        case .present: present(destination)
+        case .full: fullScreen(destination)
         }
     }
-    
+
     public func root() {
-        navigationPath = .init()
+        path.removeAll()
     }
-    
+
     public func dismiss() {
-        if !navigationPath.isEmpty {
-            navigationPath.removeLast()
-        } else if presentRoute != nil {
-            presentRoute = nil
-        } else if fullRoute != nil {
-            fullRoute = nil
+        if !path.isEmpty {
+            path.removeLast()
+        } else if presentedRoute != nil {
+            presentedRoute = nil
+        } else if fullScreenRoute != nil {
+            fullScreenRoute = nil
         } else {
-            isPresented.wrappedValue = nil
+            onDismiss()
         }
     }
-    
-    private func push(to route: Route) {
-        navigationPath.append(route)
+
+    public func push(_ route: Route) {
+        path.append(route)
     }
-    
-    private func present(to route: Route) {
-        presentRoute = route
+
+    public func present(_ route: Route) {
+        presentedRoute = route
     }
-    
-    private func full(to route: Route) {
-        fullRoute = route
+
+    public func fullScreen(_ route: Route) {
+        fullScreenRoute = route
     }
-    
-    public static func == (lhs: RyzeRouter<Route>, rhs: RyzeRouter<Route>) -> Bool {
-        lhs.presentRoute?.id == rhs.presentRoute?.id &&
-        lhs.fullRoute?.id == rhs.fullRoute?.id &&
-        lhs.navigationPath.codable == rhs.navigationPath.codable
+}
+
+extension RyzeRouter {
+    nonisolated public static func == (lhs: RyzeRouter<Route>, rhs: RyzeRouter<Route>) -> Bool {
+        MainActor.assumeIsolated {
+            lhs.path == rhs.path
+                && lhs.presentedRoute == rhs.presentedRoute
+                && lhs.fullScreenRoute == rhs.fullScreenRoute
+        }
     }
 }

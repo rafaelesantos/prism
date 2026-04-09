@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 02/07/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public protocol RyzeAccessibility: RyzeResourceString {
     var hint: RyzeResourceString { get }

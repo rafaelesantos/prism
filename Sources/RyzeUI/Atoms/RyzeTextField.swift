@@ -5,18 +5,18 @@
 //  Created by Rafael Escaleira on 07/06/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeTextField: RyzeView {
     @Environment(\.theme) var theme
     @FocusState var isFocused: Bool
     @Binding var text: String
     @State var error: RyzeError?
-    
+
     let configuration: RyzeTextFieldConfiguration
     public var accessibility: RyzeAccessibility?
-    
+
     public init(
         text: Binding<String>,
         _ accessibility: RyzeAccessibility? = nil,
@@ -26,22 +26,23 @@ public struct RyzeTextField: RyzeView {
         self.accessibility = accessibility
         self.configuration = configuration
     }
-    
+
     var needFocus: Bool {
         isFocused || !text.isEmpty
     }
-    
+
     var stateColor: RyzeColor {
-        error == nil && !text.isEmpty ? .success :
-        error == nil ? .secondary : .error
+        error == nil && !text.isEmpty ? .success : error == nil ? .secondary : .error
     }
-    
+
     public var body: some View {
-        Button { isFocused = true } label: {
+        Button {
+            isFocused = true
+        } label: {
             RyzeVStack(alignment: .leading) {
                 contentTextField
                     .overlay(alignment: .topLeading) { placeholderView }
-                
+
                 errorView
             }
             .animation(theme.animation, value: isFocused)
@@ -51,7 +52,7 @@ public struct RyzeTextField: RyzeView {
         }
         .ryze(accessibility: accessibility)
     }
-    
+
     var contentTextField: some View {
         TextField(
             "",
@@ -61,8 +62,8 @@ public struct RyzeTextField: RyzeView {
         .focused($isFocused)
         .autocorrectionDisabled()
         #if os(iOS)
-        .keyboardType(configuration.contentType.rawValue)
-        .textInputAutocapitalization(configuration.autocapitalizationType.rawValue)
+            .keyboardType(configuration.contentType.rawValue)
+            .textInputAutocapitalization(configuration.autocapitalizationType.rawValue)
         #endif
         .submitLabel(configuration.submitLabel)
         .ryze(alignment: .leading)
@@ -74,7 +75,7 @@ public struct RyzeTextField: RyzeView {
         .ryzeBackgroundSecondary()
         .ryze(clip: .rounded(radius: theme.radius.large))
     }
-    
+
     func validate() {
         do {
             try configuration.validate(text: text)
@@ -82,10 +83,10 @@ public struct RyzeTextField: RyzeView {
         } catch let error as RyzeError {
             self.error = error
         } catch {
-            
+
         }
     }
-    
+
     var clearButton: some View {
         Button {
             text = ""
@@ -102,7 +103,7 @@ public struct RyzeTextField: RyzeView {
             .scaleEffect(0.8)
         }
     }
-    
+
     @ViewBuilder
     var iconView: some View {
         if let icon = configuration.icon {
@@ -113,7 +114,7 @@ public struct RyzeTextField: RyzeView {
                 .offset(x: needFocus ? .zero : -50)
         }
     }
-    
+
     @ViewBuilder
     var placeholderView: some View {
         RyzeText(configuration.placeholder)
@@ -123,7 +124,7 @@ public struct RyzeTextField: RyzeView {
             .ryzePadding()
             .offset(y: needFocus ? -40 : .zero)
     }
-    
+
     @ViewBuilder
     var errorView: some View {
         if error != nil {
@@ -135,7 +136,7 @@ public struct RyzeTextField: RyzeView {
             .transition(.blurReplace)
         }
     }
-    
+
     @ViewBuilder
     var failureReasonView: some View {
         if let failureReason = error?.failureReason {
@@ -146,7 +147,7 @@ public struct RyzeTextField: RyzeView {
                 )
                 .ryze(font: .footnote)
                 .ryze(color: .error)
-                
+
                 RyzeText(failureReason)
                     .ryze(font: needFocus ? .footnote : .body)
                     .ryze(color: .disabled)
@@ -154,7 +155,7 @@ public struct RyzeTextField: RyzeView {
             }
         }
     }
-    
+
     @ViewBuilder
     var recoverySuggestionView: some View {
         if let recoverySuggestion = error?.recoverySuggestion {
@@ -165,7 +166,7 @@ public struct RyzeTextField: RyzeView {
                 )
                 .ryze(font: .footnote)
                 .ryze(color: .success)
-                
+
                 RyzeText(recoverySuggestion)
                     .ryze(font: needFocus ? .footnote : .body)
                     .ryze(color: .disabled)
@@ -173,7 +174,7 @@ public struct RyzeTextField: RyzeView {
             }
         }
     }
-    
+
     public static func mocked() -> some View {
         RyzeTextField(
             text: .constant(""),

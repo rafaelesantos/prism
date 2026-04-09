@@ -5,28 +5,37 @@
 //  Created by Rafael Escaleira on 24/03/25.
 //
 
-@_exported import Foundation
+import Foundation
 
 public struct RyzeBundle {
+    private let infoDictionary: [String: Any]?
+    private let operatingSystemVersionValue: OperatingSystemVersion
+
     public var applicationName: String? {
-        Bundle.main.infoDictionary?["CFBundleName"] as? String
+        infoDictionary?["CFBundleName"] as? String
     }
-    
+
     public var applicationIdentifier: String? {
-        Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String
+        infoDictionary?["CFBundleIdentifier"] as? String
     }
-    
+
     public var applicationVersion: String? {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        infoDictionary?["CFBundleShortVersionString"] as? String
     }
-    
+
     public var applicationBuild: String? {
-        Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        infoDictionary?["CFBundleVersion"] as? String
     }
-    
+
     public var operatingSystemVersion: OperatingSystemVersion {
-        ProcessInfo.processInfo.operatingSystemVersion
+        operatingSystemVersionValue
     }
-    
-    public init() {}
+
+    public init(
+        infoDictionary: [String: Any]? = Bundle.main.infoDictionary,
+        operatingSystemVersion: OperatingSystemVersion = ProcessInfo.processInfo.operatingSystemVersion
+    ) {
+        self.infoDictionary = infoDictionary
+        self.operatingSystemVersionValue = operatingSystemVersion
+    }
 }

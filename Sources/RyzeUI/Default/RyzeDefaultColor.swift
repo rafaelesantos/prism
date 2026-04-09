@@ -5,7 +5,13 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
+import SwiftUI
+
 struct RyzeDefaultColor: RyzeColorProtocol {
+    private static func asset(_ name: String) -> Color {
+        Color(name, bundle: .module)
+    }
+
     var primary: Color
     var secondary: Color
     var background: Color
@@ -24,24 +30,24 @@ struct RyzeDefaultColor: RyzeColorProtocol {
     var pressed: Color
     var white: Color
     var black: Color
-    
+
     init(
-        primary: Color = Color(.primary),
-        secondary: Color = Color(.secondary),
-        background: Color = Color(.background),
-        backgroundSecondary: Color = Color(.backgroundSecondary),
-        shadow: Color = Color(.shadow),
-        surface: Color = Color(.surface),
+        primary: Color = Self.asset("Primary"),
+        secondary: Color = Self.asset("Secondary"),
+        background: Color = Self.asset("Background"),
+        backgroundSecondary: Color = Self.asset("BackgroundSecondary"),
+        shadow: Color = Self.asset("Shadow"),
+        surface: Color = Self.asset("Surface"),
         text: Color = .primary,
         textSecondary: Color = Color.secondary,
-        border: Color = Color(.border),
-        error: Color = Color(.error),
-        success: Color = Color(.success),
-        warning: Color = Color(.warning),
-        info: Color = Color(.info),
-        disabled: Color = Color(.disabled),
-        hover: Color = Color(.hover),
-        pressed: Color = Color(.pressed),
+        border: Color = Self.asset("Border"),
+        error: Color = Self.asset("Error"),
+        success: Color = Self.asset("Success"),
+        warning: Color = Self.asset("Warning"),
+        info: Color = Self.asset("Info"),
+        disabled: Color = Self.asset("Disabled"),
+        hover: Color = Self.asset("Hover"),
+        pressed: Color = Self.asset("Pressed"),
         white: Color = .white,
         black: Color = .black
     ) {

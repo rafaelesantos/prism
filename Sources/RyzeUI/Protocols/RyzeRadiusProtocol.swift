@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public protocol RyzeRadiusProtocol: Sendable {
     var none: CGFloat { get }

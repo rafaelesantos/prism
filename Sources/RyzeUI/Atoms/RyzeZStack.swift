@@ -5,14 +5,14 @@
 //  Created by Rafael Escaleira on 08/06/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public struct RyzeZStack: RyzeView {
     let alignment: Alignment
     let content: any View
-    
+
     public var accessibility: RyzeAccessibility?
-    
+
     public init(
         _ accessibility: RyzeAccessibility? = nil,
         alignment: Alignment = .center,
@@ -23,14 +23,14 @@ public struct RyzeZStack: RyzeView {
         self.alignment = alignment
         self.content = content()
     }
-    
+
     public var body: some View {
         ZStack(alignment: alignment) {
             AnyView(content)
         }
         .ryze(accessibility: accessibility)
     }
-    
+
     public static func mocked() -> some View {
         RyzeZStack {
             RyzeSymbol.mocked()

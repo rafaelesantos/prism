@@ -11,7 +11,7 @@ extension String {
     static func localized(for key: RyzeNetworkString) -> Self {
         key.value
     }
-    
+
     static func localized(
         for key: RyzeNetworkString,
         with arguments: CVarArg...
@@ -20,9 +20,5 @@ extension String {
             format: key.value,
             arguments: arguments
         )
-    }
-    
-    static var cacheIntervalKey: Self {
-        .localized(for: .cacheInvertvalKey)
     }
 }

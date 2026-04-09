@@ -5,16 +5,17 @@
 //  Created by Rafael Escaleira on 04/07/25.
 //
 
-@_exported import SwiftUI
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeLabel: RyzeView {
     @Environment(\.isLoading) private var isLoading
-    
+
     let text: String?
     let symbol: String
-    
+
     public var accessibility: RyzeAccessibility?
-    
+
     public init(
         _ text: String?,
         _ accessibility: RyzeAccessibility? = nil,
@@ -24,7 +25,7 @@ public struct RyzeLabel: RyzeView {
         self.accessibility = accessibility
         self.symbol = symbol
     }
-    
+
     public init(
         _ localized: RyzeResourceString?,
         _ accessibility: RyzeAccessibility? = nil,
@@ -34,7 +35,7 @@ public struct RyzeLabel: RyzeView {
         self.accessibility = accessibility
         self.symbol = symbol
     }
-    
+
     public var body: some View {
         if isLoading {
             Label(
@@ -49,7 +50,7 @@ public struct RyzeLabel: RyzeView {
             )
         }
     }
-    
+
     public static func mocked() -> some View {
         RyzeLabel(
             RyzeUIString.ryzePreviewTitle,

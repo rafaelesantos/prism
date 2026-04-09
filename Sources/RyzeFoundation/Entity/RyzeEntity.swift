@@ -5,15 +5,15 @@
 //  Created by Rafael Escaleira on 24/03/25.
 //
 
-@_exported import Foundation
+import Foundation
 
 public protocol RyzeEntity:
     Codable,
-    Identifiable,
     Equatable,
     Hashable,
     CustomStringConvertible,
-    RyzeLogger {
+    RyzeLogger
+{
 }
 
 extension RyzeEntity {
@@ -26,7 +26,7 @@ extension RyzeEntity {
             logger.error(.error(error))
         }
     }
-    
+
     public var description: String {
         do {
             return try json
@@ -37,10 +37,6 @@ extension RyzeEntity {
 }
 
 extension Array: RyzeEntity where Element: RyzeEntity {}
-
-extension Array: @retroactive Identifiable where Element: RyzeEntity {
-    public var id: UUID { .init() }
-}
 
 extension Array: RyzeLogger where Element: RyzeEntity {
     public func log() {

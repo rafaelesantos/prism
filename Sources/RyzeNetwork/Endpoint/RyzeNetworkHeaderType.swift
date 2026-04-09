@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 29/03/25.
 //
 
-public enum RyzeNetworkHeaderType: String {
+public enum RyzeNetworkHeaderType: String, Sendable, CaseIterable {
     case json = "application/json"
     case xml = "application/xml"
     case formURLEncoded = "application/x-www-form-urlencoded"

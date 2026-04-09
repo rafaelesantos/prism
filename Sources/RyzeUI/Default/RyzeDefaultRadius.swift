@@ -5,6 +5,8 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
+import SwiftUI
+
 struct RyzeDefaultRadius: RyzeRadiusProtocol {
     var none: CGFloat
     var small: CGFloat
@@ -12,7 +14,7 @@ struct RyzeDefaultRadius: RyzeRadiusProtocol {
     var large: CGFloat
     var extraLarge: CGFloat
     var circle: CGFloat
-    
+
     init(
         none: CGFloat = .zero,
         small: CGFloat = 4,

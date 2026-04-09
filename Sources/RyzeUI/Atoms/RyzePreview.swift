@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 06/06/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzePreview<Content: RyzeView>: View {
     let colorSchemes: [ColorScheme] = [.light, .dark]
@@ -14,11 +14,11 @@ public struct RyzePreview<Content: RyzeView>: View {
     let orientations: [InterfaceOrientation] = [.portrait, .landscapeRight]
     let layouts: [PreviewLayout] = [.sizeThatFits, .device]
     let content: Content.Type
-    
+
     public init(content: Content.Type) {
         self.content = content
     }
-    
+
     public var body: some View {
         Group {
             ForEach(locales.indices, id: \.self) {

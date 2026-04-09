@@ -5,10 +5,9 @@
 //  Created by Rafael Escaleira on 15/05/25.
 //
 
-@_exported import Foundation
-@_exported import RyzeFoundation
+import Foundation
+import RyzeFoundation
 
 public protocol RyzeNetworkSocketRequest: Sendable {
-    var client: RyzeNetworkSocketClient { get async }
-    var endpoint: RyzeNetworkSocketEndpoint? { get async }
+    var endpoint: (any RyzeNetworkSocketEndpoint)? { get }
 }

@@ -5,17 +5,14 @@
 //  Created by Rafael Escaleira on 24/03/25.
 //
 
-@_exported import Foundation
+import Foundation
 
-public extension Data {
-    var string: String {
-        String(
-            data: self,
-            encoding: .utf8
-        ).unsafelyUnwrapped
+extension Data {
+    public var string: String {
+        String(decoding: self, as: UTF8.self)
     }
-    
-    func entity<T: Decodable>(
+
+    public func entity<T: Decodable>(
         for type: T.Type,
         with formatter: DateFormatter? = nil
     ) throws -> T {
@@ -24,8 +21,10 @@ public extension Data {
         jsonDecoder.dateDecodingStrategy = .formatted(formatter)
         return try jsonDecoder.decode(T.self, from: self)
     }
-    
-    func fieldRanges(for code: Unicode.Scalar) -> [Range<Data.Index>] {
+
+    public func fieldRanges(for code: Unicode.Scalar) -> [Range<Data.Index>] {
+        guard code.isASCII else { return [startIndex..<endIndex] }
+
         var ranges: [Range<Data.Index>] = []
         var start = startIndex
         var index = start
@@ -44,7 +43,7 @@ public extension Data {
         return ranges
     }
 
-    func int(in range: Range<Index>) -> Int? {
+    public func int(in range: Range<Index>) -> Int? {
         guard !range.isEmpty else { return nil }
 
         var index = range.lowerBound
@@ -68,7 +67,7 @@ public extension Data {
         return isNegative ? -value : value
     }
 
-    func double(in range: Range<Index>) -> Double? {
+    public func double(in range: Range<Index>) -> Double? {
         guard !range.isEmpty else { return nil }
 
         var index = range.lowerBound
@@ -113,18 +112,16 @@ public extension Data {
         return isNegative ? -value : value
     }
 
-    func byte(in range: Range<Index>) -> UInt8? {
+    public func byte(in range: Range<Index>) -> UInt8? {
         guard !range.isEmpty else { return nil }
         let next = index(after: range.lowerBound)
         guard next == range.upperBound else { return nil }
         return self[range.lowerBound]
     }
 
-    func equalsASCII(_ ascii: StaticString, in range: Range<Index>) -> Bool {
-        guard let bytes = ascii.withUTF8Buffer({ buffer -> [UInt8]? in
+    public func equalsASCII(_ ascii: StaticString, in range: Range<Index>) -> Bool {
+        let bytes = ascii.withUTF8Buffer { buffer in
             Array(buffer)
-        }) else {
-            return false
         }
 
         guard distance(from: range.lowerBound, to: range.upperBound) == bytes.count else {
@@ -145,11 +142,11 @@ public extension Data {
         return true
     }
 
-    func hasPrefixASCII(_ ascii: StaticString) -> Bool {
-        guard let bytes = ascii.withUTF8Buffer({ buffer -> [UInt8]? in
+    public func hasPrefixASCII(_ ascii: StaticString) -> Bool {
+        guard !isEmpty else { return ascii.utf8CodeUnitCount == 0 }
+
+        let bytes = ascii.withUTF8Buffer { buffer in
             Array(buffer)
-        }) else {
-            return false
         }
 
         guard count >= bytes.count else { return false }
@@ -168,7 +165,7 @@ public extension Data {
         return true
     }
 
-    func string(in range: Range<Index>) -> String? {
+    public func string(in range: Range<Index>) -> String? {
         String(data: self[range], encoding: .utf8)
     }
 }

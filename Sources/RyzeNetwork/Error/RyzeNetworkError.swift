@@ -5,7 +5,8 @@
 //  Created by Rafael Escaleira on 29/03/25.
 //
 
-@_exported import RyzeFoundation
+import Foundation
+import RyzeFoundation
 
 public enum RyzeNetworkError: RyzeError {
     case invalidURL
@@ -16,7 +17,7 @@ public enum RyzeNetworkError: RyzeError {
     case unauthorized
     case forbidden
     case noCache
-    
+
     public var description: String {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLDescription)
@@ -29,7 +30,7 @@ public enum RyzeNetworkError: RyzeError {
         case .noCache: return .localized(for: .noCacheDescription)
         }
     }
-    
+
     public var errorDescription: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLErrorDescription)
@@ -42,7 +43,7 @@ public enum RyzeNetworkError: RyzeError {
         case .noCache: return .localized(for: .noCacheErrorDescription)
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLFailureReason)
@@ -55,7 +56,7 @@ public enum RyzeNetworkError: RyzeError {
         case .noCache: return .localized(for: .noCacheFailureReason)
         }
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLRecoverySuggestion)
@@ -66,6 +67,47 @@ public enum RyzeNetworkError: RyzeError {
         case .unauthorized: return .localized(for: .unauthorizedRecoverySuggestion)
         case .forbidden: return .localized(for: .forbiddenRecoverySuggestion)
         case .noCache: return .localized(for: .noCacheRecoverySuggestion)
+        }
+    }
+}
+
+extension RyzeNetworkError {
+    static func from(statusCode: Int) -> Self {
+        switch statusCode {
+        case 400:
+            .badRequest
+        case 401:
+            .unauthorized
+        case 403:
+            .forbidden
+        case 408, 429, 500...599:
+            .serverError
+        default:
+            .invalidResponse
+        }
+    }
+
+    static func from(error: Error) -> Self {
+        if let networkError = error as? Self {
+            return networkError
+        }
+
+        guard let urlError = error as? URLError else {
+            return .invalidResponse
+        }
+
+        switch urlError.code {
+        case .badURL, .unsupportedURL:
+            return .invalidURL
+        case .notConnectedToInternet,
+            .networkConnectionLost,
+            .cannotFindHost,
+            .cannotConnectToHost,
+            .dnsLookupFailed,
+            .timedOut:
+            return .noConnectivity
+        default:
+            return .invalidResponse
         }
     }
 }

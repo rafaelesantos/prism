@@ -5,30 +5,30 @@
 //  Created by Rafael Escaleira on 03/06/25.
 //
 
-@_exported import Foundation
+import Foundation
 
-public extension Date {
-    var timestamp: Int {
+extension Date {
+    public var timestamp: Int {
         Int(self.timeIntervalSince1970)
     }
 
-    var milliseconds: Int {
+    public var milliseconds: Int {
         Int(self.timeIntervalSince1970 * 1000)
     }
 
-    var isToday: Bool {
+    public var isToday: Bool {
         Calendar.current.isDateInToday(self)
     }
 
-    var isYesterday: Bool {
+    public var isYesterday: Bool {
         Calendar.current.isDateInYesterday(self)
     }
 
-    var isTomorrow: Bool {
+    public var isTomorrow: Bool {
         Calendar.current.isDateInTomorrow(self)
     }
 
-    func string(with formatter: RyzeDateFormatter) -> String? {
+    public func string(with formatter: RyzeDateFormatter) -> String? {
         formatter.string(from: self)
     }
 }

@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 06/06/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public protocol RyzeSizeProtocol: Sendable {
     var ultraSmall: CGFloat { get }

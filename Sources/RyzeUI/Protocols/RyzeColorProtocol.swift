@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 18/04/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public protocol RyzeColorProtocol: Sendable {
     var primary: Color { get set }

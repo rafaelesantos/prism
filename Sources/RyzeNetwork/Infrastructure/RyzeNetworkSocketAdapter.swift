@@ -5,140 +5,364 @@
 //  Created by Rafael Escaleira on 15/05/25.
 //
 
-import Network
 import Foundation
+import Network
 import RyzeFoundation
 
-public actor RyzeNetworkSocketAdapter: RyzeNetworkSocketClient {
-    private var connection: NWConnection?
-    
-    public init() {}
-    
-    public func connect<Request: RyzeNetworkSocketRequest>(with request: Request) async throws -> AsyncStream<String> {
-        let logger = RyzeNetworkLogger()
-        guard let endpoint = await request.endpoint else {
-            logger.error("❌ Invalid URL for request: \(String(describing: request))")
-            throw RyzeNetworkError.invalidURL
-        }
-        
-        let port = try endpoint.port.rawValue
-        logger.info("🌐 Connecting to host \(endpoint.host) on port \(port) with parameters: \(endpoint.parameters)")
-        
-        connection = try NWConnection(
-            host: endpoint.host,
-            port: endpoint.port,
-            using: endpoint.parameters
-        )
-        
-        return AsyncStream { continuation in
-            Task(priority: .high) {
-                continuation.onTermination = { [weak self] _ in
-                    guard let self else { return }
-                    Task {
-                        await self.disconnect()
-                        logger.info("👋 Disconnected from \(endpoint.host) on port \(port)")
-                    }
-                }
-                
-                let stream = await connect()
-                for await status in stream {
-                    switch status {
-                    case .open:
-                        logger.info("✅ Connected to \(endpoint.host) on port \(port)")
-                        async let _ = receive(on: continuation)
-                    case .close:
-                        logger.info("🔌 Connection closed to \(endpoint.host) on port \(port)")
-                        continuation.finish()
-                    }
-                }
+protocol RyzeNetworkSocketConnection: AnyObject, Sendable {
+    var stateUpdateHandler: (@Sendable (RyzeNetworkSocketConnectionState) -> Void)? { get set }
+
+    func start(queue: DispatchQueue)
+    func cancel()
+    func receive(
+        minimumIncompleteLength: Int,
+        maximumLength: Int,
+        completion: @escaping @Sendable (Data?, Bool, Error?) -> Void
+    )
+    func send(
+        content: Data?,
+        completion: @escaping @Sendable (Error?) -> Void
+    )
+}
+
+enum RyzeNetworkSocketConnectionState: Sendable {
+    case ready
+    case cancelled
+    case failed(String)
+    case other(String)
+}
+
+final class RyzeNetworkNWConnection: @unchecked Sendable, RyzeNetworkSocketConnection {
+    private let connection: NWConnection
+
+    var stateUpdateHandler: (@Sendable (RyzeNetworkSocketConnectionState) -> Void)? {
+        didSet {
+            connection.stateUpdateHandler = { [weak self] state in
+                self?.stateUpdateHandler?(Self.map(state))
             }
         }
     }
-    
-    private func connect() async -> AsyncStream<RyzeNetworkSocketStatus> {
-        AsyncStream { continuation in
-            connection?.stateUpdateHandler = { state in
-                let logger = RyzeNetworkLogger()
-                switch state {
-                case .ready:
-                    logger.info("🟢 Connection ready!")
-                    continuation.yield(.open)
-                case .cancelled:
-                    logger.info("⚠️ Connection cancelled.")
-                    continuation.yield(.close)
-                case .failed(let error):
-                    logger.error("❗️Connection failed: \(error.localizedDescription)")
-                    continuation.yield(.close)
-                default:
-                    logger.info("🔄 Connection state changed: \(String(describing: state))")
-                    break
-                }
-            }
-            connection?.start(
-                queue: DispatchQueue(
-                    label: UUID().uuidString,
-                    qos: .userInitiated,
-                    attributes: .concurrent
-                )
+
+    init(
+        host: NWEndpoint.Host,
+        port: NWEndpoint.Port,
+        parameters: NWParameters
+    ) {
+        self.connection = NWConnection(
+            host: host,
+            port: port,
+            using: parameters
+        )
+    }
+
+    func start(queue: DispatchQueue) {
+        connection.start(queue: queue)
+    }
+
+    func cancel() {
+        connection.cancel()
+    }
+
+    func receive(
+        minimumIncompleteLength: Int,
+        maximumLength: Int,
+        completion: @escaping @Sendable (Data?, Bool, Error?) -> Void
+    ) {
+        connection.receive(
+            minimumIncompleteLength: minimumIncompleteLength,
+            maximumLength: maximumLength
+        ) { content, _, isComplete, error in
+            completion(
+                content,
+                isComplete,
+                error
             )
         }
     }
-    
-    private func receive(on continuation: AsyncStream<String>.Continuation) async {
-        connection?.receive(
-            minimumIncompleteLength: .zero,
-            maximumLength: 10 * 1024 * 1024
-        ) { [weak self] content, contentContext, isComplete, error in
-            guard let self else { return }
-            
-            let logger = RyzeNetworkLogger()
-            
-            if connection?.state == .cancelled {
-                continuation.finish()
-                return
+
+    func send(
+        content: Data?,
+        completion: @escaping @Sendable (Error?) -> Void
+    ) {
+        connection.send(
+            content: content,
+            completion: .contentProcessed { error in
+                completion(error)
             }
-            
-            if let error = error {
-                logger.error("📭 Receive error: \(error.localizedDescription)")
-            }
-            
-            if let data = content, let value = String(data: data, encoding: .utf8) {
-                continuation.yield(value)
-            }
-            
-            if isComplete {
-                logger.info("📬 Reception complete.")
-                continuation.finish()
-            }
-            
-            Task(priority: .high) { async let _ = self.receive(on: continuation) }
+        )
+    }
+
+    private static func map(
+        _ state: NWConnection.State
+    ) -> RyzeNetworkSocketConnectionState {
+        switch state {
+        case .ready:
+            .ready
+        case .waiting(let error):
+            .failed(error.localizedDescription)
+        case .cancelled:
+            .cancelled
+        case .failed(let error):
+            .failed(error.localizedDescription)
+        default:
+            .other(String(describing: state))
         }
     }
-    
+}
+
+public actor RyzeNetworkSocketAdapter: RyzeNetworkSocketClient {
+    private let connectionFactory:
+        @Sendable (
+            NWEndpoint.Host,
+            NWEndpoint.Port,
+            NWParameters
+        ) -> any RyzeNetworkSocketConnection
+    private let queueFactory: @Sendable () -> DispatchQueue
+
+    private var connection: (any RyzeNetworkSocketConnection)?
+    private var receiveBuffer = Data()
+
+    public init() {
+        self.init(
+            connectionFactory: { host, port, parameters in
+                RyzeNetworkNWConnection(
+                    host: host,
+                    port: port,
+                    parameters: parameters
+                )
+            },
+            queueFactory: {
+                DispatchQueue(
+                    label: UUID().uuidString,
+                    qos: .userInitiated
+                )
+            }
+        )
+    }
+
+    init(
+        connectionFactory:
+            @escaping @Sendable (
+                NWEndpoint.Host,
+                NWEndpoint.Port,
+                NWParameters
+            ) -> any RyzeNetworkSocketConnection,
+        queueFactory: @escaping @Sendable () -> DispatchQueue
+    ) {
+        self.connectionFactory = connectionFactory
+        self.queueFactory = queueFactory
+    }
+
+    public func connect(
+        to endpoint: any RyzeNetworkSocketEndpoint
+    ) async throws -> AsyncStream<Data> {
+        let logger = RyzeNetworkLogger()
+        endpoint.log()
+
+        let port = try endpoint.port.rawValue
+        let portDescription = String(port)
+        logger.info(
+            .connecting(
+                endpoint.host.debugDescription,
+                portDescription,
+                endpoint.parameters.debugDescription
+            )
+        )
+
+        receiveBuffer.removeAll(keepingCapacity: true)
+        let connection = connectionFactory(
+            endpoint.host,
+            try endpoint.port,
+            endpoint.parameters
+        )
+        self.connection = connection
+
+        return AsyncStream { continuation in
+            continuation.onTermination = { [weak self] _ in
+                guard let self else { return }
+                Task {
+                    await self.disconnect()
+                    logger.info(
+                        .disconnected(
+                            endpoint.host.debugDescription,
+                            portDescription
+                        ))
+                }
+            }
+
+            connection.stateUpdateHandler = { [weak self] state in
+                guard let self else { return }
+                Task {
+                    await self.handle(
+                        state: state,
+                        endpoint: endpoint,
+                        portDescription: portDescription,
+                        continuation: continuation,
+                        logger: logger
+                    )
+                }
+            }
+
+            connection.start(queue: queueFactory())
+        }
+    }
+
+    private func handle(
+        state: RyzeNetworkSocketConnectionState,
+        endpoint: any RyzeNetworkSocketEndpoint,
+        portDescription: String,
+        continuation: AsyncStream<Data>.Continuation,
+        logger: RyzeNetworkLogger
+    ) async {
+        switch state {
+        case .ready:
+            logger.info(
+                .connectionEstablished(
+                    endpoint.host.debugDescription,
+                    portDescription
+                ))
+            receive(
+                on: continuation,
+                logger: logger
+            )
+        case .cancelled:
+            logger.info(
+                .connectionClosed(
+                    endpoint.host.debugDescription,
+                    portDescription
+                ))
+            continuation.finish()
+            connection = nil
+        case .failed(let error):
+            logger.error(.connectionFailed(error))
+            continuation.finish()
+            connection = nil
+        case .other(let description):
+            logger.info(.connectionStateChanged(description))
+        }
+    }
+
+    private func receive(
+        on continuation: AsyncStream<Data>.Continuation,
+        logger: RyzeNetworkLogger
+    ) {
+        connection?.receive(
+            minimumIncompleteLength: 1,
+            maximumLength: 10 * 1024 * 1024
+        ) { [weak self] content, isComplete, error in
+            guard let self else { return }
+            Task {
+                await self.processReceive(
+                    content: content,
+                    isComplete: isComplete,
+                    error: error,
+                    continuation: continuation,
+                    logger: logger
+                )
+            }
+        }
+    }
+
+    private func processReceive(
+        content: Data?,
+        isComplete: Bool,
+        error: Error?,
+        continuation: AsyncStream<Data>.Continuation,
+        logger: RyzeNetworkLogger
+    ) async {
+        if let error {
+            logger.error(.receiveError(error.localizedDescription))
+            continuation.finish()
+            disconnect()
+            return
+        }
+
+        if let content, !content.isEmpty {
+            receiveBuffer.append(content)
+            emitFrames(on: continuation)
+        }
+
+        if isComplete {
+            if !receiveBuffer.isEmpty {
+                logger.warning(
+                    "⚠️ Discarding incomplete trailing buffer with \(receiveBuffer.count) bytes"
+                )
+                receiveBuffer.removeAll(keepingCapacity: true)
+            }
+            logger.info(.receptionComplete)
+            continuation.finish()
+            disconnect()
+            return
+        }
+
+        receive(
+            on: continuation,
+            logger: logger
+        )
+    }
+
+    private func emitFrames(on continuation: AsyncStream<Data>.Continuation) {
+        let newline = UInt8(ascii: "\n")
+        let carriageReturn = UInt8(ascii: "\r")
+
+        while let index = receiveBuffer.firstIndex(of: newline) {
+            let rawFrame = receiveBuffer[..<index]
+
+            let frame: Data
+            if rawFrame.last == carriageReturn {
+                frame = Data(rawFrame.dropLast())
+            } else {
+                frame = Data(rawFrame)
+            }
+
+            if !frame.isEmpty {
+                continuation.yield(frame)
+            }
+
+            let nextIndex = receiveBuffer.index(after: index)
+            receiveBuffer.removeSubrange(..<nextIndex)
+        }
+    }
+
     public func send(command: RyzeNetworkSocketCommand) async throws {
         let logger = RyzeNetworkLogger()
-        guard let content = command.message.breakLine.data(using: .utf8) else {
-            logger.error("❌ Failed to encode message: \(command.message)")
-            throw RyzeNetworkError.badRequest
+        guard let connection else {
+            throw RyzeNetworkError.noConnectivity
         }
-        
-        logger.info("✉️ Sending message: \(command.message)")
-        
-        try await withCheckedThrowingContinuation { continuation in
-            connection?.send(
+
+        let message = normalizedMessage(from: command.message)
+        let content = Data(message.utf8)
+
+        logger.info(.sendingMessage(command.message))
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            connection.send(
                 content: content,
-                completion: .contentProcessed { error in
+                completion: { error in
                     guard let error else {
-                        logger.info("✅ Message sent: \(command.message)")
-                        return continuation.resume()
+                        logger.info(.messageSent(command.message))
+                        continuation.resume(returning: ())
+                        return
                     }
-                    logger.error("🚫 Send error: \(error.localizedDescription)")
+
+                    logger.error(.sendError(error.localizedDescription))
+                    continuation.resume(throwing: error)
                 }
             )
         }
     }
-    
+
     private func disconnect() {
         connection?.cancel()
+        connection = nil
+        receiveBuffer.removeAll(keepingCapacity: true)
+    }
+
+    private func normalizedMessage(
+        from message: String
+    ) -> String {
+        message.hasSuffix(.breakLine)
+            ? message
+            : message.breakLine
     }
 }

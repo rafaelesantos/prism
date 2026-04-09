@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 07/06/25.
 //
 
+import Ryze
 import SwiftUI
-import RyzeUI
 
 @main
 struct RyzePreview: App {

@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 01/07/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public indirect enum RyzeSpacing {
     case zero
@@ -18,7 +18,7 @@ public indirect enum RyzeSpacing {
     case section
     case negative(RyzeSpacing)
     case custom(CGFloat)
-    
+
     func rawValue(for theme: RyzeSpacingProtocol) -> CGFloat {
         switch self {
         case .zero: return theme.none
@@ -29,8 +29,8 @@ public indirect enum RyzeSpacing {
         case .extraLarge: return theme.extraLarge
         case .ultraLarge: return theme.ultraLarge
         case .section: return theme.section
-        case let .negative(spacing): return -spacing.rawValue(for: theme)
-        case let .custom(spacing): return spacing
+        case .negative(let spacing): return -spacing.rawValue(for: theme)
+        case .custom(let spacing): return spacing
         }
     }
 }

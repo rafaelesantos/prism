@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public protocol RyzeThemeProtocol: Sendable {
     var color: RyzeColorProtocol { get set }

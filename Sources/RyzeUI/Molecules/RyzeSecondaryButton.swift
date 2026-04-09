@@ -5,17 +5,18 @@
 //  Created by Rafael Escaleira on 02/07/25.
 //
 
-@_exported import SwiftUI
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeSecondaryButton: RyzeView {
     @Environment(\.theme) var theme
-    
+
     let text: String?
     let role: ButtonRole?
     let action: () -> Void
-    
+
     public var accessibility: RyzeAccessibility?
-    
+
     public init(
         _ text: String?,
         _ accessibility: RyzeAccessibility? = nil,
@@ -27,7 +28,7 @@ public struct RyzeSecondaryButton: RyzeView {
         self.role = role
         self.action = action
     }
-    
+
     public init(
         _ localized: RyzeResourceString?,
         _ accessibility: RyzeAccessibility? = nil,
@@ -39,14 +40,14 @@ public struct RyzeSecondaryButton: RyzeView {
         self.role = role
         self.action = action
     }
-    
+
     var tint: RyzeColor {
         switch role {
         case .destructive: return .error
         default: return .primary
         }
     }
-    
+
     public var body: some View {
         RyzeButton(
             accessibility,
@@ -61,13 +62,13 @@ public struct RyzeSecondaryButton: RyzeView {
         .buttonBorderShape(.capsule)
         .glassEffect(.regular.interactive())
     }
-    
+
     public static func mocked() -> some View {
         RyzeSecondaryButton(
             .ryzePreviewTitle,
             role: .cancel
         ) {
-            
+
         }
         .ryze(font: .body)
     }

@@ -5,16 +5,19 @@
 //  Created by Rafael Escaleira on 25/04/25.
 //
 
-public extension String {
-    static var ryzePreviewTitle: String {
+import RyzeFoundation
+import SwiftUI
+
+extension String {
+    public static var ryzePreviewTitle: String {
         RyzeUIString.ryzePreviewTitle.value
     }
-    
-    static var ryzePreviewDescription: String {
+
+    public static var ryzePreviewDescription: String {
         RyzeUIString.ryzePreviewDescription.value
     }
-    
-    static func ryzePreviewDisplayName<T>(
+
+    public static func ryzePreviewDisplayName<T>(
         _ type: T.Type,
         scheme: ColorScheme,
         locale: RyzeLocale
@@ -24,8 +27,8 @@ public extension String {
         let localeName = locale.description
         return "\(className) • \(schemeName) • \(localeName)"
     }
-    
-    func formatted(with format: String) -> String {
+
+    public func formatted(with format: String) -> String {
         String(format: format, self)
     }
 }

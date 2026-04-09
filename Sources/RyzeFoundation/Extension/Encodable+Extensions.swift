@@ -5,23 +5,26 @@
 //  Created by Rafael Escaleira on 24/03/25.
 //
 
-@_exported import Foundation
+import Foundation
 
-public extension Encodable {
-    var json: String {
+extension Encodable {
+    public var json: String {
         get throws {
             return try data().string
         }
     }
-    
-    func data(with dateStyle: DateFormatter.Style = .long) throws -> Data {
+
+    public func data(with formatter: DateFormatter) throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .formatted(formatter)
+        return try encoder.encode(self)
+    }
+
+    public func data(with dateStyle: DateFormatter.Style = .long) throws -> Data {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = .current
         dateFormatter.dateStyle = dateStyle
-        
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        return try encoder.encode(self)
+        return try data(with: dateFormatter)
     }
 }

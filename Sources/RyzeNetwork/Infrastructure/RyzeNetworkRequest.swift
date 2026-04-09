@@ -5,26 +5,26 @@
 //  Created by Rafael Escaleira on 29/03/25.
 //
 
-@_exported import Foundation
-@_exported import RyzeFoundation
+import Foundation
+import RyzeFoundation
 
 public protocol RyzeNetworkRequest: Sendable {
     associatedtype Endpoint: RyzeNetworkEndpoint
     associatedtype Response: RyzeEntity & Sendable
-    
-    var endpoint: Endpoint { get async }
-    
+
+    var endpoint: Endpoint { get }
+
     func decode(
         data: Data,
         with formatter: DateFormatter?
-    ) async throws -> Response
+    ) throws -> Response
 }
 
-public extension RyzeNetworkRequest {
-    func decode(
+extension RyzeNetworkRequest {
+    public func decode(
         data: Data,
         with formatter: DateFormatter?
-    ) async throws -> Response {
+    ) throws -> Response {
         let decoded = try data.entity(
             for: Response.self,
             with: formatter
@@ -33,4 +33,3 @@ public extension RyzeNetworkRequest {
         return decoded
     }
 }
-

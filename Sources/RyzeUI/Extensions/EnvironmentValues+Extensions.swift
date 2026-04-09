@@ -5,15 +5,15 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
-public extension EnvironmentValues {
-    @Entry var isLoading: Bool = false
-    @Entry var isDisabled: Bool = false
-    @Entry var screenSize: CGSize = .zero
-    @Entry var scrollPosition: CGPoint = .zero
-    @Entry var isLargeScreen: Bool = false
-    
-    @Entry var theme: RyzeThemeProtocol = RyzeDefaultTheme()
+extension EnvironmentValues {
+    @Entry public var isLoading: Bool = false
+    @Entry public var isDisabled: Bool = false
+    @Entry public var screenSize: CGSize = .zero
+    @Entry public var scrollPosition: CGPoint = .zero
+    @Entry public var isLargeScreen: Bool = false
+
+    @Entry public var theme: RyzeThemeProtocol = RyzeDefaultTheme()
 }

@@ -7,46 +7,46 @@
 
 import Foundation
 
-public extension String {
-    var breakLine: String {
+extension String {
+    public var breakLine: String {
         self + "\n"
     }
-    
-    static var breakLine: String {
+
+    public static var breakLine: String {
         "\n"
     }
-    
-    var space: String {
+
+    public var space: String {
         self + " "
     }
-    
-    static var space: String {
+
+    public static var space: String {
         " "
     }
-    
-    var double: Double? {
+
+    public var double: Double? {
         Double(self)
     }
-    
-    var int: Int? {
+
+    public var int: Int? {
         Int(self)
     }
-    
-    var normalized: String {
+
+    public var normalized: String {
         self.folding(
             options: [
                 .diacriticInsensitive,
-                .caseInsensitive
+                .caseInsensitive,
             ],
             locale: .current
         )
     }
-    
-    func date(with formatter: RyzeDateFormatter) -> Date? {
+
+    public func date(with formatter: RyzeDateFormatter) -> Date? {
         formatter.date(from: self)
     }
-    
-    var stableHash: Int64 {
+
+    public var stableHash: Int64 {
         var hash: Int64 = 1_469_598_103_934_665_603
         let fnvPrime: Int64 = 1_099_511_628_211
 
@@ -58,9 +58,8 @@ public extension String {
     }
 }
 
-
-public extension Substring {
-    var stableHash: Int64 {
+extension Substring {
+    public var stableHash: Int64 {
         var hash: Int64 = 1_469_598_103_934_665_603
         let fnvPrime: Int64 = 1_099_511_628_211
 

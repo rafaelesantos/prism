@@ -11,7 +11,7 @@ public actor RyzeVideoDownloader {
     private var videoURL: URL
     private var videoName: String
     private var videoType: AVFileType
-    
+
     public init(
         video url: URL,
         with name: String,
@@ -21,47 +21,53 @@ public actor RyzeVideoDownloader {
         videoName = name
         videoType = type
     }
-    
+
     func download() -> AsyncStream<RyzeVideoDownloaderStatus> {
         AsyncStream { continuation in
             Task {
                 do {
                     let asset = AVURLAsset(url: videoURL)
                     let isPlayable = try await asset.load(.isPlayable)
-                    
+
                     guard isPlayable else {
                         continuation.yield(RyzeVideoDownloaderStatus.error(.assetNotPlayable))
                         continuation.finish()
                         return
                     }
-                    
+
                     let composition = AVMutableComposition()
                     guard let videoTrack = try await asset.loadTracks(withMediaType: .video).first,
-                          let audioTrack = try await asset.loadTracks(withMediaType: .audio).first else {
+                        let audioTrack = try await asset.loadTracks(withMediaType: .audio).first
+                    else {
                         continuation.yield(RyzeVideoDownloaderStatus.error(.missingTracks))
                         continuation.finish()
                         return
                     }
-                    
+
                     let timeRange = try await CMTimeRange(start: .zero, duration: asset.load(.duration))
-                    let videoCompTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
-                    let audioCompTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
-                    
+                    let videoCompTrack = composition.addMutableTrack(
+                        withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid)
+                    let audioCompTrack = composition.addMutableTrack(
+                        withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+
                     try videoCompTrack?.insertTimeRange(timeRange, of: videoTrack, at: .zero)
                     try audioCompTrack?.insertTimeRange(timeRange, of: audioTrack, at: .zero)
-                    
-                    let exportURL = FileManager.default.temporaryDirectory.appendingPathComponent(videoName + videoType.rawValue)
-                    
-                    guard let exportSession = AVAssetExportSession(
-                        asset: composition,
-                        presetName: AVAssetExportPresetHighestQuality
-                    ) else {
+
+                    let exportURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                        videoName + videoType.rawValue)
+
+                    guard
+                        let exportSession = AVAssetExportSession(
+                            asset: composition,
+                            presetName: AVAssetExportPresetHighestQuality
+                        )
+                    else {
                         continuation.yield(RyzeVideoDownloaderStatus.error(.failedToCreateExportSession))
                         continuation.finish()
                         return
                     }
                     exportSession.shouldOptimizeForNetworkUse = true
-                    
+
                     let progressTimer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
                     let cancellable = progressTimer.sink { _ in
                         let progress = Double(exportSession.progress)
@@ -72,7 +78,7 @@ public actor RyzeVideoDownloader {
                             )
                         )
                     }
-                    
+
                     try await exportSession.export(to: exportURL, as: videoType)
                     cancellable.cancel()
                     continuation.yield(RyzeVideoDownloaderStatus.completed(path: exportURL))

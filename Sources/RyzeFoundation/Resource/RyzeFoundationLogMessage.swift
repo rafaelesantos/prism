@@ -6,8 +6,8 @@ enum RyzeFoundationLogMessage: RyzeResourceLogMessage {
 
     var value: String {
         switch self {
-        case let .message(string): return string
-        case let .error(error): return error.localizedDescription
+        case .message(let string): return string
+        case .error(let error): return error.localizedDescription
         }
     }
 }

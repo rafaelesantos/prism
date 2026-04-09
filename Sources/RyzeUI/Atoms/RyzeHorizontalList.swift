@@ -5,17 +5,17 @@
 //  Created by Rafael Escaleira on 29/07/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public struct RyzeHorizontalList: RyzeView {
     let content: (ScrollViewProxy) -> any View
-    
+
     @State var position: Int?
-    
+
     public init(@ViewBuilder content: @escaping (ScrollViewProxy) -> some View) {
         self.content = content
     }
-    
+
     public var body: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
@@ -25,7 +25,7 @@ public struct RyzeHorizontalList: RyzeView {
             .scrollPosition(id: $position)
         }
     }
-    
+
     public static func mocked() -> some View {
         RyzeHorizontalList { _ in
             RyzeHStack.mocked()

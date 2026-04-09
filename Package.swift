@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -11,58 +11,102 @@ let package = Package(
         .macOS(.v26),
         .macCatalyst(.v26),
         .tvOS(.v26),
-        .driverKit(.v25),
-        .watchOS(.v26)
+        .watchOS(.v26),
     ],
     products: [
         .library(
             name: "Ryze",
-            type: .static,
-            targets: [
+            targets: ["Ryze"],
+        ),
+        .library(
+            name: "RyzeFoundation",
+            targets: ["RyzeFoundation"],
+        ),
+        .library(
+            name: "RyzeNetwork",
+            targets: ["RyzeNetwork"],
+        ),
+        .library(
+            name: "RyzeArchitecture",
+            targets: ["RyzeArchitecture"],
+        ),
+        .library(
+            name: "RyzeUI",
+            targets: ["RyzeUI"],
+        ),
+        .library(
+            name: "RyzeVideo",
+            targets: ["RyzeVideo"],
+        ),
+        .library(
+            name: "RyzeIntelligence",
+            targets: ["RyzeIntelligence"],
+        ),
+    ],
+    targets: [
+        .target(
+            name: "Ryze",
+            dependencies: [
                 "RyzeFoundation",
                 "RyzeNetwork",
                 "RyzeArchitecture",
                 "RyzeUI",
                 "RyzeVideo",
-                "RyzeIntelligence"
-            ]
-        )
-    ],
-    targets: [
+                "RyzeIntelligence",
+            ],
+        ),
         .target(name: "RyzeFoundation"),
         .target(
             name: "RyzeNetwork",
-            dependencies: ["RyzeFoundation"]
+            dependencies: ["RyzeFoundation"],
+            resources: [
+                .process("Resource/RyzeNetworkString.xcstrings"),
+                .process("Resource/RyzeNetworkLogMessage.xcstrings"),
+            ],
         ),
         .target(
             name: "RyzeArchitecture",
-            dependencies: ["RyzeFoundation"]
+            dependencies: ["RyzeFoundation"],
         ),
         .target(
             name: "RyzeUI",
-            dependencies: ["RyzeFoundation"],
+            dependencies: [
+                "RyzeFoundation",
+                "RyzeArchitecture",
+            ],
             resources: [
-                .copy("Resources/Symbols.json")
-            ]
+                .process("Resources/Localizable.xcstrings"),
+                .process("Resources/Media.xcassets"),
+                .copy("Resources/Symbols.json"),
+            ],
         ),
         .target(
             name: "RyzeVideo",
-            dependencies: ["RyzeFoundation"]
+            dependencies: ["RyzeFoundation"],
         ),
         .target(
             name: "RyzeIntelligence",
-            dependencies: ["RyzeFoundation"]
+            dependencies: ["RyzeFoundation"],
         ),
         .target(
             name: "RyzePreview",
+            dependencies: ["Ryze"],
+        ),
+        .testTarget(
+            name: "RyzeFoundationTests",
+            dependencies: ["RyzeFoundation"],
+        ),
+        .testTarget(
+            name: "RyzeArchitectureTests",
             dependencies: [
-                "RyzeFoundation",
-                "RyzeNetwork",
                 "RyzeArchitecture",
-                "RyzeVideo",
-                "RyzeIntelligence",
-                "RyzeUI"
-            ]
-        )
-    ]
+                "RyzeUI",
+            ],
+        ),
+        .testTarget(
+            name: "RyzeNetworkTests",
+            dependencies: ["RyzeNetwork"],
+        ),
+    ],
+    swiftLanguageModes: [.v6],
 )

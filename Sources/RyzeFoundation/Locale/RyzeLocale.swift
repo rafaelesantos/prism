@@ -5,11 +5,10 @@
 //  Created by Rafael Escaleira on 25/04/25.
 //
 
-@_exported import Foundation
-@_exported import SwiftUI
-@_exported import NaturalLanguage
+import Foundation
+import NaturalLanguage
 
-public enum RyzeLocale: CaseIterable, Sendable, Codable {
+public enum RyzeLocale: CaseIterable, Sendable, Codable, CustomStringConvertible {
     case englishUS
     case portugueseBR
     case spanishES
@@ -18,11 +17,11 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
     case arabicSA
     case japaneseJP
     case chineseCN
-    
+
     public var rawValue: Locale {
         Locale(identifier: identifier)
     }
-    
+
     public var emoji: String {
         switch self {
         case .englishUS: return "🇺🇸"
@@ -35,7 +34,7 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
         case .chineseCN: return "🇨🇳"
         }
     }
-    
+
     public var description: String {
         switch self {
         case .englishUS: return "\(emoji) English (US)"
@@ -48,11 +47,11 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
         case .chineseCN: return "\(emoji) 中文"
         }
     }
-    
+
     public var languageCode: String? {
         rawValue.language.languageCode?.identifier
     }
-    
+
     public var naturalLanguage: NLLanguage? {
         switch self {
         case .englishUS: return .english
@@ -65,7 +64,7 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
         case .chineseCN: return .simplifiedChinese
         }
     }
-    
+
     public var identifier: String {
         switch self {
         case .englishUS: return "en_US"
@@ -78,18 +77,25 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
         case .chineseCN: return "zh_CN"
         }
     }
-    
+
     var isRTL: Bool {
         ["ar", "he", "fa", "ur"].contains(languageCode)
     }
-    
+
     public var currencyCode: String {
-        rawValue.currency?.identifier ?? "USD"
+        switch self {
+        case .englishUS: return "USD"
+        case .portugueseBR: return "BRL"
+        case .spanishES, .frenchFR, .germanDE: return "EUR"
+        case .arabicSA: return "SAR"
+        case .japaneseJP: return "JPY"
+        case .chineseCN: return "CNY"
+        }
     }
-    
+
     public var calendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
-        
+
         switch self {
         case .japaneseJP:
             calendar = Calendar(identifier: .japanese)
@@ -98,20 +104,23 @@ public enum RyzeLocale: CaseIterable, Sendable, Codable {
         default:
             break
         }
-        
+
         calendar.locale = rawValue
         return calendar
     }
-    
+
     public var dateFormatStyle: Date.FormatStyle {
         var style = Date.FormatStyle()
         style.locale = rawValue
         style.calendar = calendar
         return style
     }
-    
+
     public static var current: RyzeLocale {
-        let languageCode = Locale.current.language.languageCode?.identifier
-        return RyzeLocale.allCases.first(where: { $0.languageCode == languageCode }) ?? .englishUS
+        match(languageCode: Locale.current.language.languageCode?.identifier)
+    }
+
+    static func match(languageCode: String?) -> RyzeLocale {
+        RyzeLocale.allCases.first(where: { $0.languageCode == languageCode }) ?? .englishUS
     }
 }

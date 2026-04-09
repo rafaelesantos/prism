@@ -12,7 +12,7 @@ public enum RyzeVideoResolution: Int, RyzeEntity {
     case fullHD
     case HD
     case SD
-    
+
     public var id: String { rawValue }
     public var rawValue: String {
         switch self {
@@ -22,12 +22,12 @@ public enum RyzeVideoResolution: Int, RyzeEntity {
         case .SD: return "SD"
         }
     }
-    
+
     public init?(rawValue: Int) {
         switch rawValue {
-        case 0 ..< 720: self = .SD
-        case 720 ..< 1080: self = .HD
-        case 1080 ..< 2160: self = .fullHD
+        case 0..<720: self = .SD
+        case 720..<1080: self = .HD
+        case 1080..<2160: self = .fullHD
         default: self = ._4K
         }
     }

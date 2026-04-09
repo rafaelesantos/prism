@@ -5,12 +5,14 @@
 //  Created by Rafael Escaleira on 02/08/25.
 //
 
-fileprivate struct RyzeConfettiView: RyzeView {
+import SwiftUI
+
+private struct RyzeConfettiView: RyzeView {
     @State var animate = false
     @State var xSpeed = Double.random(in: 0.7...2)
     @State var zSpeed = Double.random(in: 1...3)
     @State var anchor = CGFloat.random(in: 0...1).rounded()
-    
+
     var body: some View {
         Rectangle()
             .fill(
@@ -19,7 +21,7 @@ fileprivate struct RyzeConfettiView: RyzeView {
                     Color.green,
                     Color.blue,
                     Color.red,
-                    Color.yellow
+                    Color.yellow,
                 ].randomElement() ?? .green
             )
             .frame(width: 9, height: 12)
@@ -42,40 +44,39 @@ fileprivate struct RyzeConfettiView: RyzeView {
                 value: animate
             )
     }
-    
+
     static func mocked() -> some View {
         RyzeConfettiView()
     }
 }
 
-fileprivate struct RyzeConfettiContainerView: RyzeView {
+private struct RyzeConfettiContainerView: RyzeView {
     let count: Int
     @State var yPosition: CGFloat = 0
 
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ForEach(0 ..< count, id: \.self) { _ in
+                ForEach(0..<count, id: \.self) { _ in
                     RyzeConfettiView()
                         .position(
-                            x: CGFloat.random(in: 0 ... proxy.size.width),
-                            y: yPosition != .zero ? CGFloat.random(in: 0 ... proxy.size.height) : yPosition
+                            x: CGFloat.random(in: 0...proxy.size.width),
+                            y: yPosition != .zero ? CGFloat.random(in: 0...proxy.size.height) : yPosition
                         )
                 }
             }
             .onAppear {
-                yPosition = CGFloat.random(in: 0 ... proxy.size.height)
+                yPosition = CGFloat.random(in: 0...proxy.size.height)
             }
         }
         .ignoresSafeArea()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     static func mocked() -> some View {
         RyzeConfettiContainerView(count: 50)
     }
 }
-
 
 struct RyzeConfettiModifier: RyzeViewModifier {
     let amount: Int
@@ -92,10 +93,10 @@ struct RyzeConfettiModifier: RyzeViewModifier {
             .sensoryFeedback(.success, trigger: isActive)
             .animation(.linear, value: isActive)
     }
-    
+
     static func mocked() -> some View {
         RyzeVStack {
-            
+
         }
         .ignoresSafeArea()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

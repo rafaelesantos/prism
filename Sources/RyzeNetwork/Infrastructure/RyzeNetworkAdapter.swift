@@ -8,105 +8,180 @@
 import Foundation
 import RyzeFoundation
 
-public actor RyzeNetworkAdapter: NSObject, RyzeNetworkClient, URLSessionTaskDelegate {
-    private var session: URLSession = .shared
+private enum RyzeNetworkCacheMetadata {
+    static let expirationKey = "ryze.network.cache.expiration"
+}
+
+private final class RyzeNetworkRedirectCaptureDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let lock = NSLock()
     private var redirectURL: URL?
-    
-    public override init() {
-        super.init()
-        self.session = URLSession(
-            configuration: .default,
-            delegate: self,
-            delegateQueue: nil
-        )
-    }
-    
-    public func request<Request>(
-        on request: Request,
-        with formatter: DateFormatter?
-    ) async throws -> Request.Response where Request : RyzeNetworkRequest {
-        let endpoint = await request.endpoint
-        let urlRequest = try endpoint.request
-        let logger = RyzeNetworkLogger()
-        logger.info("🚀 Request started: \(urlRequest.url?.absoluteString ?? "nil")")
 
-        do {
-            let response = try await retrieveCache(on: request, with: formatter)
-            logger.info("✅ Cache hit for: \(urlRequest.url?.absoluteString ?? "nil")")
-            return response
-        } catch {
-            logger.warning("❌ Cache miss for: \(urlRequest.url?.absoluteString ?? "nil") - \(error.localizedDescription)")
-            let (data, response) = try await session.data(for: urlRequest)
-            try await storeCache(on: endpoint, data: data, response: response)
-            return try await request.decode(data: data, with: formatter)
+    func capturedURL() -> URL? {
+        lock.withLock {
+            redirectURL
         }
     }
-    
-    public func redirect<Request: RyzeNetworkRequest>(
-        from request: Request
-    ) async throws -> URL {
-        let endpoint = await request.endpoint
-        let url = try endpoint.url
 
-        let (_, response) = try await session.data(from: url)
-        
-        guard let httpResponse = response as? HTTPURLResponse,
-              let location = httpResponse.value(forHTTPHeaderField: "Location"),
-              let url = URL(string: location)
-        else {
-            guard let redirectURL else { throw URLError(.cannotParseResponse) }
-            return redirectURL
-        }
-        
-        return url
-    }
-    
-    public func urlSession(
+    func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
         willPerformHTTPRedirection response: HTTPURLResponse,
         newRequest request: URLRequest
     ) async -> URLRequest? {
-        redirectURL = request.url
+        lock.withLock {
+            redirectURL = request.url
+        }
+        task.cancel()
         return nil
     }
-    
-    private func retrieveCache<Request: RyzeNetworkRequest>(
+}
+
+public actor RyzeNetworkAdapter: RyzeNetworkClient {
+    private let session: URLSession
+    private let sessionConfiguration: URLSessionConfiguration
+    private let cache: URLCache
+
+    public init(
+        configuration: URLSessionConfiguration = .default,
+        cache: URLCache = .shared
+    ) {
+        let configuration = (configuration.copy() as? URLSessionConfiguration) ?? .default
+        configuration.urlCache = cache
+        self.sessionConfiguration = configuration
+        self.cache = cache
+        self.session = URLSession(configuration: configuration)
+    }
+
+    public func request<Request>(
         on request: Request,
         with formatter: DateFormatter?
-    ) async throws -> Request.Response {
-        let urlRequest = try await request.endpoint.request
+    ) async throws -> Request.Response where Request: RyzeNetworkRequest {
+        let endpoint = request.endpoint
+        let urlRequest = try endpoint.request
         let logger = RyzeNetworkLogger()
-        
-        guard await request.endpoint.cacheInterval != nil,
-              let url = urlRequest.url?.absoluteString,
-              let cacheResponse = URLCache.shared.cachedResponse(for: urlRequest),
-              let cacheInterval = cacheResponse.userInfo?[url] as? TimeInterval,
-              cacheInterval > Date.now.timeIntervalSince1970
+        logger.info(.requestStart(urlRequest.url?.absoluteString))
+
+        do {
+            let cachedData = try retrieveCachedData(
+                for: endpoint,
+                request: urlRequest
+            )
+            logger.info(.cacheHit(urlRequest.url?.absoluteString))
+
+            do {
+                return try request.decode(
+                    data: cachedData,
+                    with: formatter
+                )
+            } catch {
+                cache.removeCachedResponse(for: urlRequest)
+                logger.warning(
+                    .cacheMiss(
+                        urlRequest.url?.absoluteString,
+                        error.localizedDescription
+                    ))
+            }
+        } catch {
+            logger.warning(
+                .cacheMiss(
+                    urlRequest.url?.absoluteString,
+                    error.localizedDescription
+                ))
+        }
+
+        let (data, response) = try await fetchData(for: urlRequest)
+        let httpResponse = try validate(response)
+        try storeCache(
+            for: endpoint,
+            request: urlRequest,
+            data: data,
+            response: httpResponse
+        )
+        return try request.decode(
+            data: data,
+            with: formatter
+        )
+    }
+
+    public func redirect<Request: RyzeNetworkRequest>(
+        from request: Request
+    ) async throws -> URL {
+        let delegate = RyzeNetworkRedirectCaptureDelegate()
+        let session = URLSession(
+            configuration: sessionConfiguration,
+            delegate: delegate,
+            delegateQueue: nil
+        )
+        let urlRequest = try request.endpoint.request
+
+        defer {
+            session.invalidateAndCancel()
+        }
+
+        do {
+            let (_, response) = try await session.data(for: urlRequest)
+            if let url = redirectURL(
+                from: response,
+                originalURL: urlRequest.url
+            ) {
+                return url
+            }
+        } catch {
+            if let url = delegate.capturedURL() {
+                return url
+            }
+
+            throw RyzeNetworkError.from(error: error)
+        }
+
+        throw RyzeNetworkError.invalidResponse
+    }
+
+    private func retrieveCachedData(
+        for endpoint: some RyzeNetworkEndpoint,
+        request urlRequest: URLRequest
+    ) throws -> Data {
+        let logger = RyzeNetworkLogger()
+
+        guard endpoint.method == .get,
+            endpoint.cacheInterval != nil,
+            let cacheResponse = cache.cachedResponse(for: urlRequest),
+            let expiration = cacheResponse.userInfo?[RyzeNetworkCacheMetadata.expirationKey] as? TimeInterval
         else {
-            logger.info("📭 No cache for: \(urlRequest.url?.absoluteString ?? "nil")")
             throw RyzeNetworkError.noCache
         }
 
-        logger.info("⏳ Cache valid for: \(urlRequest.url?.absoluteString ?? "nil") until \(Date(timeIntervalSince1970: cacheInterval))")
-        
-        return try cacheResponse.data.entity(for: Request.Response.self, with: formatter)
+        guard expiration > Date.now.timeIntervalSince1970 else {
+            cache.removeCachedResponse(for: urlRequest)
+            throw RyzeNetworkError.noCache
+        }
+
+        logger.info(
+            .cacheWithExpiration(
+                urlRequest.url?.absoluteString,
+                expiration
+            ))
+
+        return cacheResponse.data
     }
-    
+
     private func storeCache(
-        on endpoint: RyzeNetworkEndpoint,
+        for endpoint: some RyzeNetworkEndpoint,
+        request urlRequest: URLRequest,
         data: Data,
-        response: URLResponse
-    ) async throws {
+        response: HTTPURLResponse
+    ) throws {
         let logger = RyzeNetworkLogger()
-        let url = try endpoint.url.absoluteString
-        
-        guard let cacheInterval = endpoint.cacheInterval else {
-            logger.info("⏱️ No cache interval set for: \(url)")
+
+        guard endpoint.method == .get,
+            let cacheInterval = endpoint.cacheInterval
+        else {
+            logger.info(.noCacheInterval(urlRequest.url?.absoluteString))
             return
         }
 
-        let userInfo: [String: TimeInterval] = [url: Date.now.timeIntervalSince1970 + cacheInterval]
+        let expiration = Date.now.timeIntervalSince1970 + cacheInterval
+        let userInfo: [String: TimeInterval] = [RyzeNetworkCacheMetadata.expirationKey: expiration]
         let cacheResponse = CachedURLResponse(
             response: response,
             data: data,
@@ -114,8 +189,56 @@ public actor RyzeNetworkAdapter: NSObject, RyzeNetworkClient, URLSessionTaskDele
             storagePolicy: .allowed
         )
 
-        let urlRequest = try endpoint.request
-        URLCache.shared.storeCachedResponse(cacheResponse, for: urlRequest)
-        logger.info("💾 Cache stored for: \(urlRequest.url?.absoluteString ?? "nil") until \(Date(timeIntervalSince1970: cacheInterval))")
+        cache.storeCachedResponse(
+            cacheResponse,
+            for: urlRequest
+        )
+        logger.info(
+            .cacheStored(
+                urlRequest.url?.absoluteString,
+                expiration
+            ))
+    }
+
+    private func fetchData(
+        for urlRequest: URLRequest
+    ) async throws -> (Data, URLResponse) {
+        do {
+            return try await session.data(for: urlRequest)
+        } catch {
+            throw RyzeNetworkError.from(error: error)
+        }
+    }
+
+    private func validate(_ response: URLResponse) throws -> HTTPURLResponse {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw RyzeNetworkError.invalidResponse
+        }
+
+        guard 200...299 ~= httpResponse.statusCode else {
+            throw RyzeNetworkError.from(statusCode: httpResponse.statusCode)
+        }
+
+        return httpResponse
+    }
+
+    private func redirectURL(
+        from response: URLResponse,
+        originalURL: URL?
+    ) -> URL? {
+        guard let httpResponse = response as? HTTPURLResponse,
+            let location = httpResponse.value(forHTTPHeaderField: "Location")
+        else {
+            return nil
+        }
+
+        if let url = URL(
+            string: location,
+            relativeTo: originalURL
+        ) {
+            return url.absoluteURL
+        }
+
+        return nil
     }
 }

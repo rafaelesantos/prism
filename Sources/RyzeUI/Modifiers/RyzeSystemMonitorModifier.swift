@@ -12,12 +12,12 @@ public struct RyzeSystemMonitor: Sendable {
     public var cpuTotalPercentage: Double
     public var cpuUsage: Int
     public var cpuCores: Int
-    
+
     public var memoryPercentageUsage: Double
     public var memoryTotalPercentage: Double
     public var memoryUsed: String
     public var memoryTotal: String
-    
+
     public init(
         cpuPercentageUsage: Double = .zero,
         cpuTotalPercentage: Double = .zero,
@@ -42,21 +42,21 @@ public struct RyzeSystemMonitor: Sendable {
 struct RyzeSystemMonitorModifier: ViewModifier {
     @State var previousCpuInfo: host_cpu_load_info?
     @Binding var systemMonitor: RyzeSystemMonitor
-    
+
     let timer = Timer.publish(every: 1, on: .current, in: .common).autoconnect()
-    
+
     init(systemMonitor: Binding<RyzeSystemMonitor>) {
         self._systemMonitor = systemMonitor
     }
-    
+
     func body(content: Content) -> some View {
         content
             .onReceive(timer) { _ in
                 Task {
                     guard let cpu = getAppCPUUsage(),
-                          let memory = getMemoryUsage()
+                        let memory = getMemoryUsage()
                     else { return }
-                    
+
                     withAnimation(.bouncy) { @MainActor in
                         systemMonitor = RyzeSystemMonitor(
                             cpuPercentageUsage: cpu.cpuPercentageUsage,
@@ -72,7 +72,7 @@ struct RyzeSystemMonitorModifier: ViewModifier {
                 }
             }
     }
-    
+
     func getAppCPUUsage() -> (
         cpuPercentageUsage: Double,
         cpuTotalPercentage: Double,
@@ -82,15 +82,15 @@ struct RyzeSystemMonitorModifier: ViewModifier {
         var totalUsageOfCPU: Double = .zero
         var threadsList: thread_act_array_t?
         var threadsCount = mach_msg_type_number_t(0)
-        
+
         let threadsResult = task_threads(mach_task_self_, &threadsList, &threadsCount)
-        
+
         guard threadsResult == KERN_SUCCESS else { return nil }
-        
-        for index in .zero ..< threadsCount {
+
+        for index in .zero..<threadsCount {
             var threadInfo = thread_basic_info()
             var threadInfoCount = mach_msg_type_number_t(THREAD_INFO_MAX)
-            
+
             let infoResult = withUnsafeMutablePointer(to: &threadInfo) {
                 $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                     thread_info(
@@ -101,31 +101,31 @@ struct RyzeSystemMonitorModifier: ViewModifier {
                     )
                 }
             }
-            
+
             guard infoResult == KERN_SUCCESS else { continue }
-            
+
             let threadBasicInfo = threadInfo as thread_basic_info
             if threadBasicInfo.flags & TH_FLAGS_IDLE == .zero {
                 let threadUsage = (Double(threadBasicInfo.cpu_usage) / Double(TH_USAGE_SCALE))
                 totalUsageOfCPU += threadUsage
             }
         }
-        
+
         vm_deallocate(
             mach_task_self_,
             vm_address_t(UInt(bitPattern: threadsList)),
             vm_size_t(Int(threadsCount) * MemoryLayout<thread_t>.stride)
         )
-        
+
         let cpuCores = ProcessInfo.processInfo.activeProcessorCount
         let adjustedUsage = totalUsageOfCPU * cpuCores.double
         let cpuTotalPercentage = cpuCores.double
         let cpuPercentageUsage = adjustedUsage / cpuTotalPercentage
         let cpuUsage = adjustedUsage.rounded().int
-        
+
         return (cpuPercentageUsage, cpuTotalPercentage, cpuUsage, cpuCores)
     }
-    
+
     func getMemoryUsage() -> (
         memoryPercentageUsage: Double,
         memoryTotalPercentage: Double,
@@ -134,7 +134,7 @@ struct RyzeSystemMonitorModifier: ViewModifier {
     )? {
         var info = task_vm_info()
         var count = mach_msg_type_number_t(MemoryLayout<task_vm_info>.size / MemoryLayout<integer_t>.size)
-        
+
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                 task_info(
@@ -145,24 +145,24 @@ struct RyzeSystemMonitorModifier: ViewModifier {
                 )
             }
         }
-        
+
         guard kerr == KERN_SUCCESS else { return nil }
-        
+
         let phys_footprint = Int64(info.phys_footprint)
         let totalMemoryBytes = Int64(ProcessInfo.processInfo.physicalMemory)
-        
+
         let usageBytes = phys_footprint
-        
+
         guard totalMemoryBytes > .zero else { return nil }
-        
+
         let memoryUsed = formatBytes(usageBytes)
         let memoryTotal = formatBytes(totalMemoryBytes)
-        
+
         let memoryPercentageUsage = Double(usageBytes) / Double(totalMemoryBytes)
-        
+
         return (memoryPercentageUsage, 1, memoryUsed, memoryTotal)
     }
-    
+
     func formatBytes(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.allowedUnits = [.useMB, .useGB]

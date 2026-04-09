@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 01/07/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
 
 public enum RyzeRadius: CaseIterable, Equatable {
     case none
@@ -15,7 +15,7 @@ public enum RyzeRadius: CaseIterable, Equatable {
     case extraLarge
     case circle
     case capsule
-    
+
     func rawValue(for theme: RyzeRadiusProtocol) -> CGFloat {
         switch self {
         case .none: return theme.none

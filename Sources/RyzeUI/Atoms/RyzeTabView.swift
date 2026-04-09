@@ -5,8 +5,8 @@
 //  Created by Rafael Escaleira on 03/07/25.
 //
 
-@_exported import SwiftUI
-@_exported import RyzeFoundation
+import RyzeFoundation
+import SwiftUI
 
 public struct RyzeTabView<SelectionValue: Hashable>: RyzeView {
     @Binding var selection: SelectionValue
@@ -14,7 +14,7 @@ public struct RyzeTabView<SelectionValue: Hashable>: RyzeView {
     var searchPrompt: RyzeResourceString?
     @ViewBuilder let content: any View
     let accessoryView: (any View)?
-    
+
     public init(
         selection: Binding<SelectionValue>,
         searchText: Binding<String>? = nil,
@@ -28,34 +28,34 @@ public struct RyzeTabView<SelectionValue: Hashable>: RyzeView {
         self.content = content()
         self.accessoryView = accessoryView?()
     }
-    
+
     public var body: some View {
         tabView
     }
-    
+
     @ViewBuilder
     var tabView: some View {
         #if os(iOS)
-        TabView(selection: $selection) {
-            AnyView(content)
-        }
-        .tabBarMinimizeBehavior(.onScrollDown)
-        .tabViewBottomAccessory {
-            if let accessoryView {
-                AnyView(accessoryView)
+            TabView(selection: $selection) {
+                AnyView(content)
             }
-        }
-        .ryze(item: searchText) {
-            searchable(
-                view: $0,
-                searchText: $1
-            )
-        }
-        .searchToolbarBehavior(.minimize)
-        .ryze(tint: .primary)
+            .tabBarMinimizeBehavior(.onScrollDown)
+            .tabViewBottomAccessory {
+                if let accessoryView {
+                    AnyView(accessoryView)
+                }
+            }
+            .ryze(item: searchText) {
+                searchable(
+                    view: $0,
+                    searchText: $1
+                )
+            }
+            .searchToolbarBehavior(.minimize)
+            .ryze(tint: .primary)
         #endif
     }
-    
+
     @ViewBuilder
     func searchable(view: some View, searchText: Binding<String>) -> some View {
         if let searchPrompt {
@@ -67,7 +67,7 @@ public struct RyzeTabView<SelectionValue: Hashable>: RyzeView {
             view.searchable(text: searchText)
         }
     }
-    
+
     public static func mocked() -> some View {
         RyzeTabView<Int>(
             selection: .constant(1),
@@ -75,12 +75,12 @@ public struct RyzeTabView<SelectionValue: Hashable>: RyzeView {
             searchPrompt: RyzeUIString.ryzePreviewTitle,
             accessoryView: nil
         ) {
-            ForEach((1 ... 3).map { $0 }, id: \.self) { index in
+            ForEach((1...3).map { $0 }, id: \.self) { index in
                 RyzeList.mocked()
                     .searchable(text: .constant(""))
                     .tabItem {
-                    RyzeLabel.mocked()
-                }
+                        RyzeLabel.mocked()
+                    }
             }
         }
     }

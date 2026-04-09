@@ -5,6 +5,8 @@
 //  Created by Rafael Escaleira on 19/04/25.
 //
 
+import SwiftUI
+
 struct RyzeDefaultSpacing: RyzeSpacingProtocol {
     var none: CGFloat = .zero
     var extraSmall: CGFloat
@@ -14,7 +16,7 @@ struct RyzeDefaultSpacing: RyzeSpacingProtocol {
     var extraLarge: CGFloat
     var ultraLarge: CGFloat
     var section: CGFloat
-    
+
     init(
         extraSmall: CGFloat = 4,
         small: CGFloat = 8,

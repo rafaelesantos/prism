@@ -5,15 +5,29 @@
 //  Created by Rafael Escaleira on 22/07/25.
 //
 
-@_exported import SwiftUI
+import SwiftUI
+
+#if canImport(AppKit)
+    import AppKit
+#endif
 #if canImport(SafariServices)
-import SafariServices
+    import SafariServices
 #endif
 
 public struct RyzeBrowserView<Content: View>: View {
     @Binding private var url: URL?
     let content: Content
-    
+    private var isPresented: Binding<Bool> {
+        Binding(
+            get: { url != nil },
+            set: { isPresented in
+                if !isPresented {
+                    url = nil
+                }
+            }
+        )
+    }
+
     public init(
         url: Binding<URL?>,
         @ViewBuilder content: () -> Content
@@ -21,47 +35,57 @@ public struct RyzeBrowserView<Content: View>: View {
         self._url = url
         self.content = content()
     }
-    
+
     public var body: some View {
         content
-            .sheet(item: $url) { url in
-                #if canImport(SafariServices)
-                RyzeBrowser(url: url)
-                #endif
+            .sheet(isPresented: isPresented) {
+                if let url {
+                    RyzeBrowser(url: url)
+                }
             }
     }
 }
 
-#if canImport(AppKit)
+#if canImport(UIKit) && canImport(SafariServices)
+    struct RyzeBrowser: UIViewControllerRepresentable {
+        let url: URL
 
-struct RyzeBrowser: NSViewRepresentable {
-    let url: URL
-    
-    func updateNSView(
-        _ NSView: NSView,
-        context: NSViewRepresentableContext<RyzeBrowser>
-    ) {
-        NSWorkspace.shared.open(url)
-    }
-    
-    func makeNSView(context: Context) -> NSView {
-        return .init()
-    }
-}
+        func makeUIViewController(context: Context) -> SFSafariViewController {
+            return SFSafariViewController(url: url)
+        }
 
-#elseif canImport(UIKit) && canImport(SafariServices)
+        func updateUIViewController(
+            _ uiViewController: SFSafariViewController,
+            context: Context
+        ) {
+            return
+        }
+    }
 
-struct RyzeBrowser: UIViewControllerRepresentable {
-    let url: URL
-    
-    func makeUIViewController(context: Context) -> SFSafariViewController {
-        return SFSafariViewController(url: url)
+#elseif canImport(AppKit)
+    struct RyzeBrowser: NSViewRepresentable {
+        let url: URL
+
+        func updateNSView(
+            _ nsView: NSView,
+            context: NSViewRepresentableContext<RyzeBrowser>
+        ) {
+            _ = nsView
+            NSWorkspace.shared.open(url)
+        }
+
+        func makeNSView(context: Context) -> NSView {
+            return .init()
+        }
     }
-    
-    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {
-        return
+
+#else
+    struct RyzeBrowser: View {
+        let url: URL
+
+        var body: some View {
+            EmptyView()
+        }
     }
-    
-}
 
 #endif

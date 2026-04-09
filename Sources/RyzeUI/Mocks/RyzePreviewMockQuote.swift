@@ -5,6 +5,8 @@
 //  Created by Rafael Escaleira on 25/04/25.
 //
 
+import Foundation
+
 public enum RyzePreviewMockQuote: CaseIterable, Equatable {
     case forceUnwrap
     case mergeConflict
@@ -16,7 +18,7 @@ public enum RyzePreviewMockQuote: CaseIterable, Equatable {
     case fridayDeploy
     case stackOverflowCopy
     case debugPrint
-    
+
     var title: RyzeUIString {
         switch self {
         case .forceUnwrap: return .forceUnwrapTitle
@@ -31,7 +33,7 @@ public enum RyzePreviewMockQuote: CaseIterable, Equatable {
         case .debugPrint: return .debugPrintTitle
         }
     }
-    
+
     var description: RyzeUIString {
         switch self {
         case .forceUnwrap: return .forceUnwrapDescription

@@ -5,9 +5,9 @@
 //  Created by Rafael Escaleira on 15/05/25.
 //
 
-@_exported import Foundation
-@_exported import RyzeFoundation
-@_exported import Network
+import Foundation
+import Network
+import RyzeFoundation
 
 public protocol RyzeNetworkSocketEndpoint: RyzeLogger, Sendable {
     var host: NWEndpoint.Host { get }
@@ -15,15 +15,15 @@ public protocol RyzeNetworkSocketEndpoint: RyzeLogger, Sendable {
     var parameters: NWParameters { get }
 }
 
-public extension RyzeNetworkSocketEndpoint {
-    func log() {
+extension RyzeNetworkSocketEndpoint {
+    public func log() {
         let logger = RyzeNetworkLogger()
-        logger.info("🌐 Host: \(host.debugDescription)")
+        logger.info(.host(host.debugDescription))
 
         if let port = try? port {
-            logger.info("🔢 Port: \(port.rawValue)")
+            logger.info(.port(port.rawValue))
         }
 
-        logger.info("⚙️ Parameters: \(parameters.debugDescription)")
+        logger.info(.parameters(parameters.debugDescription))
     }
 }
