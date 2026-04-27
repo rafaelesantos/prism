@@ -1,0 +1,84 @@
+name: Branch Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  validate:
+    name: Validate branch flow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch conventions
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "PR: $HEAD → $BASE"
+
+          valid=true
+          reason=""
+
+          case "$BASE" in
+            main)
+              # Only release/*, hotfix/*, or develop can merge to main
+              case "$HEAD" in
+                release/*|hotfix/*|develop)
+                  echo "✓ Valid: $HEAD → main"
+                  ;;
+                *)
+                  valid=false
+                  reason="Only release/*, hotfix/*, or develop branches can merge into main."
+                  ;;
+              esac
+              ;;
+            develop)
+              # Only feature/*, release/*, hotfix/*, or main can merge to develop
+              case "$HEAD" in
+                feature/*|release/*|hotfix/*|main|dependabot/*)
+                  echo "✓ Valid: $HEAD → develop"
+                  ;;
+                *)
+                  valid=false
+                  reason="Only feature/*, release/*, hotfix/*, main, or dependabot/* branches can merge into develop."
+                  ;;
+              esac
+              ;;
+            *)
+              echo "✓ No restrictions on target branch: $BASE"
+              ;;
+          esac
+
+          if [ "$valid" = false ]; then
+            echo "✗ Invalid: $HEAD → $BASE"
+            echo "  Reason: $reason"
+            echo ""
+            echo "GitFlow branch model:"
+            echo "  feature/* → develop"
+            echo "  release/* → main (and back to develop)"
+            echo "  hotfix/*  → main (and back to develop)"
+            exit 1
+          fi
+
+      - name: Check PR title follows Conventional Commits
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if echo "$TITLE" | grep -qE "^(feat|fix|refactor|style|perf|build|ci|chore|docs|test|revert)(\(.+\))?(!)?: .+"; then
+            echo "✓ PR title follows Conventional Commits: $TITLE"
+          else
+            echo "✗ PR title must follow Conventional Commits format:"
+            echo "  <type>(<scope>): <description>"
+            echo ""
+            echo "  Types: feat, fix, refactor, style, perf, build, ci, chore, docs, test, revert"
+            echo "  Examples:"
+            echo "    feat(ui): add PrismCarousel component"
+            echo "    fix(network): handle timeout on socket reconnect"
+            echo "    chore: update dependencies"
+            echo ""
+            echo "  Got: $TITLE"
+            exit 1
+          fi

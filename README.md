@@ -148,6 +148,53 @@ make docs       # generate DocC documentation
 make docs-serve # generate and serve locally
 ```
 
+## GitFlow
+
+This project follows [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) with full CI automation.
+
+```
+feature/xyz ──→ develop ──→ release/1.2.0 ──→ main ──→ auto-tag + release
+                   ↑                              │
+                   └──────────────────────────────┘  (back-merge)
+                                                  │
+hotfix/1.2.1 ─────────────────────────────────────→ main + develop
+```
+
+**Branches:**
+
+| Branch | Purpose | Merges into |
+|--------|---------|-------------|
+| `main` | Production | — (protected) |
+| `develop` | Integration | `main` via `release/*` |
+| `feature/*` | New work | `develop` |
+| `release/*` | Release prep | `main` + `develop` |
+| `hotfix/*` | Urgent fixes | `main` + `develop` |
+
+**Automation on merge to main:**
+- Version bump from Conventional Commits (`feat:` = minor, `fix:` = patch, `!:` = major)
+- CHANGELOG.md auto-updated with categorized entries
+- Git tag created automatically
+- GitHub Release published with changelog body
+- Back-merge to `develop`
+
+**Commands:**
+
+```bash
+make feature name=my-feature     # create feature/my-feature from develop
+make release version=1.2.0       # create release/1.2.0 from develop
+make hotfix version=1.2.1        # create hotfix/1.2.1 from main
+make finish-release              # merge release/* → main + develop
+make finish-hotfix               # merge hotfix/* → main + develop
+```
+
+**PR title must follow [Conventional Commits](https://www.conventionalcommits.org/):**
+
+```
+feat(ui): add PrismCarousel component
+fix(network): handle timeout on socket reconnect
+chore: update dependencies
+```
+
 ## Quality
 
 - 154 tests across 31 suites
@@ -155,6 +202,7 @@ make docs-serve # generate and serve locally
 - `swift-format` enforced in CI
 - Explicit target dependency import checks
 - DocC documentation on all public APIs
+- Branch guard enforces GitFlow conventions on PRs
 
 ## License
 

@@ -1,42 +1,210 @@
 name: Release
 
 on:
-  push:
-    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+  pull_request:
+    types: [closed]
+    branches: [main]
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
-    name: Create GitHub Release
+    name: Auto Release
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version from tag
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine version bump
+        id: bump
+        run: |
+          # Get commits from the merged PR
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+
+          commits=$(git log --oneline "$BASE_SHA".."$HEAD_SHA" 2>/dev/null || echo "")
+
+          # Detect bump type from Conventional Commits
+          if echo "$commits" | grep -qiE "^[a-f0-9]+ (feat|feature)(\(.+\))?!:"; then
+            echo "type=major" >> "$GITHUB_OUTPUT"
+          elif echo "$commits" | grep -qiE "^[a-f0-9]+ feat(\(.+\))?:"; then
+            echo "type=minor" >> "$GITHUB_OUTPUT"
+          elif echo "$commits" | grep -qiE "^[a-f0-9]+ (fix|perf|refactor|style|build|ci|chore|docs|test)(\(.+\))?:"; then
+            echo "type=patch" >> "$GITHUB_OUTPUT"
+          else
+            # Default to patch for non-conventional commits
+            echo "type=patch" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Calculate next version
         id: version
-        run: echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+        run: |
+          # Get latest tag
+          latest_tag=$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
 
-      - name: Extract changelog section
+          if [ -z "$latest_tag" ]; then
+            latest_tag="0.0.0"
+          fi
+
+          IFS='.' read -r major minor patch <<< "$latest_tag"
+
+          bump="${{ steps.bump.outputs.type }}"
+          case "$bump" in
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch)
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          next_version="${major}.${minor}.${patch}"
+          echo "version=$next_version" >> "$GITHUB_OUTPUT"
+          echo "Next version: $next_version (bump: $bump, from: $latest_tag)"
+
+      - name: Generate changelog entry
         id: changelog
         run: |
           version="${{ steps.version.outputs.version }}"
-          body=$(awk "/^## \[${version}\]/{found=1;next} /^## \[/{if(found)exit} found{print}" CHANGELOG.md)
-          if [ -z "$body" ]; then
-            body="Release ${version}"
+          today=$(date +%Y-%m-%d)
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+
+          # Collect commits grouped by type
+          added=""
+          changed=""
+          fixed=""
+
+          while IFS= read -r line; do
+            # Strip hash prefix
+            msg="${line#* }"
+
+            case "$msg" in
+              feat*)     added="${added}\n- ${msg}" ;;
+              fix*)      fixed="${fixed}\n- ${msg}" ;;
+              refactor*|style*|perf*|build*|ci*|chore*|docs*|test*)
+                         changed="${changed}\n- ${msg}" ;;
+              *)         changed="${changed}\n- ${msg}" ;;
+            esac
+          done <<< "$(git log --oneline "$BASE_SHA".."$HEAD_SHA" 2>/dev/null)"
+
+          # Build entry
+          entry="## [${version}] - ${today}"
+
+          if [ -n "$added" ]; then
+            entry="${entry}\n\n### Added\n${added}"
           fi
+          if [ -n "$changed" ]; then
+            entry="${entry}\n\n### Changed\n${changed}"
+          fi
+          if [ -n "$fixed" ]; then
+            entry="${entry}\n\n### Fixed\n${fixed}"
+          fi
+
+          # Write to temp file (multiline-safe)
+          echo -e "$entry" > /tmp/changelog_entry.md
+
+          # Also save for release body
           {
             echo "body<<RELEASE_EOF"
-            echo "$body"
+            echo -e "$entry"
             echo "RELEASE_EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Create release
+      - name: Update CHANGELOG.md
+        run: |
+          version="${{ steps.version.outputs.version }}"
+
+          if [ ! -f CHANGELOG.md ]; then
+            cat > CHANGELOG.md << 'HEADER'
+          # Changelog
+
+          All notable changes to Prism will be documented in this file.
+
+          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+          and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+          HEADER
+          fi
+
+          # Insert new entry after "## [Unreleased]" or after the header
+          if grep -q '## \[Unreleased\]' CHANGELOG.md; then
+            # Insert after [Unreleased] line
+            sed -i "/## \[Unreleased\]/r /tmp/changelog_entry.md" CHANGELOG.md
+            # Add blank line separator
+            sed -i "/## \[Unreleased\]/a\\" CHANGELOG.md
+          else
+            # Insert after the header block (after first blank line following "# Changelog")
+            awk '
+              /^## \[/ && !inserted {
+                system("cat /tmp/changelog_entry.md")
+                print ""
+                inserted=1
+              }
+              { print }
+            ' CHANGELOG.md > /tmp/changelog_new.md
+            mv /tmp/changelog_new.md CHANGELOG.md
+          fi
+
+      - name: Update README test count
+        run: |
+          # Run a quick count of test references in the repo
+          # Since we cant run tests in ubuntu, parse from latest CI or keep static
+          # Update the badge-style line if it exists
+          if grep -q "tests across" README.md; then
+            echo "README test count line found — keeping as-is (updated manually or by CI)"
+          fi
+
+      - name: Commit changelog
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          git add CHANGELOG.md README.md 2>/dev/null || true
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore(release): update changelog for v${version} [skip ci]"
+          git push origin main
+
+      - name: Create and push tag
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          git tag "$version" -m "Release v${version}"
+          git push origin "$version"
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.version }}
           name: v${{ steps.version.outputs.version }}
           body: ${{ steps.changelog.outputs.body }}
           generate_release_notes: true
+
+      - name: Back-merge to develop
+        run: |
+          version="${{ steps.version.outputs.version }}"
+
+          # Check if develop exists
+          if git ls-remote --heads origin develop | grep -q develop; then
+            git fetch origin develop
+            git checkout develop
+            git merge origin/main --no-edit -m "chore: back-merge v${version} from main to develop [skip ci]" || true
+            git push origin develop || echo "Back-merge to develop failed — may need manual resolution"
+          else
+            echo "No develop branch found — skipping back-merge"
+          fi
