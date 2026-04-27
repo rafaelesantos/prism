@@ -1,13 +1,60 @@
-.DS_Store
+# === Build ===
 /.build
 /Packages
-xcuserdata/
 DerivedData/
 *.xcresult
 .build/test-results.xml
+
+# === SPM ===
 .swiftpm/configuration/registries.json
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .swiftpm/xcode/package.xcworkspace/xcuserdata/
 .swiftpm/xcode/xcuserdata/
-.netrc
+Package.resolved
+
+# === Xcode ===
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# === Docs output ===
 docs-output/
+
+# === OS artifacts ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# === Credentials & secrets ===
+.env
+.env.*
+!.env.example
+.netrc
+*.pem
+*.p12
+*.p8
+*.key
+*.keystore
+*.jks
+credentials.json
+service-account.json
+google-services.json
+GoogleService-Info.plist
+amplify-config.json
+firebase.json
+secrets/
+.secrets/
+
+# === API keys & tokens ===
+*.secret
+*.token
+
+# === IDE ===
+.idea/
+.vscode/
+*.code-workspace
+
+# === Claude Code ===
+.claude/settings.local.json

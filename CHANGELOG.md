@@ -5,27 +5,52 @@ All notable changes to Prism will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-04-27
 
 ### Added
 
-- Baseline project tooling with `swift format`, quality scripts, CI, contribution docs, and security guidance.
-- 134 tests across 29 suites covering all 6 modules (PrismFoundation, PrismArchitecture, PrismNetwork, PrismUI, PrismVideo, PrismIntelligence).
-- DocC documentation on ~516 public declarations with parameter/return/throws annotations.
-- Thread-safety documentation on all 7 `@unchecked Sendable` types.
-- `PrismVideoTests` test target for video entity, resolution, error, and downloader types.
+- **PrismCodableTrainingData**: Generic adapter that converts any `Codable` struct into feature rows for tabular classification and regression training via Mirror-based reflection.
+- **Provider-agnostic analytics**: `PrismAnalyticsProvider` protocol and `PrismAnalyticsEvent` with automatic tracking in `PrismButton`, `PrismTextField`, `PrismCarousel`, `PrismTabView`, and `PrismNavigationView`.
+- **Runtime locale switching**: `PrismLocaleManager` observable class with persistence support and SwiftUI environment integration.
+- **Remote auth token convenience**: `PrismIntelligenceClient.remote(endpoint:token:model:)` factory with automatic Bearer header.
+- **Training configuration enhancements**: `featureColumns`, `earlyStoppingRounds`, `rowSubsample`, `columnSubsample` on `PrismTabularTrainingConfiguration`.
+- **Explicit locale parameter**: `PrismTextIntelligence.trainingTextClassifier()` accepts optional `PrismLocale` instead of hardcoding current locale.
+- **DocC documentation**: Full catalog for all 7 modules with articles for analytics, locale, codable training, local training, remote models, and platform availability.
+- **GitHub Actions**: CI workflow with SPM caching, docs workflow with GitHub Pages deploy, release workflow with automatic changelog extraction.
+- **Release workflow**: Automated GitHub Release creation from git tags with changelog body extraction.
+- `PrismDivider`, `PrismMenu`, and `PrismAlert` UI components.
+- `PrismUIPrefixAliases.swift` with Nova-prefixed typealiases and view modifier wrappers for brand customization.
+- Cross-platform macOS adaptations for all PrismUI components.
+- 154 tests across 31 suites covering all modules.
 
 ### Changed
 
-- Package manifest updated for Swift 6.3 and an explicit Swift 6 language mode baseline.
-- Public products clarified around the `Prism` umbrella module and focused domain modules.
-- All documentation comments standardized to English across all modules.
-- `PrismRouter.present(_:)` and `fullScreen(_:)` now enforce mutual exclusivity to match SwiftUI semantics.
-- `PrismDefaults.userDefaults` changed from `var` to `let` for immutability after initialization.
+- **README**: Rewritten with module table, architecture diagram, usage examples, badges, and development instructions.
+- **CHANGELOG**: Restructured to Keep a Changelog format with semantic versioning.
+- **.gitignore**: Hardened with patterns for credentials, secrets, API keys, IDE files, and OS artifacts.
+- **CI workflow**: Pinned to `macos-15`, added SPM caching, dynamic Xcode selection.
+- **Docs workflow**: Added SPM caching, dynamic Xcode selection.
+- Package manifest updated for Swift 6.3 with strict concurrency.
+- Documentation infrastructure consolidated to DocC (removed legacy Next.js docs-site and markdown docs).
+- Scripts standardized with `set -euo pipefail` and `ROOT_DIR` pattern.
 
 ### Fixed
 
-- `PrismVideoEntity.id` was a computed property generating a new UUID on every access; changed to a stored `let` property.
-- `PrismStore.send(_:)` replaced force-unwrap of optional reducer with safe `guard let`.
-- `PrismVideoResolution` now conforms to `Sendable` to satisfy `PrismVideoEntity: Sendable`.
-- Pre-existing test bug comparing `"Prism".dropFirst()` hash with incorrect expected value.
+- `PrismVideoEntity.id` was a computed property generating a new UUID on every access; changed to stored `let`.
+- `PrismStore.send(_:)` replaced force-unwrap with safe `guard let`.
+- `PrismRouter.present(_:)` and `fullScreen(_:)` enforce mutual exclusivity.
+
+## [0.0.5] - 2025-09-14
+
+### Added
+
+- Initial PrismIntelligence module with CreateML training, CoreML inference.
+- PrismArchitecture store, reducer, and middleware primitives.
+- PrismNetwork HTTP client and socket transport.
+
+## [0.0.4] - 2025-09-13
+
+### Added
+
+- Initial PrismFoundation, PrismUI, and PrismVideo modules.
+- Basic Swift Package Manager setup.
