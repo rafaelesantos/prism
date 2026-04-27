@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   quality:
@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Select latest Xcode
         run: |
@@ -50,6 +52,55 @@ jobs:
 
       - name: Test
         run: ./scripts/test.sh
+
+      - name: Extract coverage
+        if: success() && github.ref == 'refs/heads/main'
+        id: coverage
+        run: |
+          BIN_PATH=$(swift build --show-bin-path)
+          PROFDATA=$(find .build -name 'default.profdata' -type f 2>/dev/null | head -1)
+          XCTEST=$(find "$BIN_PATH" -name '*.xctest' -type d 2>/dev/null | head -1)
+
+          TOTAL="0"
+          if [ -n "$PROFDATA" ] && [ -n "$XCTEST" ]; then
+            EXEC="$XCTEST/Contents/MacOS/$(basename "${XCTEST%.xctest}")"
+            REPORT=$(xcrun llvm-cov report "$EXEC" --instr-profile="$PROFDATA" --ignore-filename-regex='\.build|Tests' 2>/dev/null || echo "")
+            EXTRACTED=$(echo "$REPORT" | grep '^TOTAL' | awk '{print $NF}' | tr -d '%')
+            if [ -n "$EXTRACTED" ]; then
+              TOTAL="$EXTRACTED"
+            fi
+          fi
+
+          echo "percentage=$TOTAL" >> "$GITHUB_OUTPUT"
+          echo "Coverage: ${TOTAL}%"
+
+      - name: Update coverage badge
+        if: success() && github.ref == 'refs/heads/main' && steps.coverage.outputs.percentage != ''
+        run: |
+          TOTAL="${{ steps.coverage.outputs.percentage }}"
+
+          if (( $(echo "$TOTAL >= 80" | bc -l) )); then
+            COLOR="brightgreen"
+          elif (( $(echo "$TOTAL >= 60" | bc -l) )); then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+
+          BADGE_URL="https://img.shields.io/badge/coverage-${TOTAL}%25-${COLOR}?style=flat-square"
+
+          # Update README badge
+          if grep -q 'coverage-.*-.*style=flat-square' README.md; then
+            sed -i '' "s|https://img.shields.io/badge/coverage-[^)]*|${BADGE_URL}|" README.md
+          fi
+
+          # Commit if changed
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet && echo "No coverage change" && exit 0
+          git commit -m "ci: update coverage badge to ${TOTAL}%"
+          git push origin main
 
       - name: Upload test results
         if: always()
