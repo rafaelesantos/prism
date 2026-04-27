@@ -26,10 +26,22 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: '6.3'
+      - name: List available Xcode versions
+        run: ls -d /Applications/Xcode*.app 2>/dev/null | sort -V
+
+      - name: Select Xcode with Swift 6.3
+        run: |
+          for xcode in $(ls -d /Applications/Xcode*.app 2>/dev/null | sort -rV); do
+            SWIFT_VER=$("$xcode/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift" --version 2>/dev/null | head -1 || true)
+            echo "$xcode → $SWIFT_VER"
+            if echo "$SWIFT_VER" | grep -q "6\.3"; then
+              echo "Found Swift 6.3 in $xcode"
+              sudo xcode-select -s "$xcode"
+              exit 0
+            fi
+          done
+          echo "::error::No Xcode with Swift 6.3 found"
+          exit 1
 
       - name: Toolchain info
         run: |
