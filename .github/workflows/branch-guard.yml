@@ -26,12 +26,12 @@ jobs:
             main)
               # Only release/*, hotfix/*, or develop can merge to main
               case "$HEAD" in
-                release/*|hotfix/*|develop)
+                release/*|hotfix/*|develop|dependabot/*)
                   echo "✓ Valid: $HEAD → main"
                   ;;
                 *)
                   valid=false
-                  reason="Only release/*, hotfix/*, or develop branches can merge into main."
+                  reason="Only release/*, hotfix/*, develop, or dependabot/* branches can merge into main."
                   ;;
               esac
               ;;
@@ -64,6 +64,7 @@ jobs:
           fi
 
       - name: Check PR title follows Conventional Commits
+        if: github.actor != 'dependabot[bot]'
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
