@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-/// Partícula individual de confetti do Design System PrismUI.
+/// Individual confetti particle for the PrismUI Design System.
 ///
-/// `PrismConfettiView` representa uma única partícula com:
-/// - Cor aleatória (laranja, verde, azul, vermelho, amarelo)
-/// - Rotação 3D em dois eixos (X e Z)
-/// - Animação contínua de 360°
-/// - Velocidade aleatória para efeito natural
+/// `PrismConfettiView` represents a single particle with:
+/// - Random color (orange, green, blue, red, yellow)
+/// - 3D rotation on two axes (X and Z)
+/// - Continuous 360 degree animation
+/// - Random speed for a natural effect
 private struct PrismConfettiView: View {
     @State var animate = false
     @State var xSpeed = Double.random(in: 0.7...2)

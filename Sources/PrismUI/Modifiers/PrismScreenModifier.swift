@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-/// Modificador de observação de screen do Design System PrismUI.
+/// Screen observation modifier for the PrismUI Design System.
 ///
-/// `PrismScreenModifier` monitora tamanho da tela e scroll position:
-/// - Disponibiliza `screenSize` no environment
-/// - Disponibiliza `isLargeScreen` no environment (configurável)
-/// - Disponibiliza `scrollPosition` no environment
-/// - Usa `PreferenceKey` para propagação eficiente
+/// `PrismScreenModifier` monitors screen size and scroll position:
+/// - Makes `screenSize` available in the environment
+/// - Makes `isLargeScreen` available in the environment (configurable)
+/// - Makes `scrollPosition` available in the environment
+/// - Uses `PreferenceKey` for efficient propagation
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// MyView()
 ///     .prismScreenObserve(minimumWidthScreen: 430)
 /// ```
 ///
-/// ## Acessando no Environment
+/// ## Accessing from the Environment
 /// ```swift
 /// struct MyView: View {
 ///     @Environment(\.screenSize) var screenSize
@@ -38,11 +38,11 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Preferências Internas
-/// - `PrismScreenSizePreferenceKey` - Propaga tamanho da tela
-/// - `PrismScreenScrollOffsetPreferenceKey` - Propaga offset de scroll
+/// ## Internal Preferences
+/// - `PrismScreenSizePreferenceKey` - Propagates screen size
+/// - `PrismScreenScrollOffsetPreferenceKey` - Propagates scroll offset
 ///
-/// - Note: O threshold padrão para `isLargeScreen` é 430pt (iPhone 14 Pro Max).
+/// - Note: The default threshold for `isLargeScreen` is 430pt (iPhone 14 Pro Max).
 private struct PrismScreenSizePreferenceKey: @MainActor PreferenceKey {
     @MainActor static var defaultValue: CGSize = .zero
 

@@ -8,26 +8,26 @@
 import PrismFoundation
 import SwiftUI
 
-/// Preview abrangente do Design System PrismUI.
+/// Comprehensive preview for the PrismUI Design System.
 ///
-/// `PrismPreview` gera automaticamente previews para todos os cenários:
-/// - Light mode e Dark mode
-/// - Português (BR) e Inglês (US)
-/// - Retrato e Paisagem
-/// - Size That Fits e Device layout
+/// `PrismPreview` automatically generates previews for all scenarios:
+/// - Light mode and Dark mode
+/// - Portuguese (BR) and English (US)
+/// - Portrait and Landscape
+/// - Size That Fits and Device layout
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// #Preview {
 ///     PrismPreview(content: PrismButton.self)
 /// }
 /// ```
 ///
-/// ## O Que é Gerado
-/// O preview gera uma matriz completa de combinações:
-/// - 2 color schemes × 2 locales × 2 orientations × 2 layouts = **16 previews**
+/// ## What Is Generated
+/// The preview generates a complete matrix of combinations:
+/// - 2 color schemes x 2 locales x 2 orientations x 2 layouts = **16 previews**
 ///
-/// ## Para Componentes Personalizados
+/// ## For Custom Components
 /// ```swift
 /// struct MyComponent: PrismView {
 ///     // ...
@@ -41,8 +41,8 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// - Note: Requer que o componente tenha `static func mocked()` implementado.
-/// - Important: Use para validar componentes em todos os cenários antes de commit.
+/// - Note: Requires the component to implement `static func mocked()`.
+/// - Important: Use to validate components across all scenarios before committing.
 public struct PrismPreview<Content: PrismView>: View {
     let colorSchemes: [ColorScheme] = [.light, .dark]
     let locales: [PrismLocale] = [.portugueseBR, .englishUS]

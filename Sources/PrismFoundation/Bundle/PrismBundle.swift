@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Informações do bundle da aplicação.
+/// Application bundle information.
 public struct PrismBundle {
     private let infoDictionary: [String: Any]?
     private let operatingSystemVersionValue: OperatingSystemVersion

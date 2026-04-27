@@ -7,15 +7,22 @@
 
 import SwiftUI
 
-/// Implementação padrão de raios de borda.
+/// Default implementation of border radii.
 public struct PrismDefaultRadius: PrismRadiusProtocol {
+    /// No rounding (0pt).
     public var none: CGFloat
+    /// Small corner radius (4pt default).
     public var small: CGFloat
+    /// Medium corner radius (8pt default).
     public var medium: CGFloat
+    /// Large corner radius (16pt default).
     public var large: CGFloat
+    /// Extra-large corner radius (24pt default).
     public var extraLarge: CGFloat
+    /// Fully circular radius (infinity).
     public var circle: CGFloat
 
+    /// Creates a default radius scale with the given values.
     public init(
         none: CGFloat = .zero,
         small: CGFloat = 4,

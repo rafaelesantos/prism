@@ -9,45 +9,66 @@ import SwiftUI
 
 // MARK: - PrismSemanticColors
 
-/// Mapeamento de cores semânticas para SwiftUI.
+/// Semantic color mapping for SwiftUI.
 public struct PrismSemanticColors: Sendable {
     // MARK: - State Colors
 
+    /// Color for active or enabled interactive elements.
     public var active: Color
+    /// Color for inactive or disabled interactive elements.
     public var inactive: Color
+    /// Color for the currently selected item.
     public var selected: Color
+    /// Color for elements with keyboard or assistive-technology focus.
     public var focused: Color
 
     // MARK: - Feedback Colors
 
+    /// Positive feedback color (e.g., success confirmations).
     public var positive: Color
+    /// Negative feedback color (e.g., error states).
     public var negative: Color
+    /// Cautionary feedback color (e.g., warnings).
     public var caution: Color
+    /// Informational feedback color (e.g., tips and notices).
     public var informational: Color
 
     // MARK: - Depth Colors
 
+    /// Surface color for elevated elements such as cards and sheets.
     public var elevated: Color
+    /// Surface color for recessed or sunken areas.
     public var submerged: Color
+    /// Semi-transparent overlay color for modals and popovers.
     public var overlay: Color
 
     // MARK: - Border Colors
 
+    /// Default border color for standard separators and outlines.
     public var borderDefault: Color
+    /// Subtle border color for low-emphasis dividers.
     public var borderSubtle: Color
+    /// Strong border color for high-emphasis outlines.
     public var borderStrong: Color
 
     // MARK: - Text Hierarchy
 
+    /// Primary text color for headings and body copy.
     public var textPrimary: Color
+    /// Secondary text color for supporting descriptions.
     public var textSecondary: Color
+    /// Tertiary text color for captions and metadata.
     public var textTertiary: Color
+    /// Text color for disabled or non-interactive labels.
     public var textDisabled: Color
+    /// Inverse text color for use on filled backgrounds.
     public var textInverse: Color
+    /// Text color for hyperlinks and tappable inline text.
     public var textLink: Color
 
     // MARK: - Initialization
 
+    /// Creates a semantic color set with the given color values.
     public init(
         active: Color = .blue,
         inactive: Color = .gray,
@@ -94,6 +115,7 @@ public struct PrismSemanticColors: Sendable {
 
     // MARK: - Dark Mode Variant
 
+    /// Semantic color set optimized for dark mode interfaces.
     public static var dark: PrismSemanticColors {
         PrismSemanticColors(
             active: .blue.opacity(0.8),
@@ -121,6 +143,7 @@ public struct PrismSemanticColors: Sendable {
 
     // MARK: - High Contrast Variant
 
+    /// Semantic color set with increased contrast for accessibility.
     public static var highContrast: PrismSemanticColors {
         PrismSemanticColors(
             active: .yellow,
@@ -150,10 +173,12 @@ public struct PrismSemanticColors: Sendable {
 // MARK: - PrismColorProtocol Extension
 
 extension PrismColorProtocol {
+    /// Convenience accessor for the dark semantic color set.
     public var semanticDark: PrismSemanticColors {
         .dark
     }
 
+    /// Convenience accessor for the high-contrast semantic color set.
     public var semanticHighContrast: PrismSemanticColors {
         .highContrast
     }

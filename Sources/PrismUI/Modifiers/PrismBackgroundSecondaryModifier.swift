@@ -7,22 +7,22 @@
 
 import SwiftUI
 
-/// Modificador de background secundário do Design System PrismUI.
+/// Secondary background modifier for the PrismUI Design System.
 ///
-/// `PrismBackgroundSecondaryModifier` aplica a cor de background secundária:
-/// - Usa `theme.color.backgroundSecondary` para consistência
-/// - Ideal para cards, seções destacadas ou superfícies elevadas
-/// - Integração automática com light/dark mode
+/// `PrismBackgroundSecondaryModifier` applies the secondary background color:
+/// - Uses `theme.color.backgroundSecondary` for consistency
+/// - Ideal for cards, highlighted sections, or elevated surfaces
+/// - Automatic integration with light/dark mode
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismVStack {
-///     PrismText("Conteúdo do card")
+///     PrismText("Card content")
 /// }
 /// .prismBackgroundSecondary()
 /// ```
 ///
-/// - Note: O background secundário é tipicamente uma variação mais clara/escura do background principal.
+/// - Note: The secondary background is typically a lighter/darker variation of the primary background.
 public struct PrismBackgroundSecondaryModifier: ViewModifier {
     @Environment(\.theme) private var theme
 

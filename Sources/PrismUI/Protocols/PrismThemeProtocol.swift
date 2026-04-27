@@ -8,7 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
-/// Protocolo que compõe todos os sub-protocolos de tema.
+/// Protocol that composes all theme sub-protocols.
 public protocol PrismThemeProtocol: Sendable {
     // MARK: - Core Properties
 

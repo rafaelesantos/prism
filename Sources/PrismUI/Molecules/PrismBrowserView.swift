@@ -14,40 +14,40 @@ import SwiftUI
     import SafariServices
 #endif
 
-/// View de navegação web do Design System PrismUI.
+/// Web navigation view for the PrismUI Design System.
 ///
-/// `PrismBrowserView` é um componente para exibir conteúdo web em:
-/// - Sheet modal com `SFSafariViewController` (iOS)
-/// - Navegador nativo (macOS)
-/// - Binding de URL opcional para controle de apresentação
+/// `PrismBrowserView` is a component for displaying web content via:
+/// - Modal sheet with `SFSafariViewController` (iOS)
+/// - Native browser (macOS)
+/// - Optional URL binding for presentation control
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var url: URL?
 /// PrismBrowserView(url: $url) {
-///     PrismPrimaryButton("Abrir site") {
+///     PrismPrimaryButton("Open website") {
 ///         url = URL(string: "https://example.com")
 ///     }
 /// }
 /// ```
 ///
-/// ## Com Conteúdo Personalizado
+/// ## With Custom Content
 /// ```swift
 /// PrismBrowserView(url: $url) {
 ///     VStack {
-///         PrismText("Clique para abrir")
-///         PrismPrimaryButton("Visitar") {
+///         PrismText("Tap to open")
+///         PrismPrimaryButton("Visit") {
 ///             url = URL(string: "https://example.com")
 ///         }
 ///     }
 /// }
 /// ```
 ///
-/// ## Comportamento por Plataforma
-/// - **iOS**: Abre em `SFSafariViewController` dentro de um sheet
-/// - **macOS**: Abre no navegador padrão do sistema
+/// ## Platform Behavior
+/// - **iOS**: Opens in `SFSafariViewController` within a sheet
+/// - **macOS**: Opens in the system default browser
 ///
-/// - Note: O sheet fecha automaticamente quando `url` é definido como `nil`.
+/// - Note: The sheet automatically dismisses when `url` is set to `nil`.
 public struct PrismBrowserView<Content: View>: View {
     @Binding private var url: URL?
     let content: Content

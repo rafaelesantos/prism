@@ -7,7 +7,7 @@
 
 import os
 
-/// Protocolo para mensagens de log localizáveis.
+/// A protocol for localizable log messages.
 public protocol PrismResourceLogMessage {
     var value: String { get }
 }

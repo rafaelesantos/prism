@@ -8,33 +8,33 @@
 import PrismFoundation
 import SwiftUI
 
-/// View de abas do Design System PrismUI.
+/// Tab view for the PrismUI Design System.
 ///
-/// `PrismTabView` é um wrapper do `TabView` nativo com:
-/// - Seleção tipada via binding
-/// - Busca integrada (searchable)
-/// - View acessória adaptativa em iOS, macOS e visionOS
-/// - Minimização automática da tab bar ao scrollar quando a plataforma suporta esse padrão
-/// - Minimização da search toolbar no iOS
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismTabView` is a wrapper around the native `TabView` with:
+/// - Typed selection via binding
+/// - Integrated search (searchable)
+/// - Adaptive accessory view on iOS, macOS, and visionOS
+/// - Automatic tab bar minimization on scroll when the platform supports this pattern
+/// - Search toolbar minimization on iOS
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var selected: Int = 0
 /// PrismTabView(selection: $selected) {
 ///     HomeView()
 ///         .tabItem {
-///             PrismLabel("Início", symbol: "house")
+///             PrismLabel("Home", symbol: "house")
 ///         }
 ///     SettingsView()
 ///         .tabItem {
-///             PrismLabel("Ajustes", symbol: "gear")
+///             PrismLabel("Settings", symbol: "gear")
 ///         }
 /// }
 /// ```
 ///
-/// ## Com Busca
+/// ## With Search
 /// ```swift
 /// @State var searchText = ""
 /// PrismTabView(
@@ -46,19 +46,19 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com View Acessória
+/// ## With Accessory View
 /// ```swift
 /// PrismTabView(
 ///     selection: $selected,
 ///     accessoryView: {
-///         PrismPrimaryButton("Ação") { }
+///         PrismPrimaryButton("Action") { }
 ///     }
 /// ) {
 ///     ContentView()
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismTabView(
 ///     selection: $selected,
@@ -68,7 +68,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// - Note: Mantém a mesma API entre plataformas e adapta o chrome conforme o `PrismPlatformContext`.
+/// - Note: Maintains the same API across platforms and adapts the chrome based on `PrismPlatformContext`.
 public struct PrismTabView<SelectionValue: Hashable>: PrismView {
     @Environment(\.platformContext) private var platformContext
 

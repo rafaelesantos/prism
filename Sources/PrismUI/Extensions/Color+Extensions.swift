@@ -8,6 +8,12 @@
 import SwiftUI
 
 extension Color {
+    /// Creates a color from a hex string (e.g., `"#FF5733"` or `"FF5733"`).
+    ///
+    /// The initializer strips a leading `#` if present and expects a 6-character RGB hex.
+    /// Invalid or `nil` input falls back to `Color.primary`.
+    ///
+    /// - Parameter hex: A hex color string, or `nil` to use the primary color.
     public init(hex: String?) {
         guard let hex else {
             self = .primary
@@ -53,6 +59,9 @@ extension Color {
         #endif
     }
 
+    /// The color represented as an uppercase hex string (e.g., `"#FF5733"`).
+    ///
+    /// Falls back to `"#F1F2F1"` if the color cannot be decomposed into RGB components.
     public var hex: String {
         #if canImport(UIKit)
             let uiColor = UIColor(self)

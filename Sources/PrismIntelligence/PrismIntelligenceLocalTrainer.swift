@@ -21,13 +21,24 @@ import PrismFoundation
     import NaturalLanguage
 #endif
 
-/// Configuração para treino de classificador de texto.
+/// Configuration for text classifier training.
 public struct PrismTextTrainingConfiguration: Sendable, Equatable {
+    /// A unique identifier for the resulting model.
     public var id: String
+    /// A display name for the resulting model.
     public var name: String
+    /// An optional BCP-47 locale identifier for the training language.
     public var localeIdentifier: String?
+    /// An optional maximum number of training iterations.
     public var maxIterations: Int?
 
+    /// Creates a text training configuration.
+    ///
+    /// - Parameters:
+    ///   - id: A unique model identifier.
+    ///   - name: A display name.
+    ///   - localeIdentifier: An optional locale identifier.
+    ///   - maxIterations: An optional iteration limit.
     public init(
         id: String,
         name: String,
@@ -41,18 +52,39 @@ public struct PrismTextTrainingConfiguration: Sendable, Equatable {
     }
 }
 
-/// Configuração para treino de modelos tabulares.
+/// Configuration for tabular model training.
 public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
+    /// A unique identifier for the resulting model.
     public var id: String
+    /// A display name for the resulting model.
     public var name: String
+    /// The name of the target column in the training data.
     public var targetColumn: String
+    /// The maximum tree depth for boosted tree training.
     public var maxDepth: Int
+    /// The maximum number of boosting iterations.
     public var maxIterations: Int
+    /// The minimum loss reduction required to make a further partition.
     public var minLossReduction: Double
+    /// The minimum sum of instance weight needed in a child node.
     public var minChildWeight: Double
+    /// The random seed for reproducible training.
     public var randomSeed: Int
+    /// The learning rate (step size) for each boosting round.
     public var stepSize: Double
 
+    /// Creates a tabular training configuration.
+    ///
+    /// - Parameters:
+    ///   - id: A unique model identifier.
+    ///   - name: A display name.
+    ///   - targetColumn: The target column name. Defaults to `"target"`.
+    ///   - maxDepth: Maximum tree depth. Defaults to 20.
+    ///   - maxIterations: Maximum boosting iterations. Defaults to 10,000.
+    ///   - minLossReduction: Minimum loss reduction. Defaults to 0.
+    ///   - minChildWeight: Minimum child weight. Defaults to 0.01.
+    ///   - randomSeed: Random seed. Defaults to 42.
+    ///   - stepSize: Learning rate. Defaults to 0.01.
     public init(
         id: String,
         name: String,
@@ -265,12 +297,20 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
     }
 }
 
-/// Treinador local de modelos usando CreateML.
+/// A local model trainer backed by CreateML.
+///
+/// Use `PrismIntelligenceLocalTrainer` to train text classifiers, tabular classifiers,
+/// and tabular regressors on-device. Trained models are automatically persisted to the catalog.
 public actor PrismIntelligenceLocalTrainer {
     private let catalog: PrismIntelligenceCatalog
     private let fileManager: PrismFileManager
     private let runtime: any PrismIntelligenceTrainingRuntime
 
+    /// Creates a local trainer backed by CreateML.
+    ///
+    /// - Parameters:
+    ///   - catalog: The catalog used to persist trained models.
+    ///   - fileManager: The file manager used to resolve artifact paths.
     public init(
         catalog: PrismIntelligenceCatalog = .init(),
         fileManager: PrismFileManager = .init()
@@ -290,6 +330,14 @@ public actor PrismIntelligenceLocalTrainer {
         self.runtime = runtime
     }
 
+    /// Trains a text classifier from labeled samples and persists the resulting model.
+    ///
+    /// - Parameters:
+    ///   - data: An array of text/label training samples.
+    ///   - configuration: The training configuration (identifier, name, locale, iterations).
+    /// - Returns: The trained ``PrismIntelligenceModel`` with populated metrics.
+    /// - Throws: ``PrismIntelligenceError/invalidTrainingData(_:)`` if data is empty,
+    ///   or ``PrismIntelligenceError/artifactNotFound(_:)`` if the destination path cannot be resolved.
     public func trainTextClassifier(
         data: [PrismTextTrainingSample],
         configuration: PrismTextTrainingConfiguration
@@ -327,6 +375,14 @@ public actor PrismIntelligenceLocalTrainer {
         return model
     }
 
+    /// Trains a tabular regressor from feature rows and persists the resulting model.
+    ///
+    /// - Parameters:
+    ///   - data: An array of feature rows, each containing the target column.
+    ///   - configuration: The tabular training configuration.
+    /// - Returns: The trained ``PrismIntelligenceModel`` with populated metrics.
+    /// - Throws: ``PrismIntelligenceError/invalidTrainingData(_:)`` if data is empty,
+    ///   or ``PrismIntelligenceError/artifactNotFound(_:)`` if the destination path cannot be resolved.
     public func trainTabularRegressor(
         data: [PrismIntelligenceFeatureRow],
         configuration: PrismTabularTrainingConfiguration
@@ -339,6 +395,14 @@ public actor PrismIntelligenceLocalTrainer {
         )
     }
 
+    /// Trains a tabular classifier from feature rows and persists the resulting model.
+    ///
+    /// - Parameters:
+    ///   - data: An array of feature rows, each containing the target column.
+    ///   - configuration: The tabular training configuration.
+    /// - Returns: The trained ``PrismIntelligenceModel`` with populated metrics.
+    /// - Throws: ``PrismIntelligenceError/invalidTrainingData(_:)`` if data is empty,
+    ///   or ``PrismIntelligenceError/artifactNotFound(_:)`` if the destination path cannot be resolved.
     public func trainTabularClassifier(
         data: [PrismIntelligenceFeatureRow],
         configuration: PrismTabularTrainingConfiguration

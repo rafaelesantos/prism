@@ -10,31 +10,31 @@ import SwiftUI
 #if os(iOS)
     import CoreMotion
 
-    /// Modificador de efeito parallax (movimento 3D) do Design System PrismUI.
+    /// Parallax (3D motion) effect modifier for the PrismUI Design System.
     ///
-    /// `PrismParallaxModifier` cria efeito de profundidade usando o giroscópio:
-    /// - Rotação 3D baseada no movimento do dispositivo
-    /// - Brilho dinâmico (shine) que segue a inclinação
-    /// - Sensibilidade ajustável via threshold
-    /// - Suporte a customização de largura e altura
+    /// `PrismParallaxModifier` creates a depth effect using the gyroscope:
+    /// - 3D rotation based on device motion
+    /// - Dynamic shine that follows the tilt
+    /// - Adjustable sensitivity via threshold
+    /// - Width and height customization support
     ///
-    /// ## Uso Básico
+    /// ## Basic Usage
     /// ```swift
     /// PrismSymbol("rainbow")
     ///     .prismParallax(height: .medium2)
     /// ```
     ///
-    /// ## Como Funciona
-    /// - Usa `CMMotionManager` para ler dados do giroscópio
-    /// - Aplica rotação nos eixos X (pitch) e Y (roll)
-    /// - Cria efeito de brilho que se move com a inclinação
-    /// - Atualiza a 60Hz para animação suave
+    /// ## How It Works
+    /// - Uses `CMMotionManager` to read gyroscope data
+    /// - Applies rotation on X (pitch) and Y (roll) axes
+    /// - Creates a shine effect that moves with the tilt
+    /// - Updates at 60Hz for smooth animation
     ///
-    /// ## Limites de Rotação
-    /// - Threshold: 35° - ângulo mínimo para ativar efeito
-    /// - Max rotation: 20° - rotação máxima aplicada
+    /// ## Rotation Limits
+    /// - Threshold: 35 degrees - minimum angle to activate the effect
+    /// - Max rotation: 20 degrees - maximum applied rotation
     ///
-    /// - Note: Disponível apenas para iOS. O efeito requer dispositivo físico com giroscópio.
+    /// - Note: Available only on iOS. The effect requires a physical device with a gyroscope.
     struct PrismParallaxModifier: ViewModifier {
         @Environment(\.theme) var theme
         @State var motion: CMDeviceMotion? = nil

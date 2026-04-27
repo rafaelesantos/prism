@@ -7,13 +7,22 @@
 
 import Foundation
 
-/// Valor de feature para dados tabulares (int, double, string, bool).
+/// A feature value for tabular data (int, double, string, or bool).
 public enum PrismIntelligenceFeatureValue: Codable, Equatable, Hashable, Sendable {
+    /// A string feature value.
     case string(String)
+    /// An integer feature value.
     case int(Int)
+    /// A double-precision floating-point feature value.
     case double(Double)
+    /// A Boolean feature value.
     case bool(Bool)
 
+    /// Creates a feature value by inspecting the runtime type of the given value.
+    ///
+    /// Supported types: `String`, `Int`, `Double`, `Float`, `Bool`, and `NSNumber`.
+    ///
+    /// - Parameter value: The value to wrap. Returns `nil` if the type is unsupported.
     public init?(_ value: Any) {
         switch value {
         case let string as String:
@@ -64,13 +73,21 @@ public enum PrismIntelligenceFeatureValue: Codable, Equatable, Hashable, Sendabl
     }
 }
 
+/// A dictionary mapping feature names to their values, representing a single data row.
 public typealias PrismIntelligenceFeatureRow = [String: PrismIntelligenceFeatureValue]
 
-/// Amostra de treino para classificação de texto.
+/// A training sample for text classification.
 public struct PrismTextTrainingSample: Codable, Equatable, Hashable, Sendable {
+    /// The input text to classify.
     public var text: String
+    /// The expected classification label.
     public var label: String
 
+    /// Creates a text training sample.
+    ///
+    /// - Parameters:
+    ///   - text: The input text.
+    ///   - label: The expected label.
     public init(
         text: String,
         label: String

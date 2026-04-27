@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-/// Lista com scroll horizontal do Design System PrismUI.
+/// Horizontal scrolling list for the PrismUI Design System.
 ///
-/// `PrismHorizontalList` é uma lista com rolagem horizontal:
-/// - Scroll horizontal com `ScrollViewProxy` para navegação programática
-/// - Indicadores de scroll ocultos
-/// - Binding de posição para controle do item visível
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismHorizontalList` is a list with horizontal scrolling:
+/// - Horizontal scroll with `ScrollViewProxy` for programmatic navigation
+/// - Hidden scroll indicators
+/// - Position binding to control the visible item
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismHorizontalList { proxy in
 ///     ForEach(items) { item in
@@ -25,7 +25,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com Scroll Programático
+/// ## With Programmatic Scrolling
 /// ```swift
 /// PrismHorizontalList { proxy in
 ///     ForEach(items) { item in
@@ -33,10 +33,10 @@ import SwiftUI
 ///             .id(item.id)
 ///     }
 /// }
-/// // Em outro lugar: proxy.scrollTo(itemId)
+/// // Elsewhere: proxy.scrollTo(itemId)
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismHorizontalList(testID: "horizontal_list") { proxy in
 ///     ForEach(items) { item in
@@ -45,7 +45,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// - Note: Use `ScrollViewProxy` para scroll programático via `scrollTo(_:)`.
+/// - Note: Use `ScrollViewProxy` for programmatic scrolling via `scrollTo(_:)`.
 public struct PrismHorizontalList: PrismView {
     let content: (ScrollViewProxy) -> any View
     public var accessibility: PrismAccessibilityProperties?

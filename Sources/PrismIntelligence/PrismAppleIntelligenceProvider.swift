@@ -7,24 +7,36 @@
 
 import Foundation
 
-/// Casos de uso do Apple Intelligence.
+/// Apple Intelligence use cases.
 public enum PrismAppleIntelligenceUseCase: String, Codable, Sendable, CaseIterable {
+    /// General-purpose language generation.
     case general
+    /// Content tagging and categorization.
     case contentTagging
 }
 
-/// Referência a modelos do Apple Intelligence (sistema ou adapter).
+/// A reference to an Apple Intelligence model (system or adapter).
 public enum PrismAppleIntelligenceModelReference: Codable, Equatable, Hashable, Sendable {
+    /// The built-in system language model for the specified use case.
     case system(useCase: PrismAppleIntelligenceUseCase)
+    /// A named adapter registered with the system.
     case adapterName(String)
+    /// An adapter loaded from a file URL.
     case adapterFile(URL)
 }
 
-/// Configuração para o provider de Apple Intelligence.
+/// Configuration for the Apple Intelligence provider.
 public struct PrismAppleIntelligenceConfiguration: Codable, Equatable, Hashable, Sendable {
+    /// The model reference (system model or adapter) to use.
     public var model: PrismAppleIntelligenceModelReference
+    /// Optional system-level instructions applied to every generation session.
     public var instructions: String?
 
+    /// Creates an Apple Intelligence configuration.
+    ///
+    /// - Parameters:
+    ///   - model: The model reference. Defaults to the general system model.
+    ///   - instructions: Optional system-level instructions.
     public init(
         model: PrismAppleIntelligenceModelReference = .system(useCase: .general),
         instructions: String? = nil
@@ -45,13 +57,17 @@ internal protocol PrismAppleIntelligenceGateway: Sendable {
     ) async throws -> PrismLanguageIntelligenceResponse
 }
 
-/// Provider de Apple Intelligence via framework FoundationModels.
+/// An Apple Intelligence provider backed by the FoundationModels framework.
 public actor PrismAppleIntelligenceProvider: PrismLanguageIntelligenceProvider {
+    /// The provider kind, always ``PrismLanguageIntelligenceProviderKind/apple``.
     public let kind: PrismLanguageIntelligenceProviderKind = .apple
 
     private let configuration: PrismAppleIntelligenceConfiguration
     private let gateway: any PrismAppleIntelligenceGateway
 
+    /// Creates an Apple Intelligence provider with the given configuration.
+    ///
+    /// - Parameter configuration: The model and instruction configuration.
     public init(
         configuration: PrismAppleIntelligenceConfiguration = .init()
     ) {
@@ -67,10 +83,16 @@ public actor PrismAppleIntelligenceProvider: PrismLanguageIntelligenceProvider {
         self.gateway = gateway
     }
 
+    /// Returns the current availability status of Apple Intelligence on this device.
     public func status() async -> PrismLanguageIntelligenceStatus {
         await gateway.status(configuration: configuration)
     }
 
+    /// Generates a response using the configured Apple Intelligence model.
+    ///
+    /// - Parameter request: The language generation request.
+    /// - Returns: A ``PrismLanguageIntelligenceResponse`` with the generated content.
+    /// - Throws: ``PrismIntelligenceError/providerUnavailable(_:)`` if the model is not available.
     public func generate(
         _ request: PrismLanguageIntelligenceRequest
     ) async throws -> PrismLanguageIntelligenceResponse {

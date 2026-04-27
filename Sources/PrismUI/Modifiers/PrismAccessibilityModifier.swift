@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Modificador que aplica todas as propriedades de acessibilidade de forma unificada
+/// Modifier that applies all accessibility properties in a unified manner.
 struct PrismAccessibilityModifier: ViewModifier {
     let properties: PrismAccessibilityProperties
 
@@ -39,20 +39,20 @@ struct PrismAccessibilityModifier: ViewModifier {
 // MARK: - View Extension
 
 extension View {
-    /// Aplica propriedades de acessibilidade completas a uma view
+    /// Applies complete accessibility properties to a view.
     ///
-    /// - Parameter properties: Configuração de acessibilidade
-    /// - Returns: View modificada com todas as propriedades de acessibilidade
+    /// - Parameter properties: Accessibility configuration.
+    /// - Returns: View modified with all accessibility properties.
     public func prism(accessibility properties: PrismAccessibilityProperties) -> some View {
         modifier(PrismAccessibilityModifier(properties: properties))
     }
 
-    /// Aplica propriedades de acessibilidade usando builder pattern
+    /// Applies accessibility properties using builder pattern.
     ///
-    /// - Parameter builder: Closure que configura PrismAccessibilityConfig
-    /// - Returns: View modificada com todas as propriedades de acessibilidade
+    /// - Parameter builder: Closure that configures PrismAccessibilityConfig.
+    /// - Returns: View modified with all accessibility properties.
     ///
-    /// ## Exemplo:
+    /// ## Example:
     /// ```swift
     /// PrismTextField(text: $email)
     ///     .prism(accessibility: {
@@ -67,17 +67,17 @@ extension View {
         return prism(accessibility: config.build())
     }
 
-    /// Atalho para definir apenas testID
+    /// Shortcut to set only testID.
     public func prism(testID: String) -> some View {
         prism(accessibility: PrismAccessibility.custom(label: "", testID: testID))
     }
 
-    /// Atalho para definir apenas label de acessibilidade
+    /// Shortcut to set only accessibility label.
     public func prism(accessibilityLabel label: LocalizedStringKey) -> some View {
         prism(accessibility: PrismAccessibility.custom(label: label, testID: ""))
     }
 
-    /// Atalho para definir label e hint
+    /// Shortcut to set label and hint.
     public func prism(accessibilityLabel label: LocalizedStringKey, hint: LocalizedStringKey) -> some View {
         prism(accessibility: PrismAccessibility.custom(label: label, testID: "", hint: hint))
     }
@@ -86,14 +86,14 @@ extension View {
 // MARK: - Accessibility Action Conveniences
 
 extension View {
-    /// Adiciona ação de delete para acessibilidade
+    /// Adds delete action for accessibility.
     public func prismAccessibilityDelete(handler: @escaping () -> Bool) -> some View {
         accessibilityAction(named: "Delete") {
             _ = handler()
         }
     }
 
-    /// Adiciona ação de adjust para acessibilidade
+    /// Adds adjust action for accessibility.
     public func prismAccessibilityAdjust(handler: @escaping () -> Bool) -> some View {
         accessibilityAction(named: "Adjust") {
             _ = handler()

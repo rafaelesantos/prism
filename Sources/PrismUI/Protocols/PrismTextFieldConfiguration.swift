@@ -8,7 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
-/// Protocolo para configuração de campos de texto.
+/// Protocol for text field configuration.
 public protocol PrismTextFieldConfiguration {
     var placeholder: PrismResourceString { get }
     var mask: PrismTextFieldMask? { get }

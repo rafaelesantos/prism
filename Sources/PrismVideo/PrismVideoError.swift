@@ -7,7 +7,7 @@
 
 import PrismFoundation
 
-/// Erros tipados de download de vídeo.
+/// Typed errors for video download operations.
 public enum PrismVideoError: PrismError, Sendable {
     case assetNotPlayable
     case missingTracks

@@ -8,27 +8,27 @@
 import PrismFoundation
 import SwiftUI
 
-/// Símbolo SF Symbols do Design System PrismUI.
+/// SF Symbols icon for the PrismUI Design System.
 ///
-/// `PrismSymbol` é um wrapper do `Image(systemName:)` nativo com:
-/// - Suporte a modos de renderização (monochrome, hierarchical, palette)
-/// - Variantes de símbolo (.fill, .circle, .square, etc.)
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
-/// - Integração com efeitos de símbolo animados
+/// `PrismSymbol` is a wrapper around the native `Image(systemName:)` with:
+/// - Rendering mode support (monochrome, hierarchical, palette)
+/// - Symbol variants (.fill, .circle, .square, etc.)
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
+/// - Integration with animated symbol effects
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismSymbol("star.fill")
 /// ```
 ///
-/// ## Com Modo de Renderização Hierárquico
+/// ## With Hierarchical Rendering Mode
 /// ```swift
 /// PrismSymbol("star.fill", mode: .hierarchical)
 ///     .prism(color: .primary)
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismSymbol(
 ///     "person.circle.fill",
@@ -36,21 +36,21 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com Efeito Animado
+/// ## With Animated Effect
 /// ```swift
 /// PrismSymbol("wifi")
 ///     .prismSymbol(effect: .variableColor.cumulative)
 /// ```
 ///
-/// ## Modos de Renderização Disponíveis
-/// - `.monochrome` - Cor única
-/// - `.hierarchical` - Hierarquia de cores baseada no foregroundStyle
-/// - `.palette` - Paleta de cores específica
+/// ## Available Rendering Modes
+/// - `.monochrome` - Single color
+/// - `.hierarchical` - Color hierarchy based on foregroundStyle
+/// - `.palette` - Specific color palette
 ///
-/// ## Variantes Disponíveis
+/// ## Available Variants
 /// - `.fill`, `.circle`, `.square`, `.slash`, `.crop`, etc.
 ///
-/// - Note: Use `PrismSymbol.mocked()` para previews e testes unitários.
+/// - Note: Use `PrismSymbol.mocked()` for previews and unit tests.
 public struct PrismSymbol: PrismView {
     @Environment(\.isLoading) var isLoading
 

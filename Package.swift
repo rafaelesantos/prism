@@ -125,6 +125,13 @@ let package = Package(
                 "PrismFoundation",
             ],
         ),
+        .testTarget(
+            name: "PrismVideoTests",
+            dependencies: [
+                "PrismVideo",
+                "PrismFoundation",
+            ],
+        ),
     ],
     swiftLanguageModes: [.v6],
 )

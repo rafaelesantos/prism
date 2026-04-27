@@ -7,13 +7,15 @@
 
 import SwiftUI
 
-/// Variante visual de botão.
+/// Button visual variant.
 public enum PrismButtonVariant: Sendable {
+    /// Filled, high-emphasis button for primary actions.
     case primary
+    /// Outlined, low-emphasis button for secondary actions.
     case secondary
 }
 
-/// Estilo de chrome para botões.
+/// Chrome style for buttons.
 public struct PrismButtonChromeStyle: ButtonStyle {
     @Environment(\.theme) private var theme
     @Environment(\.layoutTier) private var layoutTier
@@ -21,6 +23,11 @@ public struct PrismButtonChromeStyle: ButtonStyle {
     private let variant: PrismButtonVariant
     private let role: ButtonRole?
 
+    /// Creates a chrome button style with the given variant and optional role.
+    ///
+    /// - Parameters:
+    ///   - variant: The visual variant (primary or secondary).
+    ///   - role: An optional button role such as `.destructive`. Defaults to `nil`.
     public init(
         variant: PrismButtonVariant,
         role: ButtonRole? = nil
@@ -29,6 +36,7 @@ public struct PrismButtonChromeStyle: ButtonStyle {
         self.role = role
     }
 
+    /// Creates the styled button view with theme-aware colors, padding, and press animations.
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.body.weight(.semibold))

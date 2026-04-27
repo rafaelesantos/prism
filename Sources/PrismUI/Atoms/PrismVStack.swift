@@ -7,31 +7,31 @@
 
 import SwiftUI
 
-/// Container vertical de layouts do Design System PrismUI.
+/// Vertical layout container for the PrismUI Design System.
 ///
-/// `PrismVStack` é um wrapper do `VStack` nativo com:
-/// - Espaçamento semântico via `PrismSpacing`
-/// - Suporte a acessibilidade (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
-/// - Integração com o sistema de temas Prism
+/// `PrismVStack` is a wrapper around the native `VStack` with:
+/// - Semantic spacing via `PrismSpacing`
+/// - Accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
+/// - Integration with the Prism theming system
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismVStack {
-///     PrismText("Título")
-///     PrismText("Descrição")
+///     PrismText("Title")
+///     PrismText("Description")
 /// }
 /// ```
 ///
-/// ## Com Espaçamento Personalizado
+/// ## With Custom Spacing
 /// ```swift
 /// PrismVStack(spacing: .large) {
-///     PrismText("Título")
-///     PrismText("Descrição")
+///     PrismText("Title")
+///     PrismText("Description")
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismVStack(
 ///     alignment: .leading,
@@ -39,14 +39,14 @@ import SwiftUI
 ///     testID: "login_form"
 /// ) {
 ///     PrismTextField(text: $email, configuration: .email)
-///     PrismPrimaryButton("Entrar", testID: "login_button") { }
+///     PrismPrimaryButton("Sign In", testID: "login_button") { }
 /// }
 /// ```
 ///
-/// ## Alinhamentos Disponíveis
+/// ## Available Alignments
 /// - `.leading`, `.center`, `.trailing`
 ///
-/// - Note: O espaçamento usa o sistema de tokens do tema para consistência visual.
+/// - Note: Spacing uses the theme token system for visual consistency.
 public struct PrismVStack: PrismView {
     @Environment(\.theme) private var theme
 

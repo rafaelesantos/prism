@@ -9,18 +9,18 @@ import Observation
 import PrismArchitecture
 import SwiftUI
 
-/// Container de navegação do Design System PrismUI.
+/// Navigation container for the PrismUI Design System.
 ///
-/// `PrismNavigationView` é um wrapper do `NavigationStack` com:
-/// - Suporte a rotas tipadas via `PrismRoutable`
-/// - Navegação por push (NavigationStack)
-/// - Sidebar opcional para adaptação a split view em iOS, macOS e visionOS
-/// - Modal sheet (apresentação vertical)
-/// - Full screen cover (tela cheia)
-/// - Transição de zoom animada (iOS)
-/// - Gerenciamento de estado via `PrismRouter`
+/// `PrismNavigationView` is a wrapper around `NavigationStack` with:
+/// - Typed route support via `PrismRoutable`
+/// - Push navigation (NavigationStack)
+/// - Optional sidebar for split view adaptation on iOS, macOS, and visionOS
+/// - Modal sheet (vertical presentation)
+/// - Full screen cover
+/// - Animated zoom transition (iOS)
+/// - State management via `PrismRouter`
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// struct MyApp: App {
 ///     var body: some Scene {
@@ -37,12 +37,12 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Navegação por Push
+/// ## Push Navigation
 /// ```swift
 /// router.navigate(to: .detail(id: 123))
 /// ```
 ///
-/// ## Apresentação Modal
+/// ## Modal Presentation
 /// ```swift
 /// router.present(.login)
 /// ```
@@ -52,8 +52,8 @@ import SwiftUI
 /// router.presentFullScreen(.onboarding)
 /// ```
 ///
-/// - Note: Em iOS, as transições push usam `.zoom` com namespace animado.
-/// - Important: Requer que as rotas conformem com `PrismRoutable`.
+/// - Note: On iOS, push transitions use `.zoom` with an animated namespace.
+/// - Important: Requires routes to conform to `PrismRoutable`.
 public struct PrismNavigationView<Content: View, Route: PrismRoutable, Destination: View>: View {
     @Environment(\.platformContext) private var platformContext
     @Namespace private var transitionNamespace

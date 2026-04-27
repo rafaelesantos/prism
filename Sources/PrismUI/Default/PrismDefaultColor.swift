@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Implementação padrão de cores do tema.
+/// Default implementation of theme colors.
 public struct PrismDefaultColor: PrismColorProtocol {
 
     // MARK: - Static Asset Helper
@@ -19,51 +19,76 @@ public struct PrismDefaultColor: PrismColorProtocol {
 
     // MARK: - Brand Colors
 
+    /// Primary brand color used for key actions and highlights.
     public var primary: Color
+    /// Secondary brand color for supporting elements.
     public var secondary: Color
+    /// Accent color for emphasis and call-to-action elements.
     public var accent: Color
 
     // MARK: - Background Colors
 
+    /// Main background color for the application canvas.
     public var background: Color
+    /// Secondary background color for grouped or nested content areas.
     public var backgroundSecondary: Color
+    /// Surface color for cards, sheets, and elevated containers.
     public var surface: Color
 
     // MARK: - Text Colors
 
+    /// Primary text color for headings and body copy.
     public var text: Color
+    /// Secondary text color for supporting descriptions.
     public var textSecondary: Color
+    /// Tertiary text color for captions, placeholders, and metadata.
     public var textTertiary: Color
+    /// Inverse text color for use on filled or dark backgrounds.
     public var textInverse: Color
 
     // MARK: - Border Colors
 
+    /// Default border color for outlines and separators.
     public var border: Color
+    /// Subtle border color for low-emphasis dividers.
     public var borderSubtle: Color
+    /// Strong border color for high-emphasis outlines.
     public var borderStrong: Color
 
     // MARK: - State Colors
 
+    /// Color applied to disabled or non-interactive elements.
     public var disabled: Color
+    /// Color applied on pointer hover state.
     public var hover: Color
+    /// Color applied on press or tap state.
     public var pressed: Color
+    /// Color applied to the currently selected item.
     public var selected: Color
 
     // MARK: - Feedback Colors
 
+    /// Error feedback color for destructive or invalid states.
     public var error: Color
+    /// Success feedback color for confirmations and completed actions.
     public var success: Color
+    /// Warning feedback color for cautionary messages.
     public var warning: Color
+    /// Informational feedback color for tips and notices.
     public var info: Color
 
     // MARK: - Utility Colors
 
+    /// Shadow color for elevation and depth effects.
     public var shadow: Color
+    /// Constant white color, unaffected by color scheme.
     public var white: Color
+    /// Constant black color, unaffected by color scheme.
     public var black: Color
 
     // MARK: - Initialization
 
+    /// Creates a default color palette, loading brand colors from the asset catalog.
     public init(
         // Brand
         primary: Color = Self.asset("Primary"),
@@ -125,6 +150,7 @@ public struct PrismDefaultColor: PrismColorProtocol {
 
     // MARK: - Dark Theme
 
+    /// Dark color palette variant optimized for dark-mode interfaces.
     public static var dark: PrismDefaultColor {
         PrismDefaultColor(
             primary: Color(red: 0.4, green: 0.6, blue: 1.0),
@@ -156,6 +182,7 @@ public struct PrismDefaultColor: PrismColorProtocol {
 
     // MARK: - High Contrast Theme
 
+    /// High-contrast color palette variant for improved accessibility.
     public static var highContrast: PrismDefaultColor {
         PrismDefaultColor(
             primary: .yellow,

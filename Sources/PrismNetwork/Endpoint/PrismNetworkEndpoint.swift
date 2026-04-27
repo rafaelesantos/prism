@@ -8,16 +8,25 @@
 import Foundation
 import PrismFoundation
 
-/// Protocolo para definição de endpoints HTTP tipados.
+/// A protocol that defines type-safe HTTP endpoints.
 public protocol PrismNetworkEndpoint: PrismLogger, Sendable {
+    /// The URL scheme (e.g., `.https`). Defaults to `.https`.
     var scheme: PrismNetworkScheme { get }
+    /// The host component of the URL (e.g., `"api.example.com"`).
     var host: String { get }
+    /// The path component of the URL (e.g., `"/v1/users"`).
     var path: String { get }
+    /// The HTTP method for this endpoint. Defaults to `.get`.
     var method: PrismNetworkMethod { get }
+    /// Optional query parameters appended to the URL.
     var queryItems: [URLQueryItem]? { get }
+    /// HTTP headers to include in the request. Defaults to an empty dictionary.
     var headers: [String: String] { get }
+    /// An optional encodable body to send with the request.
     var body: (any Encodable)? { get }
+    /// An optional request timeout interval in seconds.
     var timeoutInterval: TimeInterval? { get }
+    /// An optional cache duration in seconds. Only applies to GET requests.
     var cacheInterval: TimeInterval? { get }
 }
 
@@ -30,6 +39,9 @@ extension PrismNetworkEndpoint {
     public var timeoutInterval: TimeInterval? { nil }
     public var cacheInterval: TimeInterval? { nil }
 
+    /// The fully constructed URL derived from `scheme`, `host`, `path`, and `queryItems`.
+    ///
+    /// - Throws: ``PrismNetworkError/invalidURL`` if the URL cannot be constructed.
     public var url: URL {
         get throws {
             guard let url = urlComponents.url else {
@@ -53,6 +65,9 @@ extension PrismNetworkEndpoint {
         return urlComponents
     }
 
+    /// A configured `URLRequest` built from this endpoint's properties.
+    ///
+    /// - Throws: ``PrismNetworkError/invalidURL`` if the URL cannot be constructed.
     public var request: URLRequest {
         get throws {
             log()
@@ -79,6 +94,7 @@ extension PrismNetworkEndpoint {
         }
     }
 
+    /// Logs the endpoint's URL, headers, and body using the network logger.
     public func log() {
         let logger = PrismNetworkLogger()
         if let url = try? url {

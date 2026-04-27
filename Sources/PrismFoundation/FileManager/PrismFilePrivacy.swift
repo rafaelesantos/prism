@@ -5,7 +5,7 @@
 //  Created by Rafael Escaleira on 13/09/25.
 //
 
-/// Define a visibilidade de um arquivo no sistema de arquivos.
+/// Defines the visibility of a file in the file system.
 public enum PrismFilePrivacy: String {
     case `public` = ""
     case `private` = ".private"

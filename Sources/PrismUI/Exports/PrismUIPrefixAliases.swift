@@ -4,13 +4,13 @@
 //
 //  Created by Rafael Escaleira on 09/04/26.
 //
-//  Arquivo de typealiases para personalização de prefixo do Design System.
+//  Typealiases file for Design System prefix customization.
 //
-//  PARA USAR: Copie este arquivo para seu projeto e altere o prefixo "Nova"
-//  para o prefixo desejado. Exemplo:
+//  TO USE: Copy this file to your project and change the "Nova" prefix
+//  to your desired prefix. Example:
 //
 //  ```swift
-//  // No seu projeto:
+//  // In your project:
 //  public typealias AppButton = PrismButton
 //  public typealias AppText = PrismText
 //  // etc...
@@ -109,73 +109,73 @@ public typealias NovaTextFieldContentType = PrismTextFieldContentType
 extension View {
     // MARK: - Accessibility
 
-    /// Aplica prefixo personalizado às propriedades de acessibilidade
+    /// Applies custom prefix to accessibility properties.
     public func nova(accessibility properties: PrismAccessibilityProperties) -> some View {
         prism(accessibility: properties)
     }
 
-    /// Atalho para definir apenas testID com prefixo personalizado
+    /// Shortcut to set only testID with custom prefix.
     public func nova(testID: String) -> some View {
         prism(testID: testID)
     }
 
-    /// Aplica propriedades de acessibilidade usando builder pattern com prefixo personalizado
+    /// Applies accessibility properties using builder pattern with custom prefix.
     public func nova(accessibility builder: (PrismAccessibilityConfig) -> PrismAccessibilityConfig) -> some View {
         prism(accessibility: builder)
     }
 
     // MARK: - Style Modifiers
 
-    /// Aplica cor de fundo com prefixo personalizado
+    /// Applies background color with custom prefix.
     public func nova(background style: PrismColor) -> some View {
         prism(background: style)
     }
 
-    /// Aplica cor de tint com prefixo personalizado
+    /// Applies tint color with custom prefix.
     public func nova(tint color: PrismColor) -> some View {
         prism(tint: color)
     }
 
-    /// Aplica cor de foreground com prefixo personalizado
+    /// Applies foreground color with custom prefix.
     public func nova(color: PrismColor) -> some View {
         prism(color: color)
     }
 
     // MARK: - Environment Modifiers
 
-    /// Aplica tema com prefixo personalizado
+    /// Applies theme with custom prefix.
     public func nova(theme: PrismThemeProtocol) -> some View {
         prism(theme: theme)
     }
 
-    /// Aplica locale com prefixo personalizado
+    /// Applies locale with custom prefix.
     public func nova(locale: PrismLocale) -> some View {
         prism(locale: locale)
     }
 
-    /// Aplica color scheme com prefixo personalizado
+    /// Applies color scheme with custom prefix.
     public func nova(colorScheme: ColorScheme? = nil) -> some View {
         prism(colorScheme: colorScheme)
     }
 
-    /// Aplica estado de loading com prefixo personalizado
+    /// Applies loading state with custom prefix.
     public func nova(loading: Bool) -> some View {
         prism(loading: loading)
     }
 
-    /// Aplica estado de disabled com prefixo personalizado
+    /// Applies disabled state with custom prefix.
     public func nova(disabled: Bool) -> some View {
         prism(disabled: disabled)
     }
 
     // MARK: - Text Modifiers
 
-    /// Aplica alinhamento de texto com prefixo personalizado
+    /// Applies text alignment with custom prefix.
     public func nova(alignment: TextAlignment) -> some View {
         prism(alignment: alignment)
     }
 
-    /// Aplica fonte com prefixo personalizado
+    /// Applies font with custom prefix.
     public func nova(
         font: Font = .body,
         weight: Font.Weight? = nil,
@@ -186,7 +186,7 @@ extension View {
 
     // MARK: - Size & Spacing Modifiers
 
-    /// Aplica tamanho com prefixo personalizado
+    /// Applies size with custom prefix.
     public func nova(
         width: PrismSize? = nil,
         height: PrismSize? = nil,
@@ -195,7 +195,7 @@ extension View {
         prism(width: width, height: height, alignment: alignment)
     }
 
-    /// Aplica padding com prefixo personalizado
+    /// Applies padding with custom prefix.
     public func novaPadding(
         _ edges: Edge.Set = .all,
         _ spacing: PrismSpacing = .medium
@@ -203,7 +203,7 @@ extension View {
         prismPadding(edges, spacing)
     }
 
-    /// Aplica padding com prefixo personalizado (todas as bordas)
+    /// Applies padding with custom prefix (all edges).
     public func novaPadding(
         _ spacing: PrismSpacing = .medium
     ) -> some View {
@@ -212,29 +212,29 @@ extension View {
 
     // MARK: - Background Modifiers
 
-    /// Aplica background padrão com prefixo personalizado
+    /// Applies default background with custom prefix.
     public func novaBackground() -> some View {
         prismBackground()
     }
 
-    /// Aplica background secundário com prefixo personalizado
+    /// Applies secondary background with custom prefix.
     public func novaBackgroundSecondary() -> some View {
         prismBackgroundSecondary()
     }
 
-    /// Aplica background de row com prefixo personalizado
+    /// Applies row background with custom prefix.
     public func novaBackgroundRow() -> some View {
         prismBackgroundRow()
     }
 
     // MARK: - Effect Modifiers
 
-    /// Aplica efeito glow com prefixo personalizado
+    /// Applies glow effect with custom prefix.
     public func novaGlow(for color: Color? = nil) -> some View {
         prismGlow(for: color)
     }
 
-    /// Aplica efeito de símbolo com prefixo personalizado
+    /// Applies symbol effect with custom prefix.
     public func novaSymbol<T: IndefiniteSymbolEffect & SymbolEffect>(
         effect: T,
         options: SymbolEffectOptions = .default,
@@ -243,17 +243,17 @@ extension View {
         prismSymbol(effect: effect, options: options, isActive: isActive)
     }
 
-    /// Aplica efeito skeleton com prefixo personalizado
+    /// Applies skeleton effect with custom prefix.
     public func novaSkeleton() -> some View {
         prismSkeleton()
     }
 
-    /// Aplica efeito parallax com prefixo personalizado (iOS apenas)
+    /// Applies parallax effect with custom prefix (iOS only).
     public func novaParallax(width: PrismSize? = nil, height: PrismSize?) -> some View {
         prismParallax(width: width, height: height)
     }
 
-    /// Aplica efeito de confetti com prefixo personalizado
+    /// Applies confetti effect with custom prefix.
     public func novaConfetti(
         amount: Int = 30,
         seconds: Int = 4,
@@ -264,26 +264,26 @@ extension View {
 
     // MARK: - Shape & Clip Modifiers
 
-    /// Aplica clip de shape com prefixo personalizado
+    /// Applies shape clip with custom prefix.
     public func nova(clip shape: PrismShape) -> some View {
         prism(clip: shape)
     }
 
     // MARK: - Screen & Display Modifiers
 
-    /// Aplica observação de screen com prefixo personalizado
+    /// Applies screen observation with custom prefix.
     public func novaScreenObserve(minimumWidthScreen: CGFloat = 430) -> some View {
         prismScreenObserve(minimumWidthScreen: minimumWidthScreen)
     }
 
-    /// Aplica browser sheet com prefixo personalizado
+    /// Applies browser sheet with custom prefix.
     public func novaBrowser(url: Binding<URL?>) -> some View {
         prismBrowser(url: url)
     }
 
     // MARK: - Preview Modifiers
 
-    /// Aplica preview com prefixo personalizado
+    /// Applies preview with custom prefix.
     public func novaPreview(
         layout: PreviewLayout,
         orientation: InterfaceOrientation,
@@ -300,7 +300,7 @@ extension View {
 
     // MARK: - Conditional Modifiers
 
-    /// Aplica transformação condicional com prefixo personalizado
+    /// Applies conditional transformation with custom prefix.
     public func nova<Content: View>(
         if condition: Bool,
         transition: AnyTransition = .scale,
@@ -310,7 +310,7 @@ extension View {
         prism(if: condition, transition: transition, animation: animation, transform: transform)
     }
 
-    /// Aplica transformação condicional com item opcional
+    /// Applies conditional transformation with optional item.
     public func nova<Content: View, Value>(
         item value: Value?,
         transform: (Self, Value) -> Content
@@ -318,7 +318,7 @@ extension View {
         prism(item: value, transform: transform)
     }
 
-    /// Aplica transformação condicional com else
+    /// Applies conditional transformation with else.
     public func nova<Content: View, ElseContent: View>(
         if condition: Bool,
         transform: (Self) -> Content,
@@ -327,7 +327,7 @@ extension View {
         prism(if: condition, transform: transform, else: `else`)
     }
 
-    /// Aplica transformação condicional com item opcional e else
+    /// Applies conditional transformation with optional item and else.
     public func nova<Content: View, Value, ElseContent: View>(
         item value: Value?,
         transform: (Self, Value) -> Content,

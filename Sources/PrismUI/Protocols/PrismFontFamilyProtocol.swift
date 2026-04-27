@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Protocolo para definição de famílias de fontes.
+/// Protocol for defining font families.
 public protocol PrismFontFamilyProtocol {
     var rawValue: String { get }
 }

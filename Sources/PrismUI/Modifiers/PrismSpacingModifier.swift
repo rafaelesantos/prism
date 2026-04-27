@@ -7,39 +7,39 @@
 
 import SwiftUI
 
-/// Modificador de padding semântico do Design System PrismUI.
+/// Semantic padding modifier for the PrismUI Design System.
 ///
-/// `PrismSpacingModifier` aplica padding usando tokens semânticos:
-/// - Edges configuráveis (`.all`, `.horizontal`, `.vertical`, etc.)
+/// `PrismSpacingModifier` applies padding using semantic tokens:
+/// - Configurable edges (`.all`, `.horizontal`, `.vertical`, etc.)
 /// - Spacing via `PrismSpacing` tokens
-/// - Integração com `theme.spacing` para consistência
+/// - Integration with `theme.spacing` for consistency
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismText("Conteúdo")
-///     .prismPadding()  // .medium em todos os lados
+/// PrismText("Content")
+///     .prismPadding()  // .medium on all sides
 /// ```
 ///
-/// ## Padding Horizontal
+/// ## Horizontal Padding
 /// ```swift
 /// PrismTextField(text: $text)
 ///     .prismPadding(.horizontal, .large)
 /// ```
 ///
-/// ## Padding Personalizado
+/// ## Custom Padding
 /// ```swift
 /// PrismVStack {
-///     PrismText("Título")
-///     PrismText("Conteúdo")
+///     PrismText("Title")
+///     PrismText("Content")
 /// }
 /// .prismPadding(.all, .extraLarge)
 /// ```
 ///
-/// ## Tokens Disponíveis
+/// ## Available Tokens
 /// - `.zero`, `.small`, `.medium`, `.large`, `.extraLarge`, `.extraExtraLarge`
-/// - `.negative(.medium)` - Padding negativo (outdent)
+/// - `.negative(.medium)` - Negative padding (outdent)
 ///
-/// - Note: Use `.negative()` para criar efeitos de sobreposição ou compensar padding pai.
+/// - Note: Use `.negative()` to create overlay effects or compensate for parent padding.
 public struct PrismSpacingModifier: ViewModifier {
     @Environment(\.theme) private var theme
     private let edges: Edge.Set

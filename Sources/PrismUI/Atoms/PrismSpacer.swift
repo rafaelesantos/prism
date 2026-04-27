@@ -8,36 +8,36 @@
 import PrismFoundation
 import SwiftUI
 
-/// Espaçador semântico do Design System PrismUI.
+/// Semantic spacer for the PrismUI Design System.
 ///
-/// `PrismSpacer` é um wrapper do `Spacer` nativo com:
-/// - Comprimento mínimo configurável via `PrismSpacing`
-/// - Integração com o sistema de tokens do tema
-/// - Uso consistente de espaçamento em layouts
+/// `PrismSpacer` is a wrapper around the native `Spacer` with:
+/// - Configurable minimum length via `PrismSpacing`
+/// - Integration with the theme token system
+/// - Consistent spacing usage across layouts
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismHStack {
-///     PrismText("Título")
-///     PrismSpacer()  // Espaçamento flexível
+///     PrismText("Title")
+///     PrismSpacer()  // Flexible spacing
 ///     PrismSymbol("star")
 /// }
 /// ```
 ///
-/// ## Com Tamanho Personalizado
+/// ## With Custom Size
 /// ```swift
 /// PrismVStack {
-///     PrismText("Superior")
-///     PrismSpacer(size: .large)  // Mínimo de 24pt
-///     PrismText("Inferior")
+///     PrismText("Top")
+///     PrismSpacer(size: .large)  // Minimum of 24pt
+///     PrismText("Bottom")
 /// }
 /// ```
 ///
-/// ## Tamanhos Disponíveis
-/// - `.zero` - Sem espaçamento mínimo (padrão)
+/// ## Available Sizes
+/// - `.zero` - No minimum spacing (default)
 /// - `.small`, `.medium`, `.large`, `.extraLarge`, etc.
 ///
-/// - Note: O spacer expande para preencher espaço disponível, mas respeita o mínimo definido.
+/// - Note: The spacer expands to fill available space while respecting the defined minimum.
 public struct PrismSpacer: PrismView {
     @Environment(\.theme) var theme
 

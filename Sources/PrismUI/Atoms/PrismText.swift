@@ -8,36 +8,36 @@
 import PrismFoundation
 import SwiftUI
 
-/// Componente de texto do Design System PrismUI.
+/// Text component for the PrismUI Design System.
 ///
-/// `PrismText` é o componente fundamental para exibição de texto, com suporte a:
-/// - Loading states (skeleton automático)
-/// - Acessibilidade (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) através de testIDs estáveis
-/// - Internacionalização via `LocalizedStringKey`
+/// `PrismText` is the fundamental component for displaying text, with support for:
+/// - Loading states (automatic skeleton)
+/// - Accessibility (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
+/// - Internationalization via `LocalizedStringKey`
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismText("Hello World")
 /// ```
 ///
-/// ## Uso com testID
+/// ## With testID
 /// ```swift
-/// PrismText("Bem-vindo", testID: "welcome_text")
+/// PrismText("Welcome", testID: "welcome_text")
 /// ```
 ///
-/// ## Uso como Header
+/// ## As Header
 /// ```swift
-/// PrismText("Título", testID: "main_header", isHeader: true)
+/// PrismText("Title", testID: "main_header", isHeader: true)
 /// ```
 ///
 /// ## Loading State
 /// ```swift
-/// PrismText("Carregando...")
-///     .prism(loading: true)  // Exibe skeleton
+/// PrismText("Loading...")
+///     .prism(loading: true)  // Displays skeleton
 /// ```
 ///
-/// - Note: Quando `isLoading` está ativo, o texto exibe automaticamente um skeleton.
+/// - Note: When `isLoading` is active, the text automatically displays a skeleton.
 public struct PrismText: PrismView {
     @Environment(\.isLoading) private var isLoading
 
@@ -70,7 +70,7 @@ public struct PrismText: PrismView {
         self.accessibility = accessibility
     }
 
-    /// Inicialização rápida com builder de acessibilidade
+    /// Quick initializer with accessibility builder.
     public init(
         _ text: String?,
         accessibility: (PrismAccessibilityConfig) -> PrismAccessibilityConfig
@@ -79,7 +79,7 @@ public struct PrismText: PrismView {
         self.accessibility = accessibility(PrismAccessibilityConfig()).build()
     }
 
-    /// Inicialização com conveniência estática
+    /// Initializer with static convenience.
     public init(
         _ text: LocalizedStringKey,
         testID: String,

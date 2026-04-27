@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Protocolo base para entidades Codable com logging integrado.
+/// Base protocol for Codable entities with integrated logging.
 public protocol PrismEntity:
     Codable,
     Equatable,

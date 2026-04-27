@@ -5,5 +5,5 @@
 //  Created by Rafael Escaleira on 12/04/25.
 //
 
-/// Protocolo marcador para ações do store.
+/// A marker protocol for store actions.
 public protocol PrismAction: Sendable {}

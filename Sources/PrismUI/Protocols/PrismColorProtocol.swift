@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Protocolo para definição de cores semânticas do tema.
+/// Protocol for defining semantic theme colors.
 public protocol PrismColorProtocol: Sendable {
     // MARK: - Brand Colors
     var primary: Color { get set }

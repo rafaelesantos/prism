@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Protocolo para formatação de datas com suporte a DateFormatter.
+/// A protocol for date formatting with DateFormatter support.
 public protocol PrismDateFormatter {
     var rawValue: DateFormatter { get }
 

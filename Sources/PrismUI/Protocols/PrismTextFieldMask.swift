@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Protocolo para máscara de campos de texto.
+/// Protocol for text field masks.
 public protocol PrismTextFieldMask {
     var rawValues: [String]? { get }
 }

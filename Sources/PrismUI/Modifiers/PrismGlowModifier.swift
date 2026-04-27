@@ -7,33 +7,33 @@
 
 import SwiftUI
 
-/// Modificador de efeito glow (brilho animado) do Design System PrismUI.
+/// Animated glow effect modifier for the PrismUI Design System.
 ///
-/// `PrismGlowModifier` aplica um brilho animado com gradiente angular:
-/// - Animação contínua de gradiente angular (6s por ciclo)
-/// - Cores dinâmicas baseadas no tema ou cor personalizada
-/// - Blur de 20pt para efeito suave
-/// - Ideal para estados de destaque ou celebração
+/// `PrismGlowModifier` applies an animated glow with angular gradient:
+/// - Continuous angular gradient animation (6s per cycle)
+/// - Dynamic colors based on theme or custom color
+/// - 20pt blur for a soft effect
+/// - Ideal for highlight or celebration states
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismText("Destaque")
+/// PrismText("Highlight")
 ///     .prismGlow()
 /// ```
 ///
-/// ## Com Cor Personalizada
+/// ## With Custom Color
 /// ```swift
 /// PrismSymbol("star.fill")
 ///     .prismGlow(for: .yellow)
 /// ```
 ///
-/// ## Efeito
-/// O glow usa um gradiente angular animado que:
-/// - Gira 360° continuamente
-/// - Alterna entre cor principal e 60% de opacidade
-/// - Cria efeito de "luz em movimento"
+/// ## Effect
+/// The glow uses an animated angular gradient that:
+/// - Rotates 360 degrees continuously
+/// - Alternates between main color and 60% opacity
+/// - Creates a "moving light" effect
 ///
-/// - Note: O modifier usa `TimelineView` para animação suave e eficiente.
+/// - Note: The modifier uses `TimelineView` for smooth and efficient animation.
 public struct PrismGlowModifier: ViewModifier {
     @Environment(\.theme) var theme
     let color: Color?

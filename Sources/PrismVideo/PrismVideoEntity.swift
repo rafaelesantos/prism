@@ -8,17 +8,18 @@
 import AVFoundation
 import PrismFoundation
 
-/// Entidade representando metadados de um vídeo.
-public struct PrismVideoEntity {
-    public var id: UUID { .init() }
-    var url: URL
-    var title: String
-    var duration: TimeInterval?
-    var resolution: PrismVideoResolution?
-    var type: AVFileType
-    var thumb: URL?
+/// Entity representing video metadata.
+public struct PrismVideoEntity: Identifiable, Equatable, Hashable, Sendable {
+    public let id: UUID
+    public var url: URL
+    public var title: String
+    public var duration: TimeInterval?
+    public var resolution: PrismVideoResolution?
+    public var type: AVFileType
+    public var thumb: URL?
 
     public init(
+        id: UUID = UUID(),
         url: URL,
         title: String,
         duration: TimeInterval? = nil,
@@ -26,6 +27,7 @@ public struct PrismVideoEntity {
         type: AVFileType = .mp4,
         thumb: URL? = nil
     ) {
+        self.id = id
         self.url = url
         self.title = title
         self.duration = duration

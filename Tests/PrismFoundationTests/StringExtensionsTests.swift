@@ -39,6 +39,6 @@ struct StringExtensionsTests {
     func substringStableHashMatchesItsContent() {
         let value = "Prism".dropFirst()
 
-        #expect(value.stableHash == "yze".stableHash)
+        #expect(value.stableHash == "rism".stableHash)
     }
 }

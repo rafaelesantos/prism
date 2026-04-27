@@ -7,7 +7,7 @@
 
 import AVFoundation
 
-/// Downloader de vídeo com streaming de progresso via AVAssetExportSession.
+/// Video downloader that streams progress updates via AVAssetExportSession.
 public actor PrismVideoDownloader {
     private var videoURL: URL
     private var videoName: String

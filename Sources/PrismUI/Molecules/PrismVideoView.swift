@@ -9,25 +9,25 @@ import AVFoundation
 import AVKit
 import SwiftUI
 
-/// Componente de reprodução de vídeo do Design System PrismUI.
+/// Video playback component for the PrismUI Design System.
 ///
-/// `PrismVideoView` é um wrapper de `AVPlayer` com:
-/// - Carregamento assíncrono de URL de vídeo
-/// - Suporte a Picture in Picture (PiP)
-/// - Controles nativos de plataforma
-/// - Transição de escala ao aparecer
-/// - Multi-plataforma (iOS, tvOS, macOS)
+/// `PrismVideoView` is an `AVPlayer` wrapper with:
+/// - Asynchronous video URL loading
+/// - Picture in Picture (PiP) support
+/// - Native platform controls
+/// - Scale transition on appearance
+/// - Multi-platform support (iOS, tvOS, macOS)
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var videoURL: URL?
 /// PrismVideoView(url: $videoURL)
 /// ```
 ///
-/// ## Com Trigger de Reprodução
+/// ## With Playback Trigger
 /// ```swift
 /// PrismVStack {
-///     PrismPrimaryButton("Assistir") {
+///     PrismPrimaryButton("Watch") {
 ///         videoURL = URL(string: "https://example.com/video.mp4")
 ///     }
 ///     PrismVideoView(url: $videoURL)
@@ -35,14 +35,14 @@ import SwiftUI
 /// ```
 ///
 /// ## Picture in Picture
-/// - **iOS/tvOS**: Suporte automático via `canStartPictureInPictureAutomaticallyFromInline`
-/// - **macOS**: Suporte via `allowsPictureInPicturePlayback`
+/// - **iOS/tvOS**: Automatic support via `canStartPictureInPictureAutomaticallyFromInline`
+/// - **macOS**: Support via `allowsPictureInPicturePlayback`
 ///
-/// ## Comportamento por Plataforma
-/// - **iOS/tvOS**: `AVPlayerViewController` com controles touch
-/// - **macOS**: `AVPlayerView` com controles de desktop
+/// ## Platform Behavior
+/// - **iOS/tvOS**: `AVPlayerViewController` with touch controls
+/// - **macOS**: `AVPlayerView` with desktop controls
 ///
-/// - Note: O player é criado automaticamente quando `url` é definido.
+/// - Note: The player is automatically created when `url` is set.
 public struct PrismVideoView: View {
     @State private var player: AVPlayer?
     @Binding private var url: URL?

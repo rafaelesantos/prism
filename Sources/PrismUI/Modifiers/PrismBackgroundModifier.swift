@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-/// Modificador de background padrão do Design System PrismUI.
+/// Default background modifier for the PrismUI Design System.
 ///
-/// `PrismBackgroundModifier` aplica a cor de background do tema:
-/// - Usa `theme.color.background` para consistência
-/// - Integração automática com light/dark mode
+/// `PrismBackgroundModifier` applies the theme background color:
+/// - Uses `theme.color.background` for consistency
+/// - Automatic integration with light/dark mode
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismVStack {
-///     PrismText("Conteúdo")
+///     PrismText("Content")
 /// }
 /// .prismBackground()
 /// ```
 ///
-/// - Note: Use como raíz de telas para garantir background consistente.
+/// - Note: Use as the root of screens to ensure consistent background.
 public struct PrismBackgroundModifier: ViewModifier {
     @Environment(\.theme) private var theme
 

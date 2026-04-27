@@ -7,23 +7,23 @@
 
 import SwiftUI
 
-/// Modificador de background para rows do Design System PrismUI.
+/// Row background modifier for the PrismUI Design System.
 ///
-/// `PrismBackgroundRowModifier` aplica background adaptativo para rows de lista:
-/// - Dark mode: Usa `backgroundSecondary` para contraste
-/// - Light mode: Usa `background` padrão
-/// - Ideal para rows selecionáveis ou destacáveis
+/// `PrismBackgroundRowModifier` applies adaptive background for list rows:
+/// - Dark mode: Uses `backgroundSecondary` for contrast
+/// - Light mode: Uses default `background`
+/// - Ideal for selectable or highlightable rows
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismHStack {
 ///     PrismSymbol("gear")
-///     PrismText("Configurações")
+///     PrismText("Settings")
 /// }
 /// .prismBackgroundRow()
 /// ```
 ///
-/// - Note: O modifier lê `colorScheme` do ambiente para determinar o background apropriado.
+/// - Note: The modifier reads `colorScheme` from the environment to determine the appropriate background.
 public struct PrismBackgroundRowModifier: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
 

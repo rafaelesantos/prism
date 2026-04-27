@@ -8,17 +8,17 @@
 import PrismFoundation
 import SwiftUI
 
-/// Campo de texto estilizado do Design System PrismUI.
+/// Styled text field for the PrismUI Design System.
 ///
-/// `PrismTextField` é um componente de input de texto com:
-/// - Label flutuante (animação automática ao focar/digitar)
-/// - Validação integrada com exibição de erros
-/// - Ícone opcional
-/// - Botão de limpar (aparece ao digitar)
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismTextField` is a text input component with:
+/// - Floating label (automatic animation on focus/typing)
+/// - Integrated validation with error display
+/// - Optional icon
+/// - Clear button (appears when typing)
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var email = ""
 /// PrismTextField(
@@ -27,7 +27,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com testID
+/// ## With testID
 /// ```swift
 /// PrismTextField(
 ///     text: $email,
@@ -37,27 +37,27 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com Builder de Acessibilidade
+/// ## With Accessibility Builder
 /// ```swift
 /// PrismTextField(
 ///     text: $email,
 ///     configuration: .email,
 ///     accessibility: {
 ///         $0.label("Email")
-///             .hint("Digite seu email corporativo")
+///             .hint("Enter your corporate email")
 ///             .testID("email_field")
 ///     }
 /// )
 /// ```
 ///
-/// ## Validação Automática
-/// O campo valida automaticamente baseado na configuração:
-/// - `.email` - Valida formato de email
-/// - `.phone` - Valida formato de telefone
-/// - `.cpf` - Valida CPF brasileiro
+/// ## Automatic Validation
+/// The field validates automatically based on the configuration:
+/// - `.email` - Validates email format
+/// - `.phone` - Validates phone format
+/// - `.cpf` - Validates Brazilian CPF
 /// - etc.
 ///
-/// - Note: Erros são exibidos automaticamente abaixo do campo com ícone e mensagem.
+/// - Note: Errors are automatically displayed below the field with an icon and message.
 public struct PrismTextField: PrismView {
     @Environment(\.theme) var theme
     @FocusState var isFocused: Bool
@@ -79,7 +79,7 @@ public struct PrismTextField: PrismView {
         self.configuration = configuration
     }
 
-    /// Inicialização rápida com conveniência de acessibilidade
+    /// Quick initializer with accessibility convenience.
     public init(
         text: Binding<String>,
         configuration: PrismTextFieldConfiguration,
@@ -90,7 +90,7 @@ public struct PrismTextField: PrismView {
         self.accessibility = accessibility(PrismAccessibilityConfig()).build()
     }
 
-    /// Inicialização com conveniência estática
+    /// Initializer with static convenience.
     public init(
         text: Binding<String>,
         label: LocalizedStringKey,

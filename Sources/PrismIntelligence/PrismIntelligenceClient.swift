@@ -8,34 +8,64 @@
 import Foundation
 import PrismFoundation
 
-/// Tipo de backend de inteligência.
+/// The kind of intelligence backend.
 public enum PrismIntelligenceBackendKind: String, Codable, Sendable, CaseIterable {
+    /// On-device inference using a Core ML or CreateML model artifact.
     case local
+    /// Apple Intelligence via the FoundationModels framework.
     case apple
+    /// A remote language model accessed over the network.
     case remote
 }
 
-/// Capacidades de um backend de inteligência.
+/// Capabilities of an intelligence backend.
 public enum PrismIntelligenceCapability: String, Codable, Sendable, CaseIterable {
+    /// Classifying free-form text into discrete labels.
     case textClassification
+    /// Classifying tabular feature rows into discrete labels.
     case tabularClassification
+    /// Predicting a continuous numeric value from tabular features.
     case tabularRegression
+    /// Generating natural-language text from a prompt.
     case languageGeneration
 }
 
-/// Status de disponibilidade e capacidades de um backend.
+/// Availability status and capabilities of a backend.
 public struct PrismIntelligenceStatus: Codable, Equatable, Hashable, Sendable {
+    /// The kind of backend this status describes.
     public var backend: PrismIntelligenceBackendKind
+    /// Whether the backend is ready to accept requests.
     public var isAvailable: Bool
+    /// A human-readable explanation when the backend is unavailable.
     public var reason: String?
+    /// The set of capabilities the backend supports.
     public var capabilities: [PrismIntelligenceCapability]
+    /// The identifier of the model served by this backend, if applicable.
     public var modelID: String?
+    /// The display name of the model, if applicable.
     public var modelName: String?
+    /// The language-intelligence provider kind, for Apple or remote backends.
     public var provider: PrismLanguageIntelligenceProviderKind?
+    /// Whether the backend supports streaming responses.
     public var supportsStreaming: Bool
+    /// Whether the backend supports custom system instructions.
     public var supportsCustomInstructions: Bool
+    /// Whether the backend supports model adapters.
     public var supportsModelAdapters: Bool
 
+    /// Creates a new backend status.
+    ///
+    /// - Parameters:
+    ///   - backend: The kind of backend.
+    ///   - isAvailable: Whether the backend is ready.
+    ///   - reason: An optional explanation when unavailable.
+    ///   - capabilities: The supported capabilities.
+    ///   - modelID: An optional model identifier.
+    ///   - modelName: An optional model display name.
+    ///   - provider: An optional language-intelligence provider kind.
+    ///   - supportsStreaming: Whether streaming is supported.
+    ///   - supportsCustomInstructions: Whether custom instructions are supported.
+    ///   - supportsModelAdapters: Whether model adapters are supported.
     public init(
         backend: PrismIntelligenceBackendKind,
         isAvailable: Bool,
@@ -61,21 +91,33 @@ public struct PrismIntelligenceStatus: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-/// Requisição de inteligência (classificação, regressão ou geração).
+/// An intelligence request (classification, regression, or generation).
 public enum PrismIntelligenceRequest: Sendable, Equatable {
+    /// Classify free-form text into a label.
     case classifyText(String)
+    /// Classify a tabular feature row into label probabilities.
     case classifyFeatures(PrismIntelligenceFeatureRow)
+    /// Predict a continuous value from a tabular feature row.
     case regressFeatures(PrismIntelligenceFeatureRow)
+    /// Generate natural-language text from a language request.
     case generate(PrismLanguageIntelligenceRequest)
 }
 
-/// Resposta de inteligência.
+/// An intelligence response.
 public enum PrismIntelligenceResponse: Sendable, Equatable {
+    /// A predicted text label from a text classifier.
     case textClassification(String)
+    /// Label probabilities from a tabular classifier.
     case tabularClassification([String: Double])
+    /// A predicted continuous value from a tabular regressor.
     case tabularRegression(Double)
+    /// A generated language response.
     case language(PrismLanguageIntelligenceResponse)
 
+    /// The textual content of the response, if applicable.
+    ///
+    /// Returns the classification label for ``textClassification`` or the generated
+    /// content for ``language``. Returns `nil` for tabular results.
     public var text: String? {
         switch self {
         case .textClassification(let value):
@@ -108,7 +150,25 @@ internal protocol PrismLanguageIntelligenceServing: Sendable {
 extension PrismIntelligencePrediction: PrismIntelligenceLocalServing {}
 extension PrismLanguageIntelligence: PrismLanguageIntelligenceServing {}
 
-/// Fachada unificada para inteligência: local, Apple e remoto.
+/// A unified facade for intelligence: local, Apple, and remote.
+///
+/// `PrismIntelligenceClient` is the primary entry point for running predictions and
+/// generating text. Create a client with one of the factory methods, then call
+/// ``status()``, ``classify(text:)``, ``regress(features:)-5v8wn``, or ``generate(_:)-4kb7s``.
+///
+/// ```swift
+/// // Local text classification
+/// let client = try await PrismIntelligenceClient.local(modelID: "sentiment")
+/// let label = try await client.classify(text: "I love this product!")
+///
+/// // Apple Intelligence generation
+/// let apple = PrismIntelligenceClient.apple()
+/// let answer = try await apple.generate("Summarize quantum computing.")
+///
+/// // Remote provider generation
+/// let remote = PrismIntelligenceClient.remote(endpoint: url)
+/// let response = try await remote.generate("Hello, world!")
+/// ```
 public actor PrismIntelligenceClient {
     private enum Backend {
         case local(
@@ -125,6 +185,12 @@ public actor PrismIntelligenceClient {
 
     private let backend: Backend
 
+    /// Creates a client backed by an on-device Core ML model.
+    ///
+    /// - Parameters:
+    ///   - model: The intelligence model descriptor.
+    ///   - fileManager: The file manager used to resolve model artifacts.
+    /// - Returns: A configured ``PrismIntelligenceClient`` for local inference.
     public static func local(
         model: PrismIntelligenceModel,
         fileManager: PrismFileManager = .init()
@@ -140,6 +206,14 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by an on-device model resolved from the catalog by identifier.
+    ///
+    /// - Parameters:
+    ///   - modelID: The unique identifier of the model in the catalog.
+    ///   - catalog: The catalog to search.
+    ///   - fileManager: The file manager used to resolve model artifacts.
+    /// - Returns: A configured ``PrismIntelligenceClient`` for local inference.
+    /// - Throws: ``PrismIntelligenceError/modelNotFound(_:)`` if the identifier is not in the catalog.
     public static func local(
         modelID: String,
         catalog: PrismIntelligenceCatalog = .init(),
@@ -155,6 +229,10 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by Apple Intelligence via the FoundationModels framework.
+    ///
+    /// - Parameter configuration: The Apple Intelligence configuration (model reference and instructions).
+    /// - Returns: A configured ``PrismIntelligenceClient`` for Apple Intelligence generation.
     public static func apple(
         configuration: PrismAppleIntelligenceConfiguration = .init()
     ) -> PrismIntelligenceClient {
@@ -170,6 +248,19 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by a remote language model endpoint.
+    ///
+    /// Uses the default serializer (``PrismDefaultRemoteIntelligenceSerializer``) to encode
+    /// requests and decode responses.
+    ///
+    /// - Parameters:
+    ///   - endpoint: The URL of the remote inference endpoint.
+    ///   - model: An optional model identifier sent to the remote API.
+    ///   - providerName: A label for the remote provider, used in response metadata.
+    ///   - headers: Additional HTTP headers included with every request.
+    ///   - timeout: The request timeout interval in seconds.
+    ///   - transport: The networking transport used to perform HTTP requests.
+    /// - Returns: A configured ``PrismIntelligenceClient`` for remote generation.
     public static func remote(
         endpoint: URL,
         model: String? = nil,
@@ -192,6 +283,12 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by a remote language model using a custom serializer.
+    ///
+    /// - Parameters:
+    ///   - serializer: A serializer that converts requests and responses for the remote API.
+    ///   - transport: The networking transport used to perform HTTP requests.
+    /// - Returns: A configured ``PrismIntelligenceClient`` for remote generation.
     public static func remote(
         serializer: any PrismRemoteIntelligenceSerializer,
         transport: any PrismRemoteIntelligenceTransport = PrismURLSessionRemoteIntelligenceTransport()
@@ -209,6 +306,12 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by a custom language-intelligence provider.
+    ///
+    /// The backend kind is inferred from ``PrismLanguageIntelligenceProvider/kind``.
+    ///
+    /// - Parameter provider: A conforming language-intelligence provider.
+    /// - Returns: A configured ``PrismIntelligenceClient``.
     public static func provider(
         _ provider: any PrismLanguageIntelligenceProvider
     ) -> PrismIntelligenceClient {
@@ -252,6 +355,9 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Returns the current availability status and capabilities of the backend.
+    ///
+    /// - Returns: A ``PrismIntelligenceStatus`` describing availability and supported capabilities.
     public func status() async -> PrismIntelligenceStatus {
         switch backend {
         case .local(let model, let fileManager, _):
@@ -290,6 +396,14 @@ public actor PrismIntelligenceClient {
         }
     }
 
+    /// Executes an intelligence request and returns the corresponding response.
+    ///
+    /// This method dispatches to the appropriate prediction or generation method
+    /// based on the request case.
+    ///
+    /// - Parameter request: The intelligence request to execute.
+    /// - Returns: A ``PrismIntelligenceResponse`` matching the request type.
+    /// - Throws: ``PrismIntelligenceError`` if the operation is unsupported or fails.
     public func execute(
         _ request: PrismIntelligenceRequest
     ) async throws -> PrismIntelligenceResponse {
@@ -313,6 +427,11 @@ public actor PrismIntelligenceClient {
         }
     }
 
+    /// Classifies free-form text into a label using the local model.
+    ///
+    /// - Parameter text: The text to classify.
+    /// - Returns: The predicted label.
+    /// - Throws: ``PrismIntelligenceError/unsupportedOperation(_:)`` if the backend is not local.
     public func classify(
         text: String
     ) async throws -> String {
@@ -326,6 +445,11 @@ public actor PrismIntelligenceClient {
         }
     }
 
+    /// Classifies a tabular feature row into label probabilities using the local model.
+    ///
+    /// - Parameter features: A dictionary of feature names to values.
+    /// - Returns: A dictionary mapping labels to their predicted probabilities.
+    /// - Throws: ``PrismIntelligenceError/unsupportedOperation(_:)`` if the backend is not local.
     public func classify(
         features: PrismIntelligenceFeatureRow
     ) async throws -> [String: Double] {
@@ -339,6 +463,13 @@ public actor PrismIntelligenceClient {
         }
     }
 
+    /// Classifies an untyped feature dictionary into label probabilities.
+    ///
+    /// The dictionary values are converted to ``PrismIntelligenceFeatureValue`` automatically.
+    ///
+    /// - Parameter features: A dictionary of feature names to untyped values.
+    /// - Returns: A dictionary mapping labels to their predicted probabilities.
+    /// - Throws: ``PrismIntelligenceError/unsupportedInput(_:)`` if conversion fails.
     public func classify(
         features: [String: Any]
     ) async throws -> [String: Double] {
@@ -351,6 +482,11 @@ public actor PrismIntelligenceClient {
         return try await classify(features: converted)
     }
 
+    /// Predicts a continuous value from a tabular feature row using the local model.
+    ///
+    /// - Parameter features: A dictionary of feature names to values.
+    /// - Returns: The predicted numeric value.
+    /// - Throws: ``PrismIntelligenceError/unsupportedOperation(_:)`` if the backend is not local.
     public func regress(
         features: PrismIntelligenceFeatureRow
     ) async throws -> Double {
@@ -364,6 +500,13 @@ public actor PrismIntelligenceClient {
         }
     }
 
+    /// Predicts a continuous value from an untyped feature dictionary.
+    ///
+    /// The dictionary values are converted to ``PrismIntelligenceFeatureValue`` automatically.
+    ///
+    /// - Parameter features: A dictionary of feature names to untyped values.
+    /// - Returns: The predicted numeric value.
+    /// - Throws: ``PrismIntelligenceError/unsupportedInput(_:)`` if conversion fails.
     public func regress(
         features: [String: Any]
     ) async throws -> Double {
@@ -376,6 +519,19 @@ public actor PrismIntelligenceClient {
         return try await regress(features: converted)
     }
 
+    /// Generates text from a prompt string using the language backend.
+    ///
+    /// This is a convenience wrapper that builds a ``PrismLanguageIntelligenceRequest``
+    /// and returns just the response content.
+    ///
+    /// - Parameters:
+    ///   - prompt: The user prompt.
+    ///   - systemPrompt: An optional system-level instruction.
+    ///   - context: Additional context strings prepended to the prompt.
+    ///   - options: Generation options such as temperature and token limits.
+    ///   - metadata: Arbitrary key-value metadata forwarded to the provider.
+    /// - Returns: The generated text content.
+    /// - Throws: ``PrismIntelligenceError/unsupportedOperation(_:)`` if the backend is local.
     public func generate(
         _ prompt: String,
         systemPrompt: String? = nil,
@@ -396,6 +552,11 @@ public actor PrismIntelligenceClient {
         return response.content
     }
 
+    /// Generates a full language response from a structured request.
+    ///
+    /// - Parameter request: The language-intelligence request.
+    /// - Returns: A ``PrismLanguageIntelligenceResponse`` containing the generated content and metadata.
+    /// - Throws: ``PrismIntelligenceError/unsupportedOperation(_:)`` if the backend is local.
     public func generate(
         _ request: PrismLanguageIntelligenceRequest
     ) async throws -> PrismLanguageIntelligenceResponse {

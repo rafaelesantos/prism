@@ -36,12 +36,17 @@ private final class PrismNetworkRedirectCaptureDelegate: NSObject, URLSessionTas
     }
 }
 
-/// Adapter HTTP thread-safe baseado em URLSession com suporte a cache e redirect.
+/// A thread-safe HTTP adapter built on URLSession with cache and redirect support.
 public actor PrismNetworkAdapter: PrismNetworkClient {
     private let session: URLSession
     private let sessionConfiguration: URLSessionConfiguration
     private let cache: URLCache
 
+    /// Creates a new network adapter with the given session configuration and cache.
+    ///
+    /// - Parameters:
+    ///   - configuration: The URL session configuration to use. Defaults to `.default`.
+    ///   - cache: The URL cache for storing responses. Defaults to `.shared`.
     public init(
         configuration: URLSessionConfiguration = .default,
         cache: URLCache = .shared
@@ -53,6 +58,13 @@ public actor PrismNetworkAdapter: PrismNetworkClient {
         self.session = URLSession(configuration: configuration)
     }
 
+    /// Executes an HTTP request, returning cached data when available or fetching from the network.
+    ///
+    /// - Parameters:
+    ///   - request: The type-safe request to perform.
+    ///   - formatter: An optional date formatter used for decoding the response.
+    /// - Returns: The decoded response matching the request's associated `Response` type.
+    /// - Throws: ``PrismNetworkError`` if the request fails or the response is invalid.
     public func request<Request>(
         on request: Request,
         with formatter: DateFormatter?
@@ -104,6 +116,11 @@ public actor PrismNetworkAdapter: PrismNetworkClient {
         )
     }
 
+    /// Follows an HTTP redirect and returns the final destination URL without downloading the body.
+    ///
+    /// - Parameter request: The request whose endpoint may trigger a redirect.
+    /// - Returns: The redirect destination URL.
+    /// - Throws: ``PrismNetworkError/invalidResponse`` if no redirect is found.
     public func redirect<Request: PrismNetworkRequest>(
         from request: Request
     ) async throws -> URL {

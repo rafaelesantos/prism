@@ -9,41 +9,41 @@ import SwiftUI
 
 // MARK: - PrismTag
 
-/// Uma tag/badge estilizada do Design System PrismUI.
+/// A styled tag/badge for the PrismUI Design System.
 ///
-/// `PrismTag` é usada para exibir labels categorizados com estilos visuais distintos.
-/// Suporta ícones, botão de fechar, e múltiplos estilos (filled, outlined, success, error, etc.).
+/// `PrismTag` displays categorized labels with distinct visual styles.
+/// Supports icons, close button, and multiple styles (filled, outlined, success, error, etc.).
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismTag("Swift")
 /// ```
 ///
-/// ## Com testID
+/// ## With testID
 /// ```swift
 /// PrismTag("Swift", testID: "language_tag")
 /// ```
 ///
-/// ## Com Ícone
+/// ## With Icon
 /// ```swift
 /// PrismTag("Swift", icon: "swift")
 /// ```
 ///
-/// ## Closable (com botão de fechar)
+/// ## Closable (with close button)
 /// ```swift
 /// PrismTag("Tag", onClose: { isPresented = false })
 /// ```
 ///
-/// ## Estilos Disponíveis
-/// - `.filled` - Preenchido com cor primária
-/// - `.outlined` - Apenas borda
-/// - `.ghost` - Sem fundo, texto secundário
-/// - `.success`, `.error`, `.warning`, `.info` - Cores semânticas
+/// ## Available Styles
+/// - `.filled` - Filled with primary color
+/// - `.outlined` - Border only
+/// - `.ghost` - No background, secondary text
+/// - `.success`, `.error`, `.warning`, `.info` - Semantic colors
 ///
-/// ## Tamanhos Disponíveis
+/// ## Available Sizes
 /// - `.small`, `.medium`, `.large`
 ///
-/// - Note: Tags com `onClose` exibem automaticamente um botão "x" para dismiss.
+/// - Note: Tags with `onClose` automatically display an "x" button for dismissal.
 public struct PrismTag: PrismView {
     @Environment(\.theme) private var theme
 

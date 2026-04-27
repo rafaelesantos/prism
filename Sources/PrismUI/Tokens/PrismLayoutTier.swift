@@ -7,12 +7,16 @@
 
 import SwiftUI
 
-/// Tiers de layout: compact, regular, expansive.
+/// Layout tiers: compact, regular, expansive.
 public enum PrismLayoutTier: String, CaseIterable, Equatable, Sendable {
+    /// Compact tier for phone-sized viewports.
     case compact
+    /// Regular tier for tablet-sized viewports.
     case regular
+    /// Expansive tier for desktop-sized viewports.
     case expansive
 
+    /// The recommended SwiftUI `ControlSize` for this layout tier.
     public var controlSize: ControlSize {
         switch self {
         case .compact:
@@ -24,6 +28,7 @@ public enum PrismLayoutTier: String, CaseIterable, Equatable, Sendable {
         }
     }
 
+    /// The horizontal content padding in points for this layout tier.
     public var horizontalPadding: CGFloat {
         switch self {
         case .compact:
@@ -35,6 +40,7 @@ public enum PrismLayoutTier: String, CaseIterable, Equatable, Sendable {
         }
     }
 
+    /// The vertical content padding in points for this layout tier.
     public var verticalPadding: CGFloat {
         switch self {
         case .compact:

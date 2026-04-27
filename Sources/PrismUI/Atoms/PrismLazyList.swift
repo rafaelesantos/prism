@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-/// Lista com lazy loading do Design System PrismUI.
+/// Lazy loading list for the PrismUI Design System.
 ///
-/// `PrismLazyList` é uma lista com carregamento preguiçoso:
-/// - Usa `LazyVStack` para performance em listas longas
-/// - Scroll vertical automático
-/// - Padding automático nas bordas
-/// - Espaçamento semântico via `PrismSpacing`
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismLazyList` is a lazily loaded list:
+/// - Uses `LazyVStack` for performance with long lists
+/// - Automatic vertical scrolling
+/// - Automatic edge padding
+/// - Semantic spacing via `PrismSpacing`
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismLazyList {
 ///     ForEach(items) { item in
@@ -26,7 +26,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismLazyList(testID: "items_list") {
 ///     ForEach(items) { item in
@@ -35,7 +35,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// - Note: Ideal para listas longas onde performance é crítica.
+/// - Note: Ideal for long lists where performance is critical.
 public struct PrismLazyList: PrismView {
     @Environment(\.theme) var theme
     let content: any View

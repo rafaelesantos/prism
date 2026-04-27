@@ -7,30 +7,30 @@
 
 import SwiftUI
 
-/// Modificador de estado de loading (skeleton) do Design System PrismUI.
+/// Loading state (skeleton) modifier for the PrismUI Design System.
 ///
-/// `PrismSkeletonModifier` aplica efeito de skeleton quando `isLoading` está ativo:
-/// - Usa `.redacted(reason: .placeholder)` para efeito nativo
-/// - Transição `.blurReplace` para animação suave
-/// - Animação configurada via `theme.animation`
+/// `PrismSkeletonModifier` applies a skeleton effect when `isLoading` is active:
+/// - Uses `.redacted(reason: .placeholder)` for native effect
+/// - `.blurReplace` transition for smooth animation
+/// - Animation configured via `theme.animation`
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismText("Conteúdo")
-///     .prismSkeleton()  // Aplica skeleton quando isLoading = true
+/// PrismText("Content")
+///     .prismSkeleton()  // Applies skeleton when isLoading = true
 /// ```
 ///
-/// ## Com Estado de Loading
+/// ## With Loading State
 /// ```swift
 /// @State var isLoading = true
 /// PrismVStack {
-///     PrismText("Título")
-///     PrismText("Descrição")
+///     PrismText("Title")
+///     PrismText("Description")
 /// }
 /// .prism(loading: isLoading)
 /// ```
 ///
-/// - Note: O modifier lê o ambiente `\.isLoading` para determinar o estado.
+/// - Note: The modifier reads the `\.isLoading` environment to determine the state.
 public struct PrismSkeletonModifier: ViewModifier {
     @Environment(\.theme) private var theme
     @Environment(\.isLoading) private var isLoading

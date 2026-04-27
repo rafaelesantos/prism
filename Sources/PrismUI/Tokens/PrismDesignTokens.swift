@@ -9,48 +9,114 @@ import SwiftUI
 
 // MARK: - Token Types
 
-/// Token de espaçamento do design system.
+/// Design system spacing token.
 public enum SpacingToken: CaseIterable, Sendable {
-    case none, extraSmall, small, medium, large, extraLarge, ultraLarge, section
+    /// No spacing (0pt).
+    case none
+    /// Extra-small spacing (4pt default).
+    case extraSmall
+    /// Small spacing (8pt default).
+    case small
+    /// Medium spacing (16pt default).
+    case medium
+    /// Large spacing (24pt default).
+    case large
+    /// Extra-large spacing (32pt default).
+    case extraLarge
+    /// Ultra-large spacing (48pt default).
+    case ultraLarge
+    /// Section-level spacing (64pt default).
+    case section
 }
 
-/// Token de raio de borda do design system.
+/// Design system border radius token.
 public enum RadiusToken: CaseIterable, Sendable {
-    case none, small, medium, large, extraLarge, circle
+    /// No rounding (sharp corners).
+    case none
+    /// Small corner radius (4pt default).
+    case small
+    /// Medium corner radius (8pt default).
+    case medium
+    /// Large corner radius (16pt default).
+    case large
+    /// Extra-large corner radius (24pt default).
+    case extraLarge
+    /// Fully circular radius (infinity).
+    case circle
 }
 
-/// Tamanhos de fonte do design system.
+/// Design system font sizes.
 public enum FontSizeToken: CaseIterable, Sendable {
-    case caption2, caption, footnote, body, title3, title2, title, largeTitle
+    /// Smallest caption text (11pt default).
+    case caption2
+    /// Caption text (12pt default).
+    case caption
+    /// Footnote text (13pt default).
+    case footnote
+    /// Body text (16pt default).
+    case body
+    /// Third-level title (18pt default).
+    case title3
+    /// Second-level title (20pt default).
+    case title2
+    /// Primary title (24pt default).
+    case title
+    /// Large display title (32pt default).
+    case largeTitle
 }
 
-/// Durações de animação do design system.
+/// Design system animation durations.
 public enum MotionToken: CaseIterable, Sendable {
-    case instant, fast, normal, slow
+    /// Near-instantaneous animation (0.05s default).
+    case instant
+    /// Fast animation (0.15s default).
+    case fast
+    /// Standard animation (0.3s default).
+    case normal
+    /// Slow, deliberate animation (0.5s default).
+    case slow
 }
 
 // MARK: - Design Tokens
 
-/// Coleção de tokens de design: espaçamento, raio, fontes, animações e breakpoints.
+/// Collection of design tokens: spacing, radius, fonts, animations, and breakpoints.
 public struct PrismDesignTokens: Equatable, Sendable {
 
     // MARK: - Spacing Scale (8pt grid system)
+
+    /// Spacing scale mapping each ``SpacingToken`` to a point value following the 8pt grid system.
     public let spacing: [SpacingToken: CGFloat]
 
     // MARK: - Radius Scale
+
+    /// Radius scale mapping each ``RadiusToken`` to a point value.
     public let radius: [RadiusToken: CGFloat]
 
     // MARK: - Font Sizes (Dynamic Type base)
+
+    /// Font size scale mapping each ``FontSizeToken`` to a base point size for Dynamic Type.
     public let fontSizes: [FontSizeToken: CGFloat]
 
     // MARK: - Motion Durations
+
+    /// Animation duration scale mapping each ``MotionToken`` to a time interval in seconds.
     public let durations: [MotionToken: TimeInterval]
 
     // MARK: - Breakpoints
+
+    /// Responsive breakpoint widths mapping each ``Breakpoint`` to a minimum width in points.
     public let breakpoints: [Breakpoint: CGFloat]
 
     // MARK: - Initialization
 
+    /// Creates a design token collection with the given scales.
+    ///
+    /// - Parameters:
+    ///   - spacing: Spacing scale dictionary. Defaults to ``defaultSpacing``.
+    ///   - radius: Radius scale dictionary. Defaults to ``defaultRadius``.
+    ///   - fontSizes: Font size scale dictionary. Defaults to ``defaultFontSizes``.
+    ///   - durations: Motion duration dictionary. Defaults to ``defaultDurations``.
+    ///   - breakpoints: Responsive breakpoint dictionary. Defaults to ``defaultBreakpoints``.
     public init(
         spacing: [SpacingToken: CGFloat] = defaultSpacing,
         radius: [RadiusToken: CGFloat] = defaultRadius,
@@ -67,8 +133,10 @@ public struct PrismDesignTokens: Equatable, Sendable {
 
     // MARK: - Default Values
 
+    /// The standard design token configuration using all default values.
     public static let `default` = PrismDesignTokens()
 
+    /// A compact token variant with tighter spacing and smaller radii for dense layouts.
     public static var compact: PrismDesignTokens {
         PrismDesignTokens(
             spacing: [
@@ -102,6 +170,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
         )
     }
 
+    /// An expanded token variant with larger spacing, radii, and font sizes for spacious layouts.
     public static var expanded: PrismDesignTokens {
         PrismDesignTokens(
             spacing: [
@@ -143,6 +212,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
 
     // MARK: - Default Configurations
 
+    /// Default spacing scale based on an 8pt grid system.
     public static let defaultSpacing: [SpacingToken: CGFloat] = [
         .none: 0,
         .extraSmall: 4,
@@ -154,6 +224,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
         .section: 64,
     ]
 
+    /// Default border radius scale.
     public static let defaultRadius: [RadiusToken: CGFloat] = [
         .none: 0,
         .small: 4,
@@ -163,6 +234,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
         .circle: .infinity,
     ]
 
+    /// Default font size scale aligned with Dynamic Type base sizes.
     public static let defaultFontSizes: [FontSizeToken: CGFloat] = [
         .caption2: 11,
         .caption: 12,
@@ -174,6 +246,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
         .largeTitle: 32,
     ]
 
+    /// Default animation duration scale in seconds.
     public static let defaultDurations: [MotionToken: TimeInterval] = [
         .instant: 0.05,
         .fast: 0.15,
@@ -181,6 +254,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
         .slow: 0.5,
     ]
 
+    /// Default responsive breakpoint widths in points.
     public static let defaultBreakpoints: [Breakpoint: CGFloat] = [
         .phoneCompact: 375,
         .phoneMax: 430,
@@ -191,30 +265,37 @@ public struct PrismDesignTokens: Equatable, Sendable {
 
     // MARK: - Convenience Accessors
 
+    /// Returns the spacing value for the given token, falling back to `0` if not found.
     public func spacing(for token: SpacingToken) -> CGFloat {
         spacing[token] ?? 0
     }
 
+    /// Returns the radius value for the given token, falling back to `0` if not found.
     public func radius(for token: RadiusToken) -> CGFloat {
         radius[token] ?? 0
     }
 
+    /// Returns the font size for the given token, falling back to `16` if not found.
     public func fontSize(for token: FontSizeToken) -> CGFloat {
         fontSizes[token] ?? 16
     }
 
+    /// Returns the animation duration for the given token, falling back to `0.3` if not found.
     public func duration(for token: MotionToken) -> TimeInterval {
         durations[token] ?? 0.3
     }
 
+    /// Returns an `easeInOut` SwiftUI animation configured with the duration of the given token.
     public func animation(for token: MotionToken) -> Animation {
         .easeInOut(duration: duration(for: token))
     }
 
+    /// Returns the minimum width for the given breakpoint, falling back to `0` if not found.
     public func breakpoint(for breakpoint: Breakpoint) -> CGFloat {
         breakpoints[breakpoint] ?? 0
     }
 
+    /// Determines the ``PrismLayoutTier`` for the given viewport width based on configured breakpoints.
     public func layoutTier(for width: CGFloat) -> PrismLayoutTier {
         let tabletCompact = breakpoint(for: .tabletCompact)
         let desktop = breakpoint(for: .desktop)
@@ -232,11 +313,16 @@ public struct PrismDesignTokens: Equatable, Sendable {
 
 // MARK: - Breakpoint
 
-/// Breakpoints de layout responsivo.
+/// Responsive layout breakpoints.
 public enum Breakpoint: CaseIterable, Sendable {
+    /// Small phone viewport (375pt default).
     case phoneCompact
+    /// Large phone viewport (430pt default).
     case phoneMax
+    /// Compact tablet viewport (768pt default).
     case tabletCompact
+    /// Full-size tablet viewport (1024pt default).
     case tabletMax
+    /// Desktop viewport (1440pt default).
     case desktop
 }

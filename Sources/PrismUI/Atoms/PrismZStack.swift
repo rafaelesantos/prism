@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-/// Container em camadas (z-axis) do Design System PrismUI.
+/// Layered container (z-axis) for the PrismUI Design System.
 ///
-/// `PrismZStack` é um wrapper do `ZStack` nativo com:
-/// - Empilhamento de views em profundidade (eixo Z)
-/// - Alinhamento configurável
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismZStack` is a wrapper around the native `ZStack` with:
+/// - Depth stacking of views (Z axis)
+/// - Configurable alignment
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismZStack {
 ///     PrismShape(.rectangle)
@@ -24,7 +24,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismZStack(
 ///     alignment: .topLeading,
@@ -35,12 +35,12 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Alinhamentos Disponíveis
+/// ## Available Alignments
 /// - `.topLeading`, `.top`, `.topTrailing`
 /// - `.leading`, `.center`, `.trailing`
 /// - `.bottomLeading`, `.bottom`, `.bottomTrailing`
 ///
-/// - Note: Views são empilhadas na ordem declarada (primeira view no fundo).
+/// - Note: Views are stacked in declaration order (first view at the back).
 public struct PrismZStack: PrismView {
     let alignment: Alignment
     let content: any View

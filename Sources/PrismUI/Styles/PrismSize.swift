@@ -7,24 +7,40 @@
 
 import SwiftUI
 
-/// Tamanhos do design system.
+/// Design system sizes.
 public indirect enum PrismSize {
+    /// No size (returns `nil`).
     case none
+    /// Ultra-small size.
     case ultraSmall
+    /// Ultra-small secondary size.
     case ultraSmall2
+    /// Extra-small size.
     case extraSmall
+    /// Extra-small secondary size.
     case extraSmall2
+    /// Small size.
     case small
+    /// Small secondary size.
     case small2
+    /// Medium size.
     case medium
+    /// Medium secondary size.
     case medium2
+    /// Large size.
     case large
+    /// Large secondary size.
     case large2
+    /// Extra-large size.
     case extraLarge
+    /// Extra-large secondary size.
     case extraLarge2
+    /// Ultra-large size.
     case ultraLarge
+    /// Maximum available size.
     case max
 
+    /// Resolves this token to a concrete point value using the given size protocol, or `nil` for ``none``.
     func rawValue(for theme: PrismSizeProtocol) -> CGFloat? {
         switch self {
         case .none: return nil

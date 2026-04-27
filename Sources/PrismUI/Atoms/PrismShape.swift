@@ -7,32 +7,32 @@
 
 import SwiftUI
 
-/// Shape personalizado do Design System PrismUI.
+/// Custom shape for the PrismUI Design System.
 ///
-/// `PrismShape` é um wrapper de `Shape` que fornece formas geométricas comuns:
-/// - Círculo perfeito
-/// - Cápsula (retângulo com cantos totalmente arredondados)
-/// - Retângulo com raio personalizado
-/// - Compatível com `.clipShape()` e `.background()`
+/// `PrismShape` is a `Shape` wrapper that provides common geometric shapes:
+/// - Perfect circle
+/// - Capsule (fully rounded rectangle)
+/// - Rectangle with custom corner radius
+/// - Compatible with `.clipShape()` and `.background()`
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismShape(.circle)
 ///     .prism(background: .primary)
 /// ```
 ///
-/// ## Como Clip Shape
+/// ## As Clip Shape
 /// ```swift
 /// PrismImage("photo")
 ///     .prism(clip: .rounded(radius: 12))
 /// ```
 ///
-/// ## Formas Disponíveis
-/// - `.circle` - Círculo perfeito
-/// - `.capsule` - Cápsula (pill shape)
-/// - `.rounded(radius: CGFloat)` - Retângulo com raio personalizado
+/// ## Available Shapes
+/// - `.circle` - Perfect circle
+/// - `.capsule` - Capsule (pill shape)
+/// - `.rounded(radius: CGFloat)` - Rectangle with custom corner radius
 ///
-/// - Note: Use com `prism(clip:)` ou `prism(background:)` para aplicar formas.
+/// - Note: Use with `prism(clip:)` or `prism(background:)` to apply shapes.
 public struct PrismShape: Shape {
     var base: @Sendable (CGRect) -> Path
 

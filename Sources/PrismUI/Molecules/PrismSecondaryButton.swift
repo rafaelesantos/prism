@@ -8,57 +8,57 @@
 import PrismFoundation
 import SwiftUI
 
-/// Botão secundário do Design System PrismUI.
+/// Secondary button for the PrismUI Design System.
 ///
-/// `PrismSecondaryButton` é o botão para ações secundárias:
-/// - Estilo bordered (borda com fundo semi-transparente)
-/// - Cor primária do tema (ou erro para papel destrutivo)
-/// - Tamanho grande (.large) com borda em cápsula
-/// - Glass effect regular interativo
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismSecondaryButton` is the button for secondary actions:
+/// - Bordered style (border with semi-transparent background)
+/// - Theme primary color (or error for destructive role)
+/// - Large size (.large) with capsule border
+/// - Interactive regular glass effect
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismSecondaryButton("Cancelar") {
-///     // Ação de cancelamento
+/// PrismSecondaryButton("Cancel") {
+///     // Cancel action
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismSecondaryButton(
-///     "Voltar",
+///     "Go Back",
 ///     testID: "back_button"
 /// ) {
-///     // Navegar para tela anterior
+///     // Navigate to previous screen
 /// }
 /// ```
 ///
-/// ## Com Papel Destrutivo
+/// ## With Destructive Role
 /// ```swift
 /// PrismSecondaryButton(
-///     "Sair sem salvar",
+///     "Discard Changes",
 ///     role: .destructive
 /// ) {
-///     // Descartar alterações
+///     // Discard changes
 /// }
 /// ```
 ///
-/// ## Com String Localizada
+/// ## With Localized String
 /// ```swift
 /// PrismSecondaryButton(.prismPreviewTitle) {
-///     // Ação secundária
+///     // Secondary action
 /// }
 /// ```
 ///
-/// ## Roles Disponíveis
-/// - `.none` - Cor primária padrão
-/// - `.destructive` - Cor de erro (vermelho)
-/// - `.cancel` - Cor primária (para ações de cancelamento)
+/// ## Available Roles
+/// - `.none` - Default primary color
+/// - `.destructive` - Error color (red)
+/// - `.cancel` - Primary color (for cancel actions)
 ///
-/// - Note: O botão usa automaticamente `.bordered` buttonStyle com `.glassEffect(.regular.interactive())`.
-/// - Important: Use para ações secundárias que não são o foco principal da tela.
+/// - Note: The button automatically uses `.bordered` buttonStyle with `.glassEffect(.regular.interactive())`.
+/// - Important: Use for secondary actions that are not the main focus of the screen.
 public struct PrismSecondaryButton: PrismView {
     let content: PrismTextContent?
     let role: ButtonRole?

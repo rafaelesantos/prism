@@ -8,18 +8,28 @@
 import PrismFoundation
 import SwiftUI
 
-/// Implementação padrão do tema Prism.
+/// Default implementation of the Prism theme.
 public struct PrismTheme: PrismThemeProtocol, Sendable {
+    /// The color palette for the theme.
     public var color: PrismColorProtocol
+    /// The spacing scale for the theme.
     public var spacing: PrismSpacingProtocol
+    /// The border radius scale for the theme.
     public var radius: PrismRadiusProtocol
+    /// The component size scale for the theme.
     public var size: PrismSizeProtocol
+    /// The locale used for localized resources.
     public var locale: PrismLocale
+    /// The default animation curve applied to interactive transitions.
     public var animation: Animation?
+    /// The haptic feedback style triggered on interactions.
     public var feedback: SensoryFeedback
+    /// An explicit color scheme override, or `nil` to follow the system.
     public var colorScheme: ColorScheme?
+    /// The design token collection backing spacing, radius, font, and motion values.
     public var tokens: PrismDesignTokens
 
+    /// Creates a theme with the given configuration values.
     public init(
         color: PrismColorProtocol = PrismDefaultColor(),
         spacing: PrismSpacingProtocol = PrismDefaultSpacing(),
@@ -42,10 +52,12 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         self.tokens = tokens
     }
 
+    /// The standard light-mode theme with default tokens.
     public static var `default`: PrismTheme {
         PrismTheme()
     }
 
+    /// A dark-mode theme variant using ``PrismDefaultColor/dark``.
     public static var dark: PrismTheme {
         PrismTheme(
             color: PrismDefaultColor.dark,
@@ -53,6 +65,7 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         )
     }
 
+    /// A high-contrast theme variant for improved accessibility.
     public static var highContrast: PrismTheme {
         PrismTheme(
             color: PrismDefaultColor.highContrast,
@@ -61,14 +74,17 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         )
     }
 
+    /// A compact theme variant using ``PrismDesignTokens/compact`` tokens.
     public static var compact: PrismTheme {
         PrismTheme(tokens: .compact)
     }
 
+    /// An expanded theme variant using ``PrismDesignTokens/expanded`` tokens.
     public static var expanded: PrismTheme {
         PrismTheme(tokens: .expanded)
     }
 
+    /// Returns a copy of this theme with a different color palette.
     public func with(color: PrismColorProtocol) -> PrismTheme {
         PrismTheme(
             color: color,
@@ -83,6 +99,7 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         )
     }
 
+    /// Returns a copy of this theme with a different color scheme override.
     public func with(colorScheme: ColorScheme?) -> PrismTheme {
         PrismTheme(
             color: color,
@@ -97,6 +114,7 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         )
     }
 
+    /// Returns a copy of this theme with a different animation curve.
     public func with(animation: Animation?) -> PrismTheme {
         PrismTheme(
             color: color,
@@ -111,6 +129,7 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
         )
     }
 
+    /// Returns a copy of this theme with a different design token collection.
     public func with(tokens: PrismDesignTokens) -> PrismTheme {
         PrismTheme(
             color: color,
@@ -127,6 +146,7 @@ public struct PrismTheme: PrismThemeProtocol, Sendable {
 }
 
 extension PrismThemeProtocol {
+    /// Type-erases any ``PrismThemeProtocol`` conformance into a concrete ``PrismTheme``.
     public func eraseToAnyTheme() -> PrismTheme {
         PrismTheme(
             color: color,

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Tela adaptativa que aplica margens e largura legível conforme a plataforma.
+/// Adaptive screen that applies margins and readable width based on the platform.
 public struct PrismAdaptiveScreen<Content: View>: View {
     @Environment(\.platformContext) private var platformContext
 

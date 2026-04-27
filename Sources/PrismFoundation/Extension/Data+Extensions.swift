@@ -8,10 +8,18 @@
 import Foundation
 
 extension Data {
+    /// The UTF-8 decoded string representation of the data.
     public var string: String {
         String(decoding: self, as: UTF8.self)
     }
 
+    /// Decodes the data into a `Decodable` entity using JSON decoding.
+    ///
+    /// - Parameters:
+    ///   - type: The type to decode.
+    ///   - formatter: An optional date formatter for date decoding strategy. If `nil`, the default strategy is used.
+    /// - Returns: A decoded instance of `T`.
+    /// - Throws: A `DecodingError` if the data cannot be decoded into the given type.
     public func entity<T: Decodable>(
         for type: T.Type,
         with formatter: DateFormatter? = nil
@@ -22,6 +30,10 @@ extension Data {
         return try jsonDecoder.decode(T.self, from: self)
     }
 
+    /// Splits the data into ranges delimited by the given ASCII scalar.
+    ///
+    /// - Parameter code: The ASCII scalar to use as a delimiter.
+    /// - Returns: An array of ranges representing each field between delimiters.
     public func fieldRanges(for code: Unicode.Scalar) -> [Range<Data.Index>] {
         guard code.isASCII else { return [startIndex..<endIndex] }
 
@@ -43,6 +55,10 @@ extension Data {
         return ranges
     }
 
+    /// Parses an integer from the raw ASCII bytes within the given range.
+    ///
+    /// - Parameter range: The byte range to parse.
+    /// - Returns: The parsed `Int`, or `nil` if the bytes do not represent a valid integer.
     public func int(in range: Range<Index>) -> Int? {
         guard !range.isEmpty else { return nil }
 
@@ -67,6 +83,12 @@ extension Data {
         return isNegative ? -value : value
     }
 
+    /// Parses a double from the raw ASCII bytes within the given range.
+    ///
+    /// Supports both `.` and `,` as decimal separators.
+    ///
+    /// - Parameter range: The byte range to parse.
+    /// - Returns: The parsed `Double`, or `nil` if the bytes do not represent a valid number.
     public func double(in range: Range<Index>) -> Double? {
         guard !range.isEmpty else { return nil }
 
@@ -112,6 +134,10 @@ extension Data {
         return isNegative ? -value : value
     }
 
+    /// Returns the single byte within the given range, or `nil` if the range does not contain exactly one byte.
+    ///
+    /// - Parameter range: The byte range to read.
+    /// - Returns: The byte value, or `nil` if the range is empty or spans more than one byte.
     public func byte(in range: Range<Index>) -> UInt8? {
         guard !range.isEmpty else { return nil }
         let next = index(after: range.lowerBound)
@@ -119,6 +145,12 @@ extension Data {
         return self[range.lowerBound]
     }
 
+    /// Checks whether the bytes in the given range are equal to the provided ASCII string.
+    ///
+    /// - Parameters:
+    ///   - ascii: The ASCII string to compare against.
+    ///   - range: The byte range within the data to compare.
+    /// - Returns: `true` if the bytes match exactly.
     public func equalsASCII(_ ascii: StaticString, in range: Range<Index>) -> Bool {
         let bytes = ascii.withUTF8Buffer { buffer in
             Array(buffer)
@@ -142,6 +174,10 @@ extension Data {
         return true
     }
 
+    /// Checks whether the data begins with the given ASCII string.
+    ///
+    /// - Parameter ascii: The ASCII prefix to check for.
+    /// - Returns: `true` if the data starts with the given bytes.
     public func hasPrefixASCII(_ ascii: StaticString) -> Bool {
         guard !isEmpty else { return ascii.utf8CodeUnitCount == 0 }
 
@@ -165,6 +201,10 @@ extension Data {
         return true
     }
 
+    /// Decodes the bytes in the given range as a UTF-8 string.
+    ///
+    /// - Parameter range: The byte range to decode.
+    /// - Returns: The decoded string, or `nil` if the bytes are not valid UTF-8.
     public func string(in range: Range<Index>) -> String? {
         String(data: self[range], encoding: .utf8)
     }

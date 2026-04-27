@@ -8,7 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
-/// Cor semântica do design system como ShapeStyle.
+/// Semantic design system color as ShapeStyle.
 public struct PrismColor: ShapeStyle, @unchecked Sendable {
     private enum Storage {
         case themed(KeyPath<PrismColorProtocol, Color>)
@@ -21,10 +21,12 @@ public struct PrismColor: ShapeStyle, @unchecked Sendable {
         self.storage = .themed(keyPath)
     }
 
+    /// Creates a color from a fixed `Color` value, bypassing theme resolution.
     public init(rawValue: Color) {
         self.storage = .custom(rawValue)
     }
 
+    /// Resolves this semantic color into a concrete `Color` using the current environment's theme.
     public func resolve(in environment: EnvironmentValues) -> some ShapeStyle {
         switch storage {
         case .themed(let keyPath):
@@ -34,6 +36,7 @@ public struct PrismColor: ShapeStyle, @unchecked Sendable {
         }
     }
 
+    /// Returns the resolved `Color` for the given theme color protocol.
     public func color(using theme: PrismColorProtocol) -> Color {
         switch storage {
         case .themed(let keyPath):

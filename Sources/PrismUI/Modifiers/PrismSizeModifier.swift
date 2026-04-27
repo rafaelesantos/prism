@@ -7,37 +7,37 @@
 
 import SwiftUI
 
-/// Modificador de tamanho do Design System PrismUI.
+/// Size modifier for the PrismUI Design System.
 ///
-/// `PrismSizeModifier` aplica dimensões usando tokens semânticos:
-/// - Largura e altura via `PrismSize` tokens
-/// - Suporte a `.max` para preenchimento total
-/// - Alinhamento configurável
-/// - Integração com `theme.size` para consistência
+/// `PrismSizeModifier` applies dimensions using semantic tokens:
+/// - Width and height via `PrismSize` tokens
+/// - `.max` support for full fill
+/// - Configurable alignment
+/// - Integration with `theme.size` for consistency
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismShape(.circle)
 ///     .prism(width: .large, height: .large)
 /// ```
 ///
-/// ## Largura Máxima
+/// ## Maximum Width
 /// ```swift
 /// PrismTextField(text: $text)
-///     .prism(width: .max)  // Ocupa toda largura disponível
+///     .prism(width: .max)  // Takes full available width
 /// ```
 ///
-/// ## Tamanho Fixo
+/// ## Fixed Size
 /// ```swift
 /// PrismSymbol("star")
 ///     .prism(width: .medium, height: .medium)
 /// ```
 ///
-/// ## Tamanhos Disponíveis
+/// ## Available Sizes
 /// - `.small`, `.medium`, `.large`, `.extraLarge`, `.extraExtraLarge`
-/// - `.max` - Preenchimento máximo
+/// - `.max` - Maximum fill
 ///
-/// - Note: O modifier combina múltiplos `.frame()` calls para suportar `.max` corretamente.
+/// - Note: The modifier combines multiple `.frame()` calls to properly support `.max`.
 public struct PrismSizeModifier: ViewModifier {
     @Environment(\.theme) var theme
 

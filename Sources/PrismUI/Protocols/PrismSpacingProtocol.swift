@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Protocolo para definição de espaçamento do tema.
+/// Protocol for defining theme spacing.
 public protocol PrismSpacingProtocol: Sendable {
     var none: CGFloat { get }
     var extraSmall: CGFloat { get }

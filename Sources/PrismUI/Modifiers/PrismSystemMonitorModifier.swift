@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - PrismSystemMonitor
 
-/// Monitor de sistema (CPU, memória).
+/// System monitor (CPU, memory).
 public struct PrismSystemMonitor: Sendable {
     public var cpuPercentageUsage: Double
     public var cpuTotalPercentage: Double

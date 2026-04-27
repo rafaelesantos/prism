@@ -8,34 +8,34 @@
 import PrismFoundation
 import SwiftUI
 
-/// Texto de nota de rodapé do Design System PrismUI.
+/// Footnote text component for the PrismUI Design System.
 ///
-/// `PrismFootnoteText` é um componente de texto pré-estilizado para conteúdo secundário:
-/// - Fonte footnote (menor que body)
-/// - Cor de texto secundária automática
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismFootnoteText` is a pre-styled text component for secondary content:
+/// - Footnote font (smaller than body)
+/// - Automatic secondary text color
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismFootnoteText("Informação adicional ou descrição secundária.")
+/// PrismFootnoteText("Additional information or secondary description.")
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismFootnoteText(
-///     "Última atualização: hoje",
+///     "Last updated: today",
 ///     testID: "last_update_label"
 /// )
 /// ```
 ///
-/// ## Com String Localizada
+/// ## With Localized String
 /// ```swift
 /// PrismFootnoteText(PrismUIString.prismPreviewDescription)
 /// ```
 ///
-/// - Note: Este componente usa automaticamente `.footnote` font e `.textSecondary` color do tema.
-/// - Important: Ideal para legendas, descrições auxiliares e metadados.
+/// - Note: This component automatically uses `.footnote` font and `.textSecondary` color from the theme.
+/// - Important: Ideal for captions, auxiliary descriptions, and metadata.
 public struct PrismFootnoteText: PrismView {
     let content: PrismTextContent?
     public var accessibility: PrismAccessibilityProperties?

@@ -8,23 +8,23 @@
 import PrismFoundation
 import SwiftUI
 
-/// Campo de texto para valores monetários do Design System PrismUI.
+/// Currency text field for the PrismUI Design System.
 ///
-/// `PrismCurrencyTextField` é um input especializado para valores de moeda:
-/// - Formatação automática no formato monetário (ex: R$ 1.234,56)
-/// - Binding em `Double` para valor numérico
-/// - Máscara de digitação em tempo real
-/// - Locale configurável para diferentes moedas
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismCurrencyTextField` is a specialized input for currency values:
+/// - Automatic currency formatting (e.g., R$ 1.234,56)
+/// - `Double` binding for the numeric value
+/// - Real-time input masking
+/// - Configurable locale for different currencies
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var amount: Double = 0
 /// PrismCurrencyTextField(amount: $amount)
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismCurrencyTextField(
 ///     amount: $amount,
@@ -32,7 +32,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com Locale Personalizado
+/// ## With Custom Locale
 /// ```swift
 /// PrismCurrencyTextField(
 ///     amount: $amount,
@@ -40,8 +40,8 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// - Note: O campo formata automaticamente enquanto o usuário digita.
-/// - Important: O binding armazena o valor numérico (Double), não o texto formatado.
+/// - Note: The field formats automatically as the user types.
+/// - Important: The binding stores the numeric value (Double), not the formatted text.
 public struct PrismCurrencyTextField: PrismView {
     @Binding var amount: Double
     @State var text: String = ""

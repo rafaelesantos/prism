@@ -7,34 +7,34 @@
 
 import SwiftUI
 
-/// Container horizontal de layouts do Design System PrismUI.
+/// Horizontal layout container for the PrismUI Design System.
 ///
-/// `PrismHStack` é um wrapper do `HStack` nativo com:
-/// - Espaçamento semântico via `PrismSpacing`
-/// - Suporte a acessibilidade (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
-/// - Integração com o sistema de temas Prism
+/// `PrismHStack` is a wrapper around the native `HStack` with:
+/// - Semantic spacing via `PrismSpacing`
+/// - Accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
+/// - Integration with the Prism theming system
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismHStack {
 ///     PrismSymbol("star")
-///     PrismText("Avaliação")
+///     PrismText("Rating")
 /// }
 /// ```
 ///
-/// ## Com Espaçamento Personalizado
+/// ## With Custom Spacing
 /// ```swift
 /// PrismHStack(spacing: .small) {
 ///     PrismAvatar()
 ///     PrismVStack {
-///         PrismText("Nome")
-///         PrismText("Cargo")
+///         PrismText("Name")
+///         PrismText("Title")
 ///     }
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismHStack(
 ///     alignment: .center,
@@ -42,14 +42,14 @@ import SwiftUI
 ///     testID: "user_info_row"
 /// ) {
 ///     PrismSymbol("person.circle")
-///     PrismText("Perfil", testID: "profile_label")
+///     PrismText("Profile", testID: "profile_label")
 /// }
 /// ```
 ///
-/// ## Alinhamentos Disponíveis
+/// ## Available Alignments
 /// - `.top`, `.center`, `.bottom`, `.firstTextBaseline`, `.lastTextBaseline`
 ///
-/// - Note: O espaçamento usa o sistema de tokens do tema para consistência visual.
+/// - Note: Spacing uses the theme token system for visual consistency.
 public struct PrismHStack: PrismView {
     @Environment(\.theme) private var theme
 

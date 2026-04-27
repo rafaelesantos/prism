@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-/// Protocolo base para erros tipados com descrição, motivo e sugestão de recuperação.
+/// Base protocol for typed errors with description, failure reason, and recovery suggestion.
 public protocol PrismError:
     Error,
     CustomStringConvertible,

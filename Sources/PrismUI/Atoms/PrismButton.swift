@@ -7,33 +7,33 @@
 
 import SwiftUI
 
-/// Um botão estilizado do Design System PrismUI.
+/// A styled button for the PrismUI Design System.
 ///
-/// `PrismButton` é o componente base para botões interativos, com suporte nativo a
-/// acessibilidade (VoiceOver/TalkBack) e testes de UI (XCUITest) através de testIDs estáveis.
+/// `PrismButton` is the base component for interactive buttons, with native support for
+/// accessibility (VoiceOver/TalkBack) and UI testing (XCUITest) via stable testIDs.
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismButton("Entrar", testID: "login_button") {
-///     // ação de login
+/// PrismButton("Sign In", testID: "login_button") {
+///     // login action
 /// }
 /// ```
 ///
-/// ## Uso com Builder de Acessibilidade
+/// ## With Accessibility Builder
 /// ```swift
 /// PrismButton(
 ///     accessibility: {
-///         $0.label("Entrar")
-///             .hint("Toque para fazer login")
+///         $0.label("Sign In")
+///             .hint("Tap to sign in")
 ///             .testID("login_button")
 ///     }
 /// ) {
-///     PrismText("Entrar")
+///     PrismText("Sign In")
 /// }
 /// ```
 ///
-/// - Important: Para testes de UI, sempre forneça um `testID` único e estável.
-/// - Note: O botão possui feedback tátil (haptic) no iOS.
+/// - Important: For UI testing, always provide a unique and stable `testID`.
+/// - Note: The button provides haptic feedback on iOS.
 public struct PrismButton: PrismView {
     let role: ButtonRole?
     let action: () async -> Void
@@ -42,12 +42,12 @@ public struct PrismButton: PrismView {
 
     // MARK: - Initialization
 
-    /// Inicialização padrão com propriedades de acessibilidade explícitas.
+    /// Default initializer with explicit accessibility properties.
     /// - Parameters:
-    ///   - accessibility: Propriedades de acessibilidade opcionais.
-    ///   - role: Papel do botão (`.none`, `.cancel`, `.destructive`).
-    ///   - action: Ação assíncrona executada ao tocar.
-    ///   - label: Conteúdo visual do botão.
+    ///   - accessibility: Optional accessibility properties.
+    ///   - role: Button role (`.none`, `.cancel`, `.destructive`).
+    ///   - action: Async action performed on tap.
+    ///   - label: Visual content of the button.
     public init(
         accessibility: PrismAccessibilityProperties? = nil,
         role: ButtonRole? = .none,
@@ -60,12 +60,12 @@ public struct PrismButton: PrismView {
         self.label = label()
     }
 
-    /// Inicialização com propriedades de acessibilidade como primeiro parâmetro.
+    /// Initializer with accessibility properties as the first parameter.
     /// - Parameters:
-    ///   - accessibility: Propriedades de acessibilidade opcionais.
-    ///   - role: Papel do botão (`.none`, `.cancel`, `.destructive`).
-    ///   - action: Ação assíncrona executada ao tocar.
-    ///   - label: Conteúdo visual do botão.
+    ///   - accessibility: Optional accessibility properties.
+    ///   - role: Button role (`.none`, `.cancel`, `.destructive`).
+    ///   - action: Async action performed on tap.
+    ///   - label: Visual content of the button.
     public init(
         _ accessibility: PrismAccessibilityProperties? = nil,
         role: ButtonRole? = .none,
@@ -78,12 +78,12 @@ public struct PrismButton: PrismView {
         self.label = label()
     }
 
-    /// Inicialização rápida com builder de acessibilidade.
+    /// Quick initializer with accessibility builder.
     /// - Parameters:
-    ///   - role: Papel do botão (`.none`, `.cancel`, `.destructive`).
-    ///   - action: Ação assíncrona executada ao tocar.
-    ///   - label: Conteúdo visual do botão.
-    ///   - accessibility: Closure que configura `PrismAccessibilityConfig`.
+    ///   - role: Button role (`.none`, `.cancel`, `.destructive`).
+    ///   - action: Async action performed on tap.
+    ///   - label: Visual content of the button.
+    ///   - accessibility: Closure that configures `PrismAccessibilityConfig`.
     public init(
         role: ButtonRole? = .none,
         action: @escaping () async -> Void,
@@ -96,13 +96,13 @@ public struct PrismButton: PrismView {
         self.label = label()
     }
 
-    /// Inicialização rápida com conveniência estática para acessibilidade.
+    /// Quick initializer with static accessibility convenience.
     /// - Parameters:
-    ///   - label: Texto do botão (LocalizedStringKey).
-    ///   - testID: Identificador único para testes de UI (NÃO localizável).
-    ///   - role: Papel do botão (`.none`, `.cancel`, `.destructive`).
-    ///   - hint: Dica adicional para VoiceOver (opcional).
-    ///   - action: Ação assíncrona executada ao tocar.
+    ///   - label: Button text (LocalizedStringKey).
+    ///   - testID: Unique identifier for UI testing (non-localizable).
+    ///   - role: Button role (`.none`, `.cancel`, `.destructive`).
+    ///   - hint: Additional VoiceOver hint (optional).
+    ///   - action: Async action performed on tap.
     public init(
         _ label: LocalizedStringKey,
         testID: String,

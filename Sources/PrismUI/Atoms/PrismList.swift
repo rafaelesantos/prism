@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-/// Lista de rows do Design System PrismUI.
+/// Row list for the PrismUI Design System.
 ///
-/// `PrismList` é um wrapper do `List` nativo com:
-/// - Suporte a seleção múltipla opcional
-/// - Integração com `PrismSection` para agrupamentos
-/// - Estilo consistente com o Design System
+/// `PrismList` is a wrapper around the native `List` with:
+/// - Optional multiple selection support
+/// - Integration with `PrismSection` for grouping
+/// - Consistent Design System styling
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismList {
 ///     PrismSection {
@@ -24,7 +24,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com Seleção
+/// ## With Selection
 /// ```swift
 /// @State var selected: Set<String> = []
 /// PrismList(selection: $selected) {
@@ -35,7 +35,7 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// - Note: Use `PrismSection` dentro da lista para agrupar conteúdo com header/footer.
+/// - Note: Use `PrismSection` inside the list to group content with header/footer.
 public struct PrismList<SelectionValue: Hashable>: PrismView {
     let content: any View
     let selection: Binding<Set<SelectionValue>>?

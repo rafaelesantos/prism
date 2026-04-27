@@ -8,41 +8,41 @@
 import PrismFoundation
 import SwiftUI
 
-/// Label com ícone e texto do Design System PrismUI.
+/// Label with icon and text for the PrismUI Design System.
 ///
-/// `PrismLabel` é um wrapper do `Label` nativo com:
-/// - Símbolo SF Symbols integrado
-/// - Suporte a estado de loading (skeleton automático)
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismLabel` is a wrapper around the native `Label` with:
+/// - Integrated SF Symbols icon
+/// - Loading state support (automatic skeleton)
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismLabel("Configurações", symbol: "gear")
+/// PrismLabel("Settings", symbol: "gear")
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismLabel(
-///     "Notificações",
+///     "Notifications",
 ///     testID: "notifications_label",
 ///     symbol: "bell"
 /// )
 /// ```
 ///
-/// ## Com Estado de Loading
+/// ## With Loading State
 /// ```swift
 /// @State var isLoading = true
 /// PrismLabel("Status", symbol: "checkmark")
-///     .prism(loading: isLoading)  // Exibe skeleton
+///     .prism(loading: isLoading)  // Displays skeleton
 /// ```
 ///
-/// ## Com String Localizada
+/// ## With Localized String
 /// ```swift
 /// PrismLabel(PrismUIString.prismPreviewTitle, symbol: "star")
 /// ```
 ///
-/// - Note: Quando `isLoading` está ativo, o label exibe automaticamente um skeleton.
+/// - Note: When `isLoading` is active, the label automatically displays a skeleton.
 public struct PrismLabel: PrismView {
     @Environment(\.isLoading) private var isLoading
 

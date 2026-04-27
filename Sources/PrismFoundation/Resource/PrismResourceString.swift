@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Protocolo para strings localizáveis.
+/// A protocol for localizable strings.
 public protocol PrismResourceString {
     var localized: LocalizedStringKey { get }
     var value: String { get }

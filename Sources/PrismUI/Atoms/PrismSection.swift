@@ -8,50 +8,50 @@
 import PrismFoundation
 import SwiftUI
 
-/// Seção de lista do Design System PrismUI.
+/// List section for the PrismUI Design System.
 ///
-/// `PrismSection` é um wrapper do `Section` nativo com:
-/// - Header e footer opcionais
-/// - Suporte a strings localizadas via `PrismResourceString`
-/// - Header automático em uppercase para estilo de lista
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismSection` is a wrapper around the native `Section` with:
+/// - Optional header and footer
+/// - Localized string support via `PrismResourceString`
+/// - Automatic uppercase header for list styling
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismSection {
-///     PrismBodyText("Conteúdo da seção")
+///     PrismBodyText("Section content")
 /// }
 /// ```
 ///
-/// ## Com Header e Footer
+/// ## With Header and Footer
 /// ```swift
 /// PrismSection(
 ///     header: PrismUIString.sectionTitle,
 ///     footer: PrismUIString.sectionDescription
 /// ) {
-///     PrismBodyText("Conteúdo")
+///     PrismBodyText("Content")
 /// }
 /// ```
 ///
-/// ## Com Header Personalizado
+/// ## With Custom Header
 /// ```swift
 /// PrismSection {
-///     PrismBodyText("Conteúdo")
+///     PrismBodyText("Content")
 /// } header: {
-///     PrismText("Título")
+///     PrismText("Title")
 ///         .prism(font: .headline)
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismSection(testID: "settings_section") {
-///     PrismBodyText("Configurações")
+///     PrismBodyText("Settings")
 /// }
 /// ```
 ///
-/// - Note: O header automático usa `.footnote` font e `.textSecondary` color em uppercase.
+/// - Note: The automatic header uses `.footnote` font and `.textSecondary` color in uppercase.
 public struct PrismSection: PrismView {
     let header: any View
     let content: any View

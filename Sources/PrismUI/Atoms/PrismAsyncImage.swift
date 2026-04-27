@@ -7,22 +7,22 @@
 
 import SwiftUI
 
-/// Componente de imagem assíncrona do Design System PrismUI.
+/// Asynchronous image component for the PrismUI Design System.
 ///
-/// `PrismAsyncImage` carrega e exibe imagens de URLs remotas com:
-/// - Cache automático de imagens (configurável via cacheInterval)
-/// - Placeholder personalizável durante o carregamento
-/// - Animação suave de aparecimento (opcional)
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismAsyncImage` loads and displays images from remote URLs with:
+/// - Automatic image caching (configurable via cacheInterval)
+/// - Customizable placeholder during loading
+/// - Smooth appearance animation (optional)
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// PrismAsyncImage("https://example.com/image.jpg")
 ///     .prism(width: .large)
 /// ```
 ///
-/// ## Com Placeholder Personalizado
+/// ## With Custom Placeholder
 /// ```swift
 /// PrismAsyncImage(
 ///     "https://example.com/avatar.jpg",
@@ -33,7 +33,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismAsyncImage(
 ///     "https://example.com/product.png",
@@ -41,7 +41,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// ## Com Closure de Conteúdo Personalizado
+/// ## With Custom Content Closure
 /// ```swift
 /// PrismAsyncImage("https://example.com/banner.jpg") { image in
 ///     image
@@ -51,13 +51,13 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Cache de Imagem
-/// O cache é automático e configurável:
-/// - `cacheInterval: .infinity` - Cache permanente (padrão)
-/// - `cacheInterval: 3600` - Cache por 1 hora
-/// - `cacheInterval: nil` - Sem cache
+/// ## Image Caching
+/// Caching is automatic and configurable:
+/// - `cacheInterval: .infinity` - Permanent cache (default)
+/// - `cacheInterval: 3600` - Cache for 1 hour
+/// - `cacheInterval: nil` - No cache
 ///
-/// - Note: A animação de aparecimento usa `.bouncy` por padrão e pode ser desativada com `isAnimated: false`.
+/// - Note: The appearance animation uses `.bouncy` by default and can be disabled with `isAnimated: false`.
 public struct PrismAsyncImage: PrismView {
     @Environment(\.theme) var theme
 

@@ -8,56 +8,56 @@
 import PrismFoundation
 import SwiftUI
 
-/// Botão primário do Design System PrismUI.
+/// Primary button for the PrismUI Design System.
 ///
-/// `PrismPrimaryButton` é o botão de destaque para ações principais:
-/// - Estilo glassProminent (efeito de vidro com profundidade)
-/// - Cor primária do tema (ou erro para papel destrutivo)
-/// - Tamanho grande (.large) com borda em cápsula
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismPrimaryButton` is the prominent button for primary actions:
+/// - Glass prominent style (glass effect with depth)
+/// - Theme primary color (or error for destructive role)
+/// - Large size (.large) with capsule border
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismPrimaryButton("Entrar") {
-///     // Ação de login
+/// PrismPrimaryButton("Sign In") {
+///     // Login action
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismPrimaryButton(
-///     "Confirmar compra",
+///     "Confirm Purchase",
 ///     testID: "confirm_purchase_button"
 /// ) {
-///     // Processar compra
+///     // Process purchase
 /// }
 /// ```
 ///
-/// ## Com Papel Destrutivo
+/// ## With Destructive Role
 /// ```swift
 /// PrismPrimaryButton(
-///     "Excluir conta",
+///     "Delete Account",
 ///     role: .destructive
 /// ) {
-///     // Excluir conta do usuário
+///     // Delete user account
 /// }
 /// ```
 ///
-/// ## Com String Localizada
+/// ## With Localized String
 /// ```swift
 /// PrismPrimaryButton(.prismPreviewTitle) {
-///     // Ação
+///     // Action
 /// }
 /// ```
 ///
-/// ## Roles Disponíveis
-/// - `.none` - Cor primária padrão
-/// - `.destructive` - Cor de erro (vermelho)
-/// - `.cancel` - Cor primária (para ações de cancelamento)
+/// ## Available Roles
+/// - `.none` - Default primary color
+/// - `.destructive` - Error color (red)
+/// - `.cancel` - Primary color (for cancel actions)
 ///
-/// - Note: O botão usa automaticamente `.glassProminent` buttonStyle e `.capsule` borderShape.
-/// - Important: Use para a ação principal em telas (CTA - Call to Action).
+/// - Note: The button automatically uses `.glassProminent` buttonStyle and `.capsule` borderShape.
+/// - Important: Use for the primary action on screens (CTA - Call to Action).
 public struct PrismPrimaryButton: PrismView {
     let content: PrismTextContent?
     let role: ButtonRole?

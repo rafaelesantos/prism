@@ -8,34 +8,34 @@
 import PrismFoundation
 import SwiftUI
 
-/// Texto de corpo do Design System PrismUI.
+/// Body text component for the PrismUI Design System.
 ///
-/// `PrismBodyText` é um componente de texto pré-estilizado para conteúdo de corpo:
-/// - Fonte body (tamanho e peso padrão do sistema)
-/// - Cor de texto primária automática
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismBodyText` is a pre-styled text component for body content:
+/// - Body font (system default size and weight)
+/// - Automatic primary text color
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
-/// PrismBodyText("Este é o conteúdo principal do texto.")
+/// PrismBodyText("This is the main text content.")
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismBodyText(
-///     "Descrição do produto",
+///     "Product description",
 ///     testID: "product_description"
 /// )
 /// ```
 ///
-/// ## Com String Localizada
+/// ## With Localized String
 /// ```swift
 /// PrismBodyText(PrismUIString.prismPreviewDescription)
 /// ```
 ///
-/// - Note: Este componente usa automaticamente `.body` font e `.text` color do tema.
-/// - Important: Para textos secundários, use `PrismFootnoteText`.
+/// - Note: This component automatically uses `.body` font and `.text` color from the theme.
+/// - Important: For secondary text, use `PrismFootnoteText`.
 public struct PrismBodyText: PrismView {
     let content: PrismTextContent?
     public var accessibility: PrismAccessibilityProperties?

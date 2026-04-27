@@ -7,7 +7,7 @@
 
 import PrismFoundation
 
-/// Erros do módulo PrismUI.
+/// Errors for the PrismUI module.
 public enum PrismUIError: PrismError {
     case systemSymbolNotFound
     case emailValidationFailed

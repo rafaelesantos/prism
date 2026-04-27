@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Arquivos de recurso do módulo PrismUI.
+/// Resource files for the PrismUI module.
 public enum PrismUIFile: String, CaseIterable {
     case symbols = "Symbols"
 

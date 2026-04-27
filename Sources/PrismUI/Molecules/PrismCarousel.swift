@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-/// Carrossel de itens com scroll horizontal do Design System PrismUI.
+/// Horizontal scrolling item carousel for the PrismUI Design System.
 ///
-/// `PrismCarousel` é um componente de lista horizontal com:
-/// - Efeito de escala e opacidade nos itens laterais
-/// - Scroll automático opcional (configurável via timer)
-/// - Binding de seleção para controle do item visível
-/// - Espaçamento semântico via `PrismSpacing`
-/// - Acessibilidade completa (VoiceOver/TalkBack)
-/// - Testes de UI (XCUITest) via testIDs estáveis
+/// `PrismCarousel` is a horizontal list component with:
+/// - Scale and opacity effects on side items
+/// - Optional auto-scrolling (configurable via timer)
+/// - Selection binding to control the visible item
+/// - Semantic spacing via `PrismSpacing`
+/// - Full accessibility support (VoiceOver/TalkBack)
+/// - UI testing (XCUITest) via stable testIDs
 ///
-/// ## Uso Básico
+/// ## Basic Usage
 /// ```swift
 /// @State var selected: Int?
 /// PrismCarousel(
@@ -28,19 +28,19 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Com Auto Scroll
+/// ## With Auto Scroll
 /// ```swift
 /// @State var selected: Int?
 /// PrismCarousel(
 ///     items: items,
 ///     selection: $selected,
-///     isAutoScrolling: true  // Scroll a cada 5 segundos
+///     isAutoScrolling: true  // Scrolls every 5 seconds
 /// ) { index in
 ///     CardView(item: items[index])
 /// }
 /// ```
 ///
-/// ## Com testID para Testes
+/// ## With testID for Testing
 /// ```swift
 /// PrismCarousel(
 ///     items: items,
@@ -51,21 +51,21 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// ## Personalização
+/// ## Customization
 /// ```swift
 /// PrismCarousel(
 ///     items: items,
-///     itemWidth: 200,          // Largura de cada item
-///     spacing: .medium,        // Espaçamento entre itens
-///     minimumScale: 0.9,       // Escala mínima dos itens laterais
+///     itemWidth: 200,          // Width of each item
+///     spacing: .medium,        // Spacing between items
+///     minimumScale: 0.9,       // Minimum scale for side items
 ///     selection: $selected
 /// ) { index in
 ///     ContentCard(items[index])
 /// }
 /// ```
 ///
-/// - Note: O auto scroll ocorre a cada 5 segundos e usa animação `.bouncy(duration: 1.2)`.
-/// - Important: O carousel usa `.viewAligned` scroll behavior para alinhamento preciso.
+/// - Note: Auto scroll occurs every 5 seconds using `.bouncy(duration: 1.2)` animation.
+/// - Important: The carousel uses `.viewAligned` scroll behavior for precise alignment.
 public struct PrismCarousel<Item: Identifiable & Equatable, Content: View>: PrismView {
     @Environment(\.theme) var theme
 
