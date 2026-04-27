@@ -8,6 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
+/// Scaffold adaptativo com título, subtítulo e ações.
 public struct PrismScaffold<Content: View, Actions: View>: View {
     @Environment(\.platformContext) private var platformContext
 

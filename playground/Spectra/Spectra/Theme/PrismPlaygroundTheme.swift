@@ -10,9 +10,6 @@ import PrismUI
 import SwiftUI
 
 /// Design System customizado para o PrismPlayground
-///
-/// Este tema demonstra como criar uma identidade visual única
-/// usando o sistema de tokens do PrismUI como base.
 struct PrismPlaygroundTheme: PrismThemeProtocol {
     let tokens: PrismDesignTokens
     let locale: PrismLocale = .portugueseBR
@@ -76,81 +73,83 @@ struct PrismPlaygroundTheme: PrismThemeProtocol {
 // MARK: - Cores do Playground
 
 private struct PrismPlaygroundColors: PrismColorProtocol {
-    // Cores primárias com identidade própria
+    // MARK: - Brand Colors
     var primary: Color
     var secondary: Color
     var accent: Color
 
-    // Backgrounds
+    // MARK: - Background Colors
     var background: Color
     var backgroundSecondary: Color
     var surface: Color
 
-    // Textos
+    // MARK: - Text Colors
     var text: Color
     var textSecondary: Color
     var textTertiary: Color
     var textInverse: Color
 
-    // Borders
+    // MARK: - Border Colors
     var border: Color
-    var borderStrong: Color
     var borderSubtle: Color
+    var borderStrong: Color
 
-    // States
+    // MARK: - State Colors
     var disabled: Color
     var hover: Color
     var pressed: Color
     var selected: Color
 
-    // Semânticas
+    // MARK: - Feedback Colors
     var error: Color
-    var warning: Color
     var success: Color
+    var warning: Color
     var info: Color
 
-    // Utility
+    // MARK: - Utility Colors
     var shadow: Color
     var white: Color
     var black: Color
 
-    // Gradients
-    var gradient: PrismGradient { .primary }
-    var gradientSecondary: PrismGradient { .secondary }
-    var gradientDestructive: PrismGradient { .destructive }
-    var gradientSuccess: PrismGradient { .success }
-
+    // MARK: - Initialization
     init() {
-        self.primary = .init(red: 0.2, green: 0.4, blue: 0.9)
-        self.secondary = .init(red: 0.6, green: 0.3, blue: 0.8)
-        self.accent = .init(red: 0.9, green: 0.3, blue: 0.5)
+        // Brand Colors
+        self.primary = Color(red: 0.2, green: 0.4, blue: 0.9)
+        self.secondary = Color(red: 0.6, green: 0.3, blue: 0.8)
+        self.accent = Color(red: 0.9, green: 0.3, blue: 0.5)
 
-        self.background = Color.black.opacity(0.02)
-        self.backgroundSecondary = Color.white
-        self.surface = Color.white
+        // Background Colors - usando cores do sistema para suportar dark mode
+        self.background = Color(UIColor.systemBackground)
+        self.backgroundSecondary = Color(UIColor.secondarySystemBackground)
+        self.surface = Color(UIColor.tertiarySystemBackground)
 
-        self.text = .init(red: 0.1, green: 0.1, blue: 0.15)
-        self.textSecondary = .init(red: 0.4, green: 0.4, blue: 0.45)
-        self.textTertiary = .init(red: 0.6, green: 0.6, blue: 0.65)
-        self.textInverse = .white
+        // Text Colors
+        self.text = Color(UIColor.label)
+        self.textSecondary = Color(UIColor.secondaryLabel)
+        self.textTertiary = Color(UIColor.tertiaryLabel)
+        self.textInverse = Color.white
 
-        self.border = Color.black.opacity(0.1)
-        self.borderStrong = Color.black.opacity(0.2)
-        self.borderSubtle = Color.black.opacity(0.05)
+        // Border Colors
+        self.border = Color(UIColor.separator)
+        self.borderSubtle = Color(UIColor.separator).opacity(0.5)
+        self.borderStrong = Color(UIColor.opaqueSeparator)
 
-        self.disabled = Color.black.opacity(0.3)
-        self.hover = .init(red: 0.2, green: 0.4, blue: 0.9).opacity(0.08)
-        self.pressed = .init(red: 0.2, green: 0.4, blue: 0.9).opacity(0.2)
-        self.selected = .init(red: 0.2, green: 0.4, blue: 0.9).opacity(0.15)
+        // State Colors
+        self.disabled = Color(UIColor.systemGray4)
+        self.hover = Color(red: 0.2, green: 0.4, blue: 0.9).opacity(0.1)
+        self.pressed = Color(red: 0.2, green: 0.4, blue: 0.9).opacity(0.2)
+        self.selected = Color(red: 0.2, green: 0.4, blue: 0.9).opacity(0.15)
 
-        self.error = .init(red: 0.9, green: 0.2, blue: 0.3)
-        self.warning = .init(red: 1.0, green: 0.6, blue: 0.0)
-        self.success = .init(red: 0.1, green: 0.7, blue: 0.4)
-        self.info = .init(red: 0.0, green: 0.5, blue: 0.9)
+        // Feedback Colors
+        self.error = Color(red: 0.9, green: 0.2, blue: 0.3)
+        self.success = Color(red: 0.1, green: 0.7, blue: 0.4)
+        self.warning = Color(red: 1.0, green: 0.6, blue: 0.0)
+        self.info = Color(red: 0.0, green: 0.5, blue: 0.9)
 
+        // Utility Colors
         self.shadow = Color.black.opacity(0.2)
-        self.white = .white
-        self.black = .black
+        self.white = Color.white
+        self.black = Color.black
     }
 }
 

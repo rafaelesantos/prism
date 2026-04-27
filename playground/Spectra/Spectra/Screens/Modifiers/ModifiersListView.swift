@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ModifiersListView: View {
     @Environment(\.theme) private var theme
+    @Bindable private var router = PrismRouter<PlaygroundRoute>()
 
     private let modifiers: [PlaygroundModifier] = [
         .glow,
@@ -28,66 +29,130 @@ struct ModifiersListView: View {
     ]
 
     var body: some View {
-        PrismLazyList {
-            PrismVStack(alignment: .leading, spacing: .medium) {
-                ForEach(modifiers, id: \.self) { modifier in
-                    ModifierRow(modifier: modifier)
-                }
-            }
-            .prismPadding()
-            .prismBackgroundSecondary()
-            .prism(clip: .rounded(radius: 20))
+        ScrollView {
+            LazyVStack(spacing: theme.spacing.extraLarge) {
+                modifiersGrid
 
-            intelligenceSection
+                intelligenceSection
+            }
+            .padding(.horizontal, theme.spacing.medium)
+            .padding(.vertical, theme.spacing.medium)
         }
+        .background(Color(UIColor.systemBackground))
         .navigationTitle("Modifiers")
     }
 
-    private var intelligenceSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismHStack(spacing: .small) {
-                PrismSymbol("brain.headset", mode: .hierarchical)
-                    .prism(color: .primary)
+    // MARK: - Modifiers Grid
 
-                PrismText("Sobre Modifiers")
-                    .prism(font: .headline)
+    private var modifiersGrid: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(), spacing: theme.spacing.medium),
+                GridItem(.flexible(), spacing: theme.spacing.medium),
+            ],
+            spacing: theme.spacing.medium
+        ) {
+            ForEach(modifiers, id: \.self) { modifier in
+                Button {
+                    if let route = modifier.demoRoute {
+                        router.push(route)
+                    }
+                } label: {
+                    ModifierCardView(modifier: modifier)
+                }
+                .buttonStyle(.plain)
+                .disabled(modifier.demoRoute == nil)
+            }
+        }
+    }
+
+    // MARK: - Intelligence Section
+
+    private var intelligenceSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            HStack(spacing: theme.spacing.small) {
+                Image(systemName: "brain.headset")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(theme.color.primary)
+
+                Text("Sobre Modifiers")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(theme.color.text)
+
+                Spacer()
             }
 
-            PrismBodyText(
-                "Modifiers são transformadores que aplicam efeitos, animações, comportamentos e estilizações às views. Eles seguem o padrão de composição do SwiftUI."
-            )
+            Text("Modifiers são transformadores que aplicam efeitos, animações, comportamentos e estilizações às views. Eles seguem o padrão de composição do SwiftUI.")
+                .font(.system(size: 15))
+                .foregroundStyle(theme.color.textSecondary)
 
-            PrismTag("12 modifiers", style: .info, size: .small)
+            HStack {
+                Text("12 modifiers")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(theme.color.info)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(theme.color.info.opacity(0.15))
+                    .clipShape(Capsule())
+
+                Spacer()
+            }
         }
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 20))
+        .padding(theme.spacing.medium)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
-private struct ModifierRow: View {
+// MARK: - Modifier Card View
+
+private struct ModifierCardView: View {
     @Environment(\.theme) private var theme
     let modifier: PlaygroundModifier
 
     var body: some View {
-        PrismHStack(spacing: .medium) {
-            PrismSymbol(modifier.icon, mode: .hierarchical)
-                .prism(font: .title2)
-                .prism(color: PrismColor(rawValue: modifier.color))
+        VStack(alignment: .leading, spacing: theme.spacing.small) {
+            Image(systemName: modifier.icon)
+                .font(.system(size: 32))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(modifier.color)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            PrismVStack(alignment: .leading, spacing: .small) {
-                PrismText(modifier.title)
-                    .prism(font: .body)
-                PrismFootnoteText(modifier.description)
-                    .lineLimit(1)
-            }
+            Spacer()
 
-            PrismSpacer()
+            Text(modifier.title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(theme.color.text)
+                .lineLimit(1)
 
-            PrismSymbol("chevron.right")
-                .prism(color: .textSecondary)
+            Text(modifier.description)
+                .font(.system(size: 13))
+                .foregroundStyle(theme.color.textSecondary)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
         }
-        .prismPadding()
+        .padding(theme.spacing.medium)
+        .frame(height: 140)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
+        .opacity(modifier.demoRoute == nil ? 0.6 : 1.0)
+        .overlay(
+            Group {
+                if modifier.demoRoute == nil {
+                    Text("Em breve")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(theme.color.textSecondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(UIColor.tertiarySystemBackground))
+                        .clipShape(Capsule())
+                        .padding([.top, .trailing], 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                }
+            }
+        )
     }
 }
 
@@ -109,18 +174,18 @@ enum PlaygroundModifier: Hashable, CaseIterable {
 
     var title: String {
         switch self {
-        case .glow: "prismGlow"
-        case .skeleton: "prismSkeleton"
-        case .confetti: "prismConfetti"
-        case .parallax: "prismParallax"
-        case .background: "prismBackground"
-        case .backgroundSecondary: "prismBackgroundSecondary"
-        case .backgroundRow: "prismBackgroundRow"
-        case .size: "prism(width:height:)"
-        case .spacing: "prismPadding"
-        case .screenObserve: "prismScreenObserve"
-        case .accessibility: "prism(accessibility:)"
-        case .symbolEffect: "prismSymbol"
+        case .glow: "Glow"
+        case .skeleton: "Skeleton"
+        case .confetti: "Confetti"
+        case .parallax: "Parallax"
+        case .background: "Background"
+        case .backgroundSecondary: "BackgroundSecondary"
+        case .backgroundRow: "BackgroundRow"
+        case .size: "Size"
+        case .spacing: "Spacing"
+        case .screenObserve: "ScreenObserve"
+        case .accessibility: "Accessibility"
+        case .symbolEffect: "SymbolEffect"
         }
     }
 
@@ -129,7 +194,7 @@ enum PlaygroundModifier: Hashable, CaseIterable {
         case .glow: "light.beacon.max.fill"
         case .skeleton: "rectangle.dashed"
         case .confetti: "party.popper.fill"
-        case .parallax: "box.trianglebadge.arrow.up.and.arrow.down"
+        case .parallax: "view.2d"
         case .background: "square.fill"
         case .backgroundSecondary: "square.2.layers.3d"
         case .backgroundRow: "list.and.film"
@@ -172,6 +237,17 @@ enum PlaygroundModifier: Hashable, CaseIterable {
         case .screenObserve: "Observa tamanho da tela e scroll"
         case .accessibility: "Aplica propriedades de acessibilidade"
         case .symbolEffect: "Efeitos animados de símbolo"
+        }
+    }
+
+    var demoRoute: PlaygroundRoute? {
+        switch self {
+        case .glow: .glowDemo
+        case .skeleton: .skeletonDemo
+        case .confetti: .confettiDemo
+        case .parallax: .parallaxDemo
+        case .background: .backgroundDemo
+        case .backgroundSecondary, .backgroundRow, .size, .spacing, .screenObserve, .accessibility, .symbolEffect: nil
         }
     }
 }

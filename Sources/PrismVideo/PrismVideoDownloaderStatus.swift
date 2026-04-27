@@ -8,6 +8,7 @@
 import AVFoundation
 import PrismFoundation
 
+/// Status do download de vídeo: progresso, conclusão ou erro.
 public enum PrismVideoDownloaderStatus: @unchecked Sendable {
     case downloading(
         progress: Double,

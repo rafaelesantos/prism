@@ -5,6 +5,7 @@
 //  Created by Rafael Escaleira on 29/03/25.
 //
 
+/// Tipos de header HTTP.
 public enum PrismNetworkHeaderType: String, Sendable, CaseIterable {
     case json = "application/json"
     case xml = "application/xml"

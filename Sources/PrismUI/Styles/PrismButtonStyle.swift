@@ -7,11 +7,13 @@
 
 import SwiftUI
 
+/// Variante visual de botão.
 public enum PrismButtonVariant: Sendable {
     case primary
     case secondary
 }
 
+/// Estilo de chrome para botões.
 public struct PrismButtonChromeStyle: ButtonStyle {
     @Environment(\.theme) private var theme
     @Environment(\.layoutTier) private var layoutTier

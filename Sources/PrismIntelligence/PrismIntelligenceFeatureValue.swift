@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Valor de feature para dados tabulares (int, double, string, bool).
 public enum PrismIntelligenceFeatureValue: Codable, Equatable, Hashable, Sendable {
     case string(String)
     case int(Int)
@@ -65,6 +66,7 @@ public enum PrismIntelligenceFeatureValue: Codable, Equatable, Hashable, Sendabl
 
 public typealias PrismIntelligenceFeatureRow = [String: PrismIntelligenceFeatureValue]
 
+/// Amostra de treino para classificação de texto.
 public struct PrismTextTrainingSample: Codable, Equatable, Hashable, Sendable {
     public var text: String
     public var label: String

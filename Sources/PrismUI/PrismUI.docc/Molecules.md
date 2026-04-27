@@ -1,0 +1,146 @@
+# Molecules
+
+Componentes compostos que combinam átomos para criar padrões de UI completos.
+
+## Visão Geral
+
+Moléculas são componentes de nível superior que compõem átomos em padrões de uso comum. Elas encapsulam lógica de layout, acessibilidade e adaptação por plataforma.
+
+### PrismScaffold
+
+Estrutura de tela com título, subtítulo, ações e conteúdo escrolável:
+
+```swift
+PrismScaffold("Workspace", subtitle: "Gerencie seus projetos") {
+    PrismPrimaryButton("Novo Projeto") {
+        createProject()
+    }
+} content: {
+    ProjectList(projects: store.state.projects)
+}
+```
+
+O Scaffold adapta automaticamente:
+- **iOS**: Título grande, ações na horizontal, conteúdo escrolável
+- **macOS**: Título menor, ações na barra de ferramentas
+- **tvOS**: Foco otimizado para remote
+- **watchOS**: Layout compacto sem ações
+
+Veja ``Scaffold`` para documentação completa.
+
+### PrismNavigationView
+
+Navegação adaptativa que alterna entre stack e split-view:
+
+```swift
+PrismNavigationView(
+    router: router,
+    sidebar: {
+        SidebarView()
+    },
+    destination: { route in
+        RouteView(route: route)
+    },
+    content: {
+        ContentView()
+    }
+)
+```
+
+Veja ``Navigation`` para documentação completa.
+
+### PrismPrimaryButton e PrismSecondaryButton
+
+Botões estilizados para ação principal e secundária:
+
+```swift
+PrismPrimaryButton("Salvar", testID: "save_btn") {
+    saveChanges()
+}
+
+PrismSecondaryButton("Cancelar", testID: "cancel_btn") {
+    dismiss()
+}
+```
+
+### PrismBodyText e PrismFootnoteText
+
+Texto com estilos semânticos pré-definidos:
+
+```swift
+PrismBodyText("Conteúdo principal da tela com formatação de corpo.")
+PrismFootnoteText("Informação adicional em tamanho footnote.")
+```
+
+### PrismTag
+
+Tags/chips para categorização:
+
+```swift
+PrismTag("Financeiro")
+PrismTag("Urgente", style: .error)
+```
+
+### PrismCarousel
+
+Carrossel de conteúdo com scroll horizontal:
+
+```swift
+PrismCarousel {
+    ForEach(items) { item in
+        ItemCard(item: item)
+    }
+}
+```
+
+### PrismCurrencyTextField
+
+Campo de texto com formatação monetária automática:
+
+```swift
+PrismCurrencyTextField(
+    value: $amount,
+    locale: .brazil
+)
+```
+
+### PrismBrowserView
+
+View para exibição de conteúdo web:
+
+```swift
+PrismBrowserView(url: webURL)
+```
+
+### PrismVideoView
+
+Player de vídeo:
+
+```swift
+PrismVideoView(entity: videoEntity)
+```
+
+### PrismAdaptiveScreen
+
+Container de tela que adapta o layout por plataforma:
+
+```swift
+PrismAdaptiveScreen {
+    Content()
+}
+```
+
+## Topics
+
+- ``PrismScaffold``
+- ``PrismNavigationView``
+- ``PrismPrimaryButton``
+- ``PrismSecondaryButton``
+- ``PrismBodyText``
+- ``PrismFootnoteText``
+- ``PrismTag``
+- ``PrismCarousel``
+- ``PrismCurrencyTextField``
+- ``PrismBrowserView``
+- ``PrismVideoView``
+- ``PrismAdaptiveScreen``

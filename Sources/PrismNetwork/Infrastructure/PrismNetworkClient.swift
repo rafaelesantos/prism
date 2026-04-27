@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Protocolo para cliente de rede HTTP.
 public protocol PrismNetworkClient: Sendable {
     func request<Request: PrismNetworkRequest>(
         on request: Request,

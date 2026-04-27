@@ -8,6 +8,7 @@
 import AVFoundation
 import PrismFoundation
 
+/// Entidade representando metadados de um vídeo.
 public struct PrismVideoEntity {
     public var id: UUID { .init() }
     var url: URL

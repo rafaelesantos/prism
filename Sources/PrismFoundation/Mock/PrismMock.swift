@@ -5,6 +5,7 @@
 //  Created by Rafael Escaleira on 25/04/25.
 //
 
+/// Protocolo para geração de dados de teste (mocks).
 public protocol PrismMock {
     static var mock: Self { get }
     static var mocks: [Self] { get }

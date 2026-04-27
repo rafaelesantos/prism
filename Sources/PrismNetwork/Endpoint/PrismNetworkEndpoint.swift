@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Protocolo para definição de endpoints HTTP tipados.
 public protocol PrismNetworkEndpoint: PrismLogger, Sendable {
     var scheme: PrismNetworkScheme { get }
     var host: String { get }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Wrapper sobre UserDefaults com suporte a tipos Codable.
 public struct PrismDefaults: @unchecked Sendable {
     var userDefaults: UserDefaults
 

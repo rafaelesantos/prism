@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Tipos de conteúdo para campos de texto.
 public enum PrismTextFieldContentType {
     case `default`
     case asciiCapable

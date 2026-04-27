@@ -10,3 +10,5 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/xcuserdata/
 .swiftpm/xcode/xcuserdata/
 .netrc
+docs-output/
+docs-site/site/

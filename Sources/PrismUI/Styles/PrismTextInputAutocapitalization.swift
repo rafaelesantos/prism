@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Tipos de autocapitalização para campos de texto.
 public enum PrismTextInputAutocapitalization {
     case never
     case words

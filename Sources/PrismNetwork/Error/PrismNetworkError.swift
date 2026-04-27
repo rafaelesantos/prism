@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Erros tipados de rede com mapeamento de status HTTP.
 public enum PrismNetworkError: PrismError {
     case invalidURL
     case invalidResponse

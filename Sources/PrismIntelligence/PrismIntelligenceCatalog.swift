@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Catálogo de modelos de inteligência persistidos.
 public actor PrismIntelligenceCatalog {
     private let defaults: PrismDefaults
 

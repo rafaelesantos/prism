@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Efeito assíncrono que produz ações via AsyncStream.
 public struct PrismEffect<Action: Sendable>: Sendable {
     private let isKnownEmpty: Bool
     private let makeActions: @Sendable () -> AsyncStream<Action>

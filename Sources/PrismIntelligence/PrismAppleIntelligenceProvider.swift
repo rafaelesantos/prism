@@ -7,17 +7,20 @@
 
 import Foundation
 
+/// Casos de uso do Apple Intelligence.
 public enum PrismAppleIntelligenceUseCase: String, Codable, Sendable, CaseIterable {
     case general
     case contentTagging
 }
 
+/// Referência a modelos do Apple Intelligence (sistema ou adapter).
 public enum PrismAppleIntelligenceModelReference: Codable, Equatable, Hashable, Sendable {
     case system(useCase: PrismAppleIntelligenceUseCase)
     case adapterName(String)
     case adapterFile(URL)
 }
 
+/// Configuração para o provider de Apple Intelligence.
 public struct PrismAppleIntelligenceConfiguration: Codable, Equatable, Hashable, Sendable {
     public var model: PrismAppleIntelligenceModelReference
     public var instructions: String?
@@ -42,6 +45,7 @@ internal protocol PrismAppleIntelligenceGateway: Sendable {
     ) async throws -> PrismLanguageIntelligenceResponse
 }
 
+/// Provider de Apple Intelligence via framework FoundationModels.
 public actor PrismAppleIntelligenceProvider: PrismLanguageIntelligenceProvider {
     public let kind: PrismLanguageIntelligenceProviderKind = .apple
 

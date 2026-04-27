@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Protocolo para cliente de WebSocket.
 public protocol PrismNetworkSocketClient: Sendable {
     func send(command: PrismNetworkSocketCommand) async throws
     func connect(

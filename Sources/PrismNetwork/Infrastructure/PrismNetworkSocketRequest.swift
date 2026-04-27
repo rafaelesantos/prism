@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Protocolo para requisições de WebSocket.
 public protocol PrismNetworkSocketRequest: Sendable {
     var endpoint: (any PrismNetworkSocketEndpoint)? { get }
 }

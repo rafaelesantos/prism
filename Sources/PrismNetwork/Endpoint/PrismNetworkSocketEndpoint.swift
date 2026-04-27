@@ -9,6 +9,7 @@ import Foundation
 import Network
 import PrismFoundation
 
+/// Protocolo para endpoints de WebSocket.
 public protocol PrismNetworkSocketEndpoint: PrismLogger, Sendable {
     var host: NWEndpoint.Host { get }
     var port: NWEndpoint.Port { get throws }

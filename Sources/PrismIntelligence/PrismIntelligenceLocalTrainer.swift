@@ -21,6 +21,7 @@ import PrismFoundation
     import NaturalLanguage
 #endif
 
+/// Configuração para treino de classificador de texto.
 public struct PrismTextTrainingConfiguration: Sendable, Equatable {
     public var id: String
     public var name: String
@@ -40,6 +41,7 @@ public struct PrismTextTrainingConfiguration: Sendable, Equatable {
     }
 }
 
+/// Configuração para treino de modelos tabulares.
 public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
     public var id: String
     public var name: String
@@ -263,6 +265,7 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
     }
 }
 
+/// Treinador local de modelos usando CreateML.
 public actor PrismIntelligenceLocalTrainer {
     private let catalog: PrismIntelligenceCatalog
     private let fileManager: PrismFileManager

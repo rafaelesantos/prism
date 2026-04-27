@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Protocolo para definição de fontes do tema.
 public protocol PrismFontProtocol {
     var largeTitle: Font { get }
     var title: Font { get }

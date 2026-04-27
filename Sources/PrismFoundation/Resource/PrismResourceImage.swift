@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Protocolo para recursos de imagem do asset catalog.
 public protocol PrismResourceImage {
     var image: Image { get }
 }

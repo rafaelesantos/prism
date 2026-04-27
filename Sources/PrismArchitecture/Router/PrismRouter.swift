@@ -9,6 +9,7 @@ import Observation
 
 @Observable
 @MainActor
+/// Router observável para navegação tipada com push, modal e full-screen.
 public final class PrismRouter<Route: PrismRoutable>: Equatable {
     public var path: [Route]
     public var presentedRoute: Route?

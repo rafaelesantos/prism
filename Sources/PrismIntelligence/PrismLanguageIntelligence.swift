@@ -8,11 +8,13 @@
 import Foundation
 import PrismFoundation
 
+/// Tipo de provider de inteligência de linguagem.
 public enum PrismLanguageIntelligenceProviderKind: String, Codable, Sendable, CaseIterable {
     case apple
     case remote
 }
 
+/// Opções para geração de linguagem.
 public struct PrismLanguageGenerationOptions: Codable, Equatable, Hashable, Sendable {
     public var temperature: Double?
     public var maximumResponseTokens: Int?
@@ -26,6 +28,7 @@ public struct PrismLanguageGenerationOptions: Codable, Equatable, Hashable, Send
     }
 }
 
+/// Requisição para geração de linguagem.
 public struct PrismLanguageIntelligenceRequest: Codable, Equatable, Hashable, Sendable {
     public var prompt: String
     public var systemPrompt: String?
@@ -64,6 +67,7 @@ public struct PrismLanguageTokenUsage: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+/// Resposta de geração de linguagem.
 public struct PrismLanguageIntelligenceResponse: PrismEntity, Sendable {
     public var id: String
     public var provider: PrismLanguageIntelligenceProviderKind
@@ -95,6 +99,7 @@ public struct PrismLanguageIntelligenceResponse: PrismEntity, Sendable {
     }
 }
 
+/// Status de disponibilidade do provider.
 public struct PrismLanguageIntelligenceStatus: Codable, Equatable, Hashable, Sendable {
     public var provider: PrismLanguageIntelligenceProviderKind
     public var isAvailable: Bool
@@ -120,6 +125,7 @@ public struct PrismLanguageIntelligenceStatus: Codable, Equatable, Hashable, Sen
     }
 }
 
+/// Protocolo para providers de inteligência de linguagem.
 public protocol PrismLanguageIntelligenceProvider: Sendable {
     var kind: PrismLanguageIntelligenceProviderKind { get }
 
@@ -129,6 +135,7 @@ public protocol PrismLanguageIntelligenceProvider: Sendable {
     ) async throws -> PrismLanguageIntelligenceResponse
 }
 
+/// Fachada para modelos generativos de linguagem.
 public actor PrismLanguageIntelligence {
     private let provider: any PrismLanguageIntelligenceProvider
 

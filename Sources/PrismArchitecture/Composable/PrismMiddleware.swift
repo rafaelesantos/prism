@@ -5,6 +5,7 @@
 //  Created by Rafael Escaleira on 12/04/25.
 //
 
+/// Protocolo para middleware que intercepta ações no store.
 public protocol PrismMiddleware: Sendable {
     associatedtype State: Sendable
     associatedtype Action: Sendable
@@ -15,6 +16,7 @@ public protocol PrismMiddleware: Sendable {
     ) -> PrismEffect<Action>
 }
 
+/// Middleware baseado em closure para efeitos colaterais.
 public struct PrismSideEffect<State: Sendable, Action: Sendable>: PrismMiddleware {
     private let operation: @Sendable (State, Action) -> PrismEffect<Action>
 
@@ -57,6 +59,7 @@ extension PrismSideEffect {
     }
 }
 
+/// Type-erased wrapper para middleware.
 public struct AnyPrismMiddleware<State: Sendable, Action: Sendable>: PrismMiddleware {
     private let operation: @Sendable (State, Action) -> PrismEffect<Action>
 

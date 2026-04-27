@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Plataformas Apple suportadas pelo design system.
 public enum PrismPlatform: String, CaseIterable, Sendable {
     case iOS
     case macOS
@@ -29,12 +30,14 @@ public enum PrismPlatform: String, CaseIterable, Sendable {
     }
 }
 
+/// Modelo de navegação da plataforma.
 public enum PrismNavigationModel: String, Sendable {
     case stack
     case tabBar
     case splitView
 }
 
+/// Margens de conteúdo por plataforma.
 public struct PrismContentMargins: Sendable {
     public let horizontal: CGFloat
     public let vertical: CGFloat
@@ -48,6 +51,7 @@ public struct PrismContentMargins: Sendable {
     }
 }
 
+/// Contexto de plataforma para resolução de layout adaptativo.
 public struct PrismPlatformContext: Sendable {
     public let platform: PrismPlatform
     public let layoutTier: PrismLayoutTier

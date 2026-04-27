@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Tipo de modelo de inteligência.
 public enum PrismIntelligenceModelKind: String, Codable, Sendable, CaseIterable {
     case custom
     case textClassifier
@@ -16,6 +17,7 @@ public enum PrismIntelligenceModelKind: String, Codable, Sendable, CaseIterable 
     case foundationModelAdapter
 }
 
+/// Engine de treinamento usada.
 public enum PrismIntelligenceEngineKind: String, Codable, Sendable, CaseIterable {
     case coreML
     case createML
@@ -23,6 +25,7 @@ public enum PrismIntelligenceEngineKind: String, Codable, Sendable, CaseIterable
     case remote
 }
 
+/// Métricas de performance do modelo.
 public struct PrismIntelligenceModelMetrics: Codable, Equatable, Hashable, Sendable {
     public var accuracy: Double?
     public var rootMeanSquaredError: Double?
@@ -51,6 +54,7 @@ private struct PrismLegacyIntelligenceModel: Codable, Equatable, Hashable, Senda
     let rootMeanSquaredError: Double?
 }
 
+/// Modelo de inteligência com metadados e métricas.
 public struct PrismIntelligenceModel: PrismEntity, Sendable {
     public var id: String
     public var name: String

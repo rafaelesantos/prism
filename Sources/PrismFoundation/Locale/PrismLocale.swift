@@ -8,6 +8,7 @@
 import Foundation
 import NaturalLanguage
 
+/// Enumeração de locales com suporte a formatação e moeda.
 public enum PrismLocale: CaseIterable, Sendable, Codable, CustomStringConvertible {
     case englishUS
     case portugueseBR

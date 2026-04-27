@@ -8,6 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
+/// Implementação padrão do tema Prism.
 public struct PrismTheme: PrismThemeProtocol, Sendable {
     public var color: PrismColorProtocol
     public var spacing: PrismSpacingProtocol

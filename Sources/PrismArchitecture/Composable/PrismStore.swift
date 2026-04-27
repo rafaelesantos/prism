@@ -10,6 +10,7 @@ import Observation
 
 @MainActor
 @Observable
+/// Store observável com suporte a reducer, middleware e escopo.
 public final class PrismStore<State: Sendable, Action: Sendable> {
     public private(set) var state: State
 

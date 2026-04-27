@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - PrismSemanticColors
 
+/// Mapeamento de cores semânticas para SwiftUI.
 public struct PrismSemanticColors: Sendable {
     // MARK: - State Colors
 

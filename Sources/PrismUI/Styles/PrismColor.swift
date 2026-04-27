@@ -8,6 +8,7 @@
 import PrismFoundation
 import SwiftUI
 
+/// Cor semântica do design system como ShapeStyle.
 public struct PrismColor: ShapeStyle, @unchecked Sendable {
     private enum Storage {
         case themed(KeyPath<PrismColorProtocol, Color>)

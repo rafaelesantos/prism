@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Implementação padrão de cores do tema.
 public struct PrismDefaultColor: PrismColorProtocol {
 
     // MARK: - Static Asset Helper

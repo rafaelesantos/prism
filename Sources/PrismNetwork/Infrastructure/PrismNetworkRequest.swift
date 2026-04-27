@@ -8,6 +8,7 @@
 import Foundation
 import PrismFoundation
 
+/// Protocolo para requisições de rede com decodificação tipada.
 public protocol PrismNetworkRequest: Sendable {
     associatedtype Endpoint: PrismNetworkEndpoint
     associatedtype Response: PrismEntity & Sendable

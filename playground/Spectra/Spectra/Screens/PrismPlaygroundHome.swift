@@ -34,7 +34,7 @@ private struct CustomString: PrismResourceString {
 struct PrismPlaygroundHome: View {
     @Environment(\.theme) private var theme
     @State private var searchText = ""
-    @State private var selectedCategory: PlaygroundCategory?
+    @Bindable private var router = PrismRouter<PlaygroundRoute>()
 
     private let categories: [PlaygroundCategory] = [
         .atoms,
@@ -45,7 +45,7 @@ struct PrismPlaygroundHome: View {
 
     var body: some View {
         PrismNavigationView(
-            router: .init(),
+            router: router,
             destination: { (route: PlaygroundRoute) in
                 route.destinationView()
             },
@@ -56,196 +56,274 @@ struct PrismPlaygroundHome: View {
     }
 
     private var homeContent: some View {
-        PrismLazyList {
-            headerSection
+        ScrollView {
+            LazyVStack(spacing: theme.spacing.extraLarge) {
+                headerSection
 
-            searchSection
+                searchSection
 
-            categoriesSection
+                categoriesSection
 
-            quickDemosSection
+                quickDemosSection
 
-            intelligenceSection
+                intelligenceSection
+            }
+            .padding(.horizontal, theme.spacing.medium)
+            .padding(.vertical, theme.spacing.medium)
         }
-        .navigationTitle("PrismPlayground")
+        .background(Color(UIColor.systemBackground))
+        .navigationTitle("Spectra")
+    }
+
+    // MARK: - Navigation
+
+    private func navigateToCategory(_ category: PlaygroundCategory) {
+        let route: PlaygroundRoute
+        switch category {
+        case .atoms:
+            route = .atomsList
+        case .molecules:
+            route = .moleculesList
+        case .modifiers:
+            route = .modifiersList
+        case .patterns:
+            route = .patternsList
+        }
+        router.push(route)
     }
 
     // MARK: - Header
 
     private var headerSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismHStack(spacing: .small) {
-                PrismSymbol("sparkles", mode: .hierarchical)
-                    .prism(color: .primary)
-                    .prism(font: .title)
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            HStack(spacing: theme.spacing.small) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 28, weight: .medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(theme.color.primary)
 
-                PrismText("Design System Interativo")
-                    .prism(font: .title)
-                    .prism(color: .primary)
+                Text("Spectra")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundStyle(theme.color.primary)
             }
 
-            PrismBodyText(
-                "Explore todos os componentes do PrismUI com exemplos interativos e documentação inteligente."
-            )
+            Text("Explore todos os componentes do PrismUI com exemplos interativos e documentação inteligente.")
+                .font(.system(size: 15))
+                .foregroundStyle(theme.color.textSecondary)
+                .lineLimit(nil)
         }
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 20))
+        .padding(theme.spacing.medium)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - Search
 
     private var searchSection: some View {
-        PrismHStack(spacing: .small) {
-            PrismSymbol("magnifyingglass")
-                .prism(color: .textSecondary)
+        HStack(spacing: theme.spacing.small) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 17))
+                .foregroundStyle(theme.color.textSecondary)
 
-            PrismTextField(
-                text: $searchText,
-                configuration: HomeSearchConfiguration(),
-                accessibility: {
-                    $0.label("Buscar componentes")
-                        .testID("search_field")
-                }
-            )
+            TextField("Buscar componentes...", text: $searchText)
+                .font(.system(size: 17))
+                .foregroundStyle(theme.color.text)
         }
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 20))
+        .padding(theme.spacing.medium)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Categories
 
     private var categoriesSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismText("Categorias")
-                .prism(font: .headline)
-                .prismPadding(.bottom, .small)
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            Text("Categorias")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(theme.color.text)
 
             LazyVGrid(
                 columns: [
-                    GridItem(.adaptive(minimum: 150, maximum: 200), spacing: theme.spacing.medium),
+                    GridItem(.flexible(), spacing: theme.spacing.medium),
+                    GridItem(.flexible(), spacing: theme.spacing.medium),
                 ],
                 spacing: theme.spacing.medium
             ) {
                 ForEach(categories, id: \.self) { category in
-                    CategoryCard(category: category)
-                        .onTapGesture {
-                            selectedCategory = category
-                        }
+                    Button {
+                        navigateToCategory(category)
+                    } label: {
+                        CategoryCardView(category: category)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
-        .prismPadding()
     }
 
     // MARK: - Quick Demos
 
     private var quickDemosSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismHStack {
-                PrismText("Demos Rápidas")
-                    .prism(font: .headline)
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            Text("Demos Rápidas")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(theme.color.text)
 
-                PrismSpacer()
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: theme.spacing.medium) {
+                    QuickDemoButton(
+                        title: "Buttons",
+                        icon: "rectangle.fill.on.rectangle.angled.fill",
+                        color: theme.color.primary
+                    ) {
+                        router.push(.buttonDemo)
+                    }
 
-                PrismFootnoteText("Ver todos")
-                    .prism(color: .primary)
+                    QuickDemoButton(
+                        title: "Text Fields",
+                        icon: "textformat",
+                        color: theme.color.secondary
+                    ) {
+                        router.push(.textFieldDemo)
+                    }
+
+                    QuickDemoButton(
+                        title: "Effects",
+                        icon: "sparkles",
+                        color: theme.color.warning
+                    ) {
+                        router.push(.glowDemo)
+                    }
+
+                    QuickDemoButton(
+                        title: "Skeleton",
+                        icon: "rectangle.dashed",
+                        color: theme.color.info
+                    ) {
+                        router.push(.skeletonDemo)
+                    }
+
+                    QuickDemoButton(
+                        title: "Carousel",
+                        icon: "arrow.left.and.right",
+                        color: theme.color.secondary
+                    ) {
+                        router.push(.carouselDemo)
+                    }
+                }
+                .padding(.horizontal, theme.spacing.small)
             }
-
-            PrismHStack(spacing: .medium) {
-                QuickDemoCard(
-                    title: "Buttons",
-                    icon: "rectangle.fill.on.rectangle.angled.fill",
-                    color: .primary
-                )
-
-                QuickDemoCard(
-                    title: "Text Fields",
-                    icon: "textformat",
-                    color: .secondary
-                )
-
-                QuickDemoCard(
-                    title: "Effects",
-                    icon: "sparkles",
-                    color: PrismColor.warning
-                )
-            }
+            .padding(.horizontal, -theme.spacing.small)
         }
-        .prismPadding()
     }
 
     // MARK: - Intelligence
 
     private var intelligenceSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismHStack {
-                PrismSymbol("brain.headset")
-                    .prism(color: .primary)
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            HStack {
+                Image(systemName: "brain.headset")
+                    .font(.system(size: 22))
+                    .foregroundStyle(theme.color.primary)
 
-                PrismText("Prism Intelligence")
-                    .prism(font: .headline)
+                Text("Prism Intelligence")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(theme.color.text)
+
+                Spacer()
             }
 
-            PrismBodyText(
-                "Obtenha explicações inteligentes sobre cada componente, incluindo melhores práticas, padrões de uso e exemplos de código."
-            )
+            Text("Obtenha explicações inteligentes sobre cada componente, incluindo melhores práticas, padrões de uso e exemplos de código.")
+                .font(.system(size: 15))
+                .foregroundStyle(theme.color.textSecondary)
 
-            PrismPrimaryButton("Explorar Intelligence", testID: "explore_intelligence_button") {
-                // Navegar para tela de intelligence
+            Button {
+                // Navegar para tela de intelligence quando implementada
+            } label: {
+                Text("Explorar Intelligence")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color(UIColor.systemBackground))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(theme.color.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .prism(width: .max)
+            .buttonStyle(.plain)
         }
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 20))
+        .padding(theme.spacing.medium)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
-// MARK: - Category Card
+// MARK: - Category Card View
 
-private struct CategoryCard: View {
+private struct CategoryCardView: View {
     @Environment(\.theme) private var theme
     let category: PlaygroundCategory
 
     var body: some View {
-        PrismVStack(alignment: .leading, spacing: .small) {
-            PrismSymbol(category.icon, mode: .hierarchical)
-                .prism(font: .title2)
-                .prism(color: category.color)
+        VStack(alignment: .leading, spacing: theme.spacing.small) {
+            Image(systemName: category.icon)
+                .font(.system(size: 32))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(category.color)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            PrismText(category.title)
-                .prism(font: .headline)
+            Spacer()
 
-            PrismFootnoteText("\(category.componentCount) componentes")
+            Text(category.title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(theme.color.text)
+                .lineLimit(1)
+
+            Text("\(category.componentCount) componentes")
+                .font(.system(size: 13))
+                .foregroundStyle(theme.color.textSecondary)
         }
+        .padding(theme.spacing.medium)
+        .frame(height: 120)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 12))
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
-// MARK: - Quick Demo Card
+// MARK: - Quick Demo Button
 
-private struct QuickDemoCard: View {
+private struct QuickDemoButton: View {
+    @Environment(\.theme) private var theme
     let title: String
     let icon: String
-    let color: PrismColor
+    let color: Color
+    let action: () -> Void
+
+    init(title: String, icon: String, color: Color, action: @escaping () -> Void) {
+        self.title = title
+        self.icon = icon
+        self.color = color
+        self.action = action
+    }
 
     var body: some View {
-        PrismVStack(spacing: .small) {
-            PrismSymbol(icon, mode: .hierarchical)
-                .prism(font: .title2)
-                .prism(color: color)
+        Button(action: action) {
+            VStack(spacing: theme.spacing.small) {
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(color)
 
-            PrismFootnoteText(title)
+                Text(title)
+                    .font(.system(size: 13))
+                    .foregroundStyle(theme.color.textSecondary)
+                    .lineLimit(1)
+            }
+            .frame(width: 90, height: 90)
+            .background(Color(UIColor.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .frame(maxWidth: .infinity)
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 12))
+        .buttonStyle(.plain)
     }
 }
 

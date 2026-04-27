@@ -9,6 +9,7 @@ import SwiftUI
 
 // MARK: - PrismGradient
 
+/// Gradiente baseado em cores semânticas.
 public struct PrismGradient: Sendable {
     private let colors: [Color]
     private let startPoint: UnitPoint

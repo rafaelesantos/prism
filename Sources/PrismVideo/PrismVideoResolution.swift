@@ -7,6 +7,7 @@
 
 import PrismFoundation
 
+/// Resoluções de vídeo suportadas.
 public enum PrismVideoResolution: Int, PrismEntity {
     case _4K
     case fullHD

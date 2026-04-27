@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Implementação padrão de raios de borda.
 public struct PrismDefaultRadius: PrismRadiusProtocol {
     public var none: CGFloat
     public var small: CGFloat

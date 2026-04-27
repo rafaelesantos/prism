@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Implementação padrão de tamanhos.
 public struct PrismDefaultSize: PrismSizeProtocol {
     public var ultraSmall: CGFloat
     public var ultraSmall2: CGFloat

@@ -110,6 +110,7 @@ final class PrismNetworkNWConnection: @unchecked Sendable, PrismNetworkSocketCon
     }
 }
 
+/// Adapter WebSocket thread-safe com suporte a comandos e streams.
 public actor PrismNetworkSocketAdapter: PrismNetworkSocketClient {
     private let connectionFactory:
         @Sendable (

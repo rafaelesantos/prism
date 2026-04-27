@@ -12,7 +12,7 @@ import PrismArchitecture
 
 struct AtomsListView: View {
     @Environment(\.theme) private var theme
-    @State private var selectedAtom: PlaygroundAtom?
+    @Bindable private var router = PrismRouter<PlaygroundRoute>()
 
     private let atoms: [PlaygroundAtom] = [
         .button,
@@ -33,69 +33,115 @@ struct AtomsListView: View {
     ]
 
     var body: some View {
-        PrismLazyList {
-            PrismVStack(alignment: .leading, spacing: .medium) {
-                ForEach(atoms, id: \.self) { atom in
-                    AtomRow(atom: atom)
-                        .onTapGesture {
-                            selectedAtom = atom
-                        }
-                }
-            }
-            .prismPadding()
-            .prismBackgroundSecondary()
-            .prism(clip: .rounded(radius: 20))
+        ScrollView {
+            LazyVStack(spacing: theme.spacing.extraLarge) {
+                // Grid de cards para cada atom
+                atomsGrid
 
-            intelligenceSection
+                intelligenceSection
+            }
+            .padding(.horizontal, theme.spacing.medium)
+            .padding(.vertical, theme.spacing.medium)
         }
+        .background(Color(UIColor.systemBackground))
         .navigationTitle("Atoms")
     }
 
-    private var intelligenceSection: some View {
-        PrismVStack(alignment: .leading, spacing: .medium) {
-            PrismHStack(spacing: .small) {
-                PrismSymbol("brain.headset", mode: .hierarchical)
-                    .prism(color: .primary)
+    // MARK: - Atoms Grid
 
-                PrismText("Sobre Atoms")
-                    .prism(font: .headline)
+    private var atomsGrid: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(), spacing: theme.spacing.medium),
+                GridItem(.flexible(), spacing: theme.spacing.medium),
+            ],
+            spacing: theme.spacing.medium
+        ) {
+            ForEach(atoms, id: \.self) { atom in
+                Button {
+                    router.push(atom.demoRoute)
+                } label: {
+                    AtomCardView(atom: atom)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // MARK: - Intelligence Section
+
+    private var intelligenceSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.medium) {
+            HStack(spacing: theme.spacing.small) {
+                Image(systemName: "brain.headset")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(theme.color.primary)
+
+                Text("Sobre Atoms")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(theme.color.text)
+
+                Spacer()
             }
 
-            PrismBodyText(
-                "Atoms são os componentes fundamentais do Design System. Eles representam elementos UI básicos e atômicos que não podem ser divididos em partes menores sem perder sua funcionalidade."
-            )
+            Text("Atoms são os componentes fundamentais do Design System. Eles representam elementos UI básicos e atômicos que não podem ser divididos em partes menores sem perder sua funcionalidade.")
+                .font(.system(size: 15))
+                .foregroundStyle(theme.color.textSecondary)
 
-            PrismTag("15 componentes", style: .info, size: .small)
+            HStack {
+                Text("15 componentes")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(theme.color.info)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(theme.color.info.opacity(0.15))
+                    .clipShape(Capsule())
+
+                Spacer()
+            }
         }
-        .prismPadding()
-        .prismBackgroundSecondary()
-        .prism(clip: .rounded(radius: 20))
+        .padding(theme.spacing.medium)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
-private struct AtomRow: View {
+// MARK: - Atom Card View
+
+private struct AtomCardView: View {
     @Environment(\.theme) private var theme
     let atom: PlaygroundAtom
 
     var body: some View {
-        PrismHStack(spacing: .medium) {
-            PrismSymbol(atom.icon, mode: .hierarchical)
-                .prism(font: .title2)
-                .prism(color: PrismColor(rawValue: atom.color))
+        VStack(alignment: .leading, spacing: theme.spacing.small) {
+            // Ícone
+            Image(systemName: atom.icon)
+                .font(.system(size: 32))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(atom.color)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            PrismVStack(alignment: .leading, spacing: .small) {
-                PrismText(atom.title)
-                    .prism(font: .body)
-                PrismFootnoteText(atom.description)
-                    .lineLimit(1)
-            }
+            Spacer()
 
-            PrismSpacer()
+            // Título
+            Text(atom.title)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(theme.color.text)
+                .lineLimit(1)
 
-            PrismSymbol("chevron.right")
-                .prism(color: .textSecondary)
+            // Descrição
+            Text(atom.description)
+                .font(.system(size: 13))
+                .foregroundStyle(theme.color.textSecondary)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
         }
-        .prismPadding()
+        .padding(theme.spacing.medium)
+        .frame(height: 140)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(UIColor.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 
@@ -120,21 +166,21 @@ enum PlaygroundAtom: Hashable, CaseIterable {
 
     var title: String {
         switch self {
-        case .button: "PrismButton"
-        case .text: "PrismText"
-        case .textField: "PrismTextField"
-        case .symbol: "PrismSymbol"
-        case .asyncImage: "PrismAsyncImage"
-        case .shape: "PrismShape"
-        case .spacer: "PrismSpacer"
-        case .label: "PrismLabel"
-        case .list: "PrismList"
-        case .lazyList: "PrismLazyList"
-        case .section: "PrismSection"
-        case .hStack: "PrismHStack"
-        case .vStack: "PrismVStack"
-        case .zStack: "PrismZStack"
-        case .tabView: "PrismTabView"
+        case .button: "Button"
+        case .text: "Text"
+        case .textField: "TextField"
+        case .symbol: "Symbol"
+        case .asyncImage: "AsyncImage"
+        case .shape: "Shape"
+        case .spacer: "Spacer"
+        case .label: "Label"
+        case .list: "List"
+        case .lazyList: "LazyList"
+        case .section: "Section"
+        case .hStack: "HStack"
+        case .vStack: "VStack"
+        case .zStack: "ZStack"
+        case .tabView: "TabView"
         }
     }
 

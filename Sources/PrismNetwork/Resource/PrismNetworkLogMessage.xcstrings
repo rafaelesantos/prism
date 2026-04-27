@@ -8,13 +8,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📝 Body: %s"
+            "value" : "📝 Body: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📝 Corpo: %s"
+            "value" : "📝 Corpo: %@"
           }
         }
       }
@@ -26,13 +26,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Cache hit for %s"
+            "value" : "📦 Cache hit for %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Cache encontrado para %s"
+            "value" : "📦 Cache encontrado para %@"
           }
         }
       }
@@ -44,13 +44,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗄️ Cache miss or error for %s: %s"
+            "value" : "🗄️ Cache miss or error for %@: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗄️ Cache não encontrado ou erro para %s: %s"
+            "value" : "🗄️ Cache não encontrado ou erro para %@: %@"
           }
         }
       }
@@ -62,13 +62,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗄️ Cached response stored for %s with interval %f"
+            "value" : "🗄️ Cached response stored for %@ with interval %f"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗄️ Resposta armazenada em cache para %s com intervalo %f"
+            "value" : "🗄️ Resposta armazenada em cache para %@ com intervalo %f"
           }
         }
       }
@@ -80,13 +80,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Cache hit for %s with expiration at %f"
+            "value" : "📦 Cache hit for %@ with expiration at %f"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Cache encontrado para %s com expiração em %f"
+            "value" : "📦 Cache encontrado para %@ com expiração em %f"
           }
         }
       }
@@ -98,13 +98,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔗 Connecting to %s:%s using parameters: %s"
+            "value" : "🔗 Connecting to %@:%@ using parameters: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔗 Conectando a %s:%s com parâmetros: %s"
+            "value" : "🔗 Conectando a %@:%@ com parâmetros: %@"
           }
         }
       }
@@ -133,13 +133,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔌 Connection closed to %s:%s"
+            "value" : "🔌 Connection closed to %@:%@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔌 Conexão encerrada com %s:%s"
+            "value" : "🔌 Conexão encerrada com %@:%@"
           }
         }
       }
@@ -151,13 +151,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Connection established to %s:%s"
+            "value" : "✅ Connection established to %@:%@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Conexão estabelecida com %s:%s"
+            "value" : "✅ Conexão estabelecida com %@:%@"
           }
         }
       }
@@ -169,13 +169,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Connection failed with error: %s"
+            "value" : "⚠️ Connection failed with error: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Falha na conexão com erro: %s"
+            "value" : "⚠️ Falha na conexão com erro: %@"
           }
         }
       }
@@ -204,13 +204,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔄 Connection state changed: %s"
+            "value" : "🔄 Connection state changed: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔄 Estado da conexão alterado: %s"
+            "value" : "🔄 Estado da conexão alterado: %@"
           }
         }
       }
@@ -222,13 +222,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔌 Disconnected from %s:%s"
+            "value" : "🔌 Disconnected from %@:%@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🔌 Desconectado de %s:%s"
+            "value" : "🔌 Desconectado de %@:%@"
           }
         }
       }
@@ -240,13 +240,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "❌ Failed to encode message: %s"
+            "value" : "❌ Failed to encode message: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "❌ Falha ao codificar mensagem: %s"
+            "value" : "❌ Falha ao codificar mensagem: %@"
           }
         }
       }
@@ -258,13 +258,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📋 Headers: %s"
+            "value" : "📋 Headers: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📋 Cabeçalhos: %s"
+            "value" : "📋 Cabeçalhos: %@"
           }
         }
       }
@@ -276,13 +276,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🖥️ Host: %s"
+            "value" : "🖥️ Host: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🖥️ Host: %s"
+            "value" : "🖥️ Host: %@"
           }
         }
       }
@@ -294,13 +294,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "❌ Invalid URL for request: %s"
+            "value" : "❌ Invalid URL for request: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "❌ URL inválida para requisição: %s"
+            "value" : "❌ URL inválida para requisição: %@"
           }
         }
       }
@@ -312,13 +312,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Message sent successfully: %s"
+            "value" : "✅ Message sent successfully: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Mensagem enviada com sucesso: %s"
+            "value" : "✅ Mensagem enviada com sucesso: %@"
           }
         }
       }
@@ -330,13 +330,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗑️ No valid cache found for %s"
+            "value" : "🗑️ No valid cache found for %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🗑️ Nenhum cache válido encontrado para %s"
+            "value" : "🗑️ Nenhum cache válido encontrado para %@"
           }
         }
       }
@@ -348,13 +348,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⏱️ No cache interval provided for %s, skipping cache storage."
+            "value" : "⏱️ No cache interval provided for %@, skipping cache storage."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⏱️ Nenhum intervalo de cache fornecido para %s, pulando armazenamento."
+            "value" : "⏱️ Nenhum intervalo de cache fornecido para %@, pulando armazenamento."
           }
         }
       }
@@ -366,13 +366,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Parameters: %s"
+            "value" : "📦 Parameters: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "📦 Parâmetros: %s"
+            "value" : "📦 Parâmetros: %@"
           }
         }
       }
@@ -384,13 +384,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🚪 Port: %s"
+            "value" : "🚪 Port: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🚪 Porta: %s"
+            "value" : "🚪 Porta: %@"
           }
         }
       }
@@ -402,13 +402,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Error while receiving data: %s"
+            "value" : "⚠️ Error while receiving data: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Erro ao receber dados: %s"
+            "value" : "⚠️ Erro ao receber dados: %@"
           }
         }
       }
@@ -437,13 +437,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🚀 Starting request to %s"
+            "value" : "🚀 Starting request to %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🚀 Iniciando requisição para %s"
+            "value" : "🚀 Iniciando requisição para %@"
           }
         }
       }
@@ -455,13 +455,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Response received and cached for %s"
+            "value" : "✅ Response received and cached for %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✅ Resposta recebida e armazenada em cache para %s"
+            "value" : "✅ Resposta recebida e armazenada em cache para %@"
           }
         }
       }
@@ -473,13 +473,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Error while sending message: %s"
+            "value" : "⚠️ Error while sending message: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Erro ao enviar mensagem: %s"
+            "value" : "⚠️ Erro ao enviar mensagem: %@"
           }
         }
       }
@@ -491,13 +491,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✉️ Sending message: %s"
+            "value" : "✉️ Sending message: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✉️ Enviando mensagem: %s"
+            "value" : "✉️ Enviando mensagem: %@"
           }
         }
       }
@@ -509,13 +509,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🌐 URL: %s"
+            "value" : "🌐 URL: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🌐 URL: %s"
+            "value" : "🌐 URL: %@"
           }
         }
       }

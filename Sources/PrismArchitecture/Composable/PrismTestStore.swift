@@ -8,6 +8,7 @@
 import Foundation
 
 @MainActor
+/// Store de teste para asserções determinísticas de estado.
 public final class PrismTestStore<State: Sendable & Equatable, Action: Sendable> {
     public let store: PrismStore<State, Action>
 

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Tamanhos do design system.
 public indirect enum PrismSize {
     case none
     case ultraSmall

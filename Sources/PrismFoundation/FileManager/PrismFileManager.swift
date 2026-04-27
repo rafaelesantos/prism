@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Gerenciador de arquivos com suporte a diretórios públicos e privados.
 public struct PrismFileManager: @unchecked Sendable {
     private let fileManager: FileManager
     private let documentsURL: URL?

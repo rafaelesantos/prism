@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Espaçamento do design system.
 public indirect enum PrismSpacing {
     case zero
     case extraSmall

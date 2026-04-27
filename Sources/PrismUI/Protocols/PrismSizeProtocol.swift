@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Protocolo para definição de tamanhos do tema.
 public protocol PrismSizeProtocol: Sendable {
     var ultraSmall: CGFloat { get }
     var ultraSmall2: CGFloat { get }

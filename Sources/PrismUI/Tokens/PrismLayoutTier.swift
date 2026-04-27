@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Tiers de layout: compact, regular, expansive.
 public enum PrismLayoutTier: String, CaseIterable, Equatable, Sendable {
     case compact
     case regular

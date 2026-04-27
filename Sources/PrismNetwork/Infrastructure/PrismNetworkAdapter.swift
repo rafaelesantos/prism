@@ -36,6 +36,7 @@ private final class PrismNetworkRedirectCaptureDelegate: NSObject, URLSessionTas
     }
 }
 
+/// Adapter HTTP thread-safe baseado em URLSession com suporte a cache e redirect.
 public actor PrismNetworkAdapter: PrismNetworkClient {
     private let session: URLSession
     private let sessionConfiguration: URLSessionConfiguration

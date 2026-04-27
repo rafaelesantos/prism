@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Raios de borda do design system.
 public enum PrismRadius: CaseIterable, Equatable {
     case none
     case small

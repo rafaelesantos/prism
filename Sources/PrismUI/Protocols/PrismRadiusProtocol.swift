@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Protocolo para definição de raios de borda do tema.
 public protocol PrismRadiusProtocol: Sendable {
     var none: CGFloat { get }
     var small: CGFloat { get }

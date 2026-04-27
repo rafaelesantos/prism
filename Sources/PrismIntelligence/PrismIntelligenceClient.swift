@@ -8,12 +8,14 @@
 import Foundation
 import PrismFoundation
 
+/// Tipo de backend de inteligência.
 public enum PrismIntelligenceBackendKind: String, Codable, Sendable, CaseIterable {
     case local
     case apple
     case remote
 }
 
+/// Capacidades de um backend de inteligência.
 public enum PrismIntelligenceCapability: String, Codable, Sendable, CaseIterable {
     case textClassification
     case tabularClassification
@@ -21,6 +23,7 @@ public enum PrismIntelligenceCapability: String, Codable, Sendable, CaseIterable
     case languageGeneration
 }
 
+/// Status de disponibilidade e capacidades de um backend.
 public struct PrismIntelligenceStatus: Codable, Equatable, Hashable, Sendable {
     public var backend: PrismIntelligenceBackendKind
     public var isAvailable: Bool
@@ -58,6 +61,7 @@ public struct PrismIntelligenceStatus: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+/// Requisição de inteligência (classificação, regressão ou geração).
 public enum PrismIntelligenceRequest: Sendable, Equatable {
     case classifyText(String)
     case classifyFeatures(PrismIntelligenceFeatureRow)
@@ -65,6 +69,7 @@ public enum PrismIntelligenceRequest: Sendable, Equatable {
     case generate(PrismLanguageIntelligenceRequest)
 }
 
+/// Resposta de inteligência.
 public enum PrismIntelligenceResponse: Sendable, Equatable {
     case textClassification(String)
     case tabularClassification([String: Double])
@@ -103,6 +108,7 @@ internal protocol PrismLanguageIntelligenceServing: Sendable {
 extension PrismIntelligencePrediction: PrismIntelligenceLocalServing {}
 extension PrismLanguageIntelligence: PrismLanguageIntelligenceServing {}
 
+/// Fachada unificada para inteligência: local, Apple e remoto.
 public actor PrismIntelligenceClient {
     private enum Backend {
         case local(

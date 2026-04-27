@@ -7,10 +7,12 @@
 
 import os
 
+/// Protocolo para logging estruturado via os.Logger.
 public protocol PrismLogger {
     func log()
 }
 
+/// Protocolo de logging do sistema com Logger dedicado.
 public protocol PrismSystemLogger {
     associatedtype Message: PrismResourceLogMessage
     var logger: Logger { get }

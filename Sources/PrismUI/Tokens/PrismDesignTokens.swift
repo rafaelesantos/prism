@@ -9,24 +9,29 @@ import SwiftUI
 
 // MARK: - Token Types
 
+/// Token de espaçamento do design system.
 public enum SpacingToken: CaseIterable, Sendable {
     case none, extraSmall, small, medium, large, extraLarge, ultraLarge, section
 }
 
+/// Token de raio de borda do design system.
 public enum RadiusToken: CaseIterable, Sendable {
     case none, small, medium, large, extraLarge, circle
 }
 
+/// Tamanhos de fonte do design system.
 public enum FontSizeToken: CaseIterable, Sendable {
     case caption2, caption, footnote, body, title3, title2, title, largeTitle
 }
 
+/// Durações de animação do design system.
 public enum MotionToken: CaseIterable, Sendable {
     case instant, fast, normal, slow
 }
 
 // MARK: - Design Tokens
 
+/// Coleção de tokens de design: espaçamento, raio, fontes, animações e breakpoints.
 public struct PrismDesignTokens: Equatable, Sendable {
 
     // MARK: - Spacing Scale (8pt grid system)
@@ -227,6 +232,7 @@ public struct PrismDesignTokens: Equatable, Sendable {
 
 // MARK: - Breakpoint
 
+/// Breakpoints de layout responsivo.
 public enum Breakpoint: CaseIterable, Sendable {
     case phoneCompact
     case phoneMax

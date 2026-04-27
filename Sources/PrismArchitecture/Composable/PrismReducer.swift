@@ -6,6 +6,7 @@
 //
 
 @MainActor
+/// Protocolo para reducers que processam ações e produzem novo estado.
 public protocol PrismReducer: Sendable {
     associatedtype State: Sendable
     associatedtype Action: Sendable

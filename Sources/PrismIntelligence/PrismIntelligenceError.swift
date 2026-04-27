@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Erros do módulo de inteligência.
 public enum PrismIntelligenceError: Error, Sendable, Equatable {
     case invalidTrainingData(String)
     case unsupportedPlatform(String)

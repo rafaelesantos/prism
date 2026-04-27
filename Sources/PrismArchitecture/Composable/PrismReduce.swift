@@ -5,6 +5,7 @@
 //  Created by Rafael Escaleira on 08/04/26.
 //
 
+/// Reducer baseado em closure para transformação de estado.
 public struct PrismReduce<State: Sendable, Action: Sendable>: PrismReducer {
     private let body: @MainActor @Sendable (inout State, Action) -> PrismEffect<Action>
 

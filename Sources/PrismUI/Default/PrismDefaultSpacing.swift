@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Implementação padrão de espaçamento.
 public struct PrismDefaultSpacing: PrismSpacingProtocol {
     public var none: CGFloat = .zero
     public var extraSmall: CGFloat

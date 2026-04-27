@@ -83,7 +83,7 @@ enum PrismNetworkLogMessage: PrismResourceLogMessage {
     }
 
     func formatted(with arguments: CVarArg...) -> String {
-        String(format: format, arguments)
+        String(format: format, arguments: arguments)
     }
 
     var value: String {
