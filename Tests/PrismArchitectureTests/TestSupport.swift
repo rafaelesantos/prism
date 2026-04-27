@@ -78,10 +78,10 @@ func collectActions<Action: PrismAction>(
     return actions
 }
 
-func settleTasks(iterations: Int = 10) async {
+func settleTasks(iterations: Int = 20) async {
     for _ in 0..<iterations {
         await Task.yield()
     }
 
-    try? await Task.sleep(for: .milliseconds(20))
+    try? await Task.sleep(for: .milliseconds(100))
 }
