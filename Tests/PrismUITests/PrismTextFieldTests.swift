@@ -437,57 +437,57 @@ final class PrismTextFieldContentTypeTests: XCTestCase {
     }
 
     #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
-    func testDefaultRawValueIsDefaultKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.default.rawValue, .default)
-    }
+        func testDefaultRawValueIsDefaultKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.default.rawValue, .default)
+        }
 
-    func testAsciiCapableRawValueIsAsciiCapableKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.asciiCapable.rawValue, .asciiCapable)
-    }
+        func testAsciiCapableRawValueIsAsciiCapableKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.asciiCapable.rawValue, .asciiCapable)
+        }
 
-    func testNumbersAndPunctuationRawValueIsNumbersAndPunctuation() {
-        XCTAssertEqual(PrismTextFieldContentType.numbersAndPunctuation.rawValue, .numbersAndPunctuation)
-    }
+        func testNumbersAndPunctuationRawValueIsNumbersAndPunctuation() {
+            XCTAssertEqual(PrismTextFieldContentType.numbersAndPunctuation.rawValue, .numbersAndPunctuation)
+        }
 
-    func testURLRawValueIsURLKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.URL.rawValue, .URL)
-    }
+        func testURLRawValueIsURLKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.URL.rawValue, .URL)
+        }
 
-    func testNumberPadRawValueIsNumberPadKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.numberPad.rawValue, .numberPad)
-    }
+        func testNumberPadRawValueIsNumberPadKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.numberPad.rawValue, .numberPad)
+        }
 
-    func testPhonePadRawValueIsPhonePadKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.phonePad.rawValue, .phonePad)
-    }
+        func testPhonePadRawValueIsPhonePadKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.phonePad.rawValue, .phonePad)
+        }
 
-    func testNamePhonePadRawValueIsNamePhonePadKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.namePhonePad.rawValue, .namePhonePad)
-    }
+        func testNamePhonePadRawValueIsNamePhonePadKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.namePhonePad.rawValue, .namePhonePad)
+        }
 
-    func testEmailAddressRawValueIsEmailAddressKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.emailAddress.rawValue, .emailAddress)
-    }
+        func testEmailAddressRawValueIsEmailAddressKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.emailAddress.rawValue, .emailAddress)
+        }
 
-    func testDecimalPadRawValueIsDecimalPadKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.decimalPad.rawValue, .decimalPad)
-    }
+        func testDecimalPadRawValueIsDecimalPadKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.decimalPad.rawValue, .decimalPad)
+        }
 
-    func testTwitterRawValueIsTwitterKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.twitter.rawValue, .twitter)
-    }
+        func testTwitterRawValueIsTwitterKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.twitter.rawValue, .twitter)
+        }
 
-    func testWebSearchRawValueIsWebSearchKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.webSearch.rawValue, .webSearch)
-    }
+        func testWebSearchRawValueIsWebSearchKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.webSearch.rawValue, .webSearch)
+        }
 
-    func testAsciiCapableNumberPadRawValueIsAsciiCapableNumberPadKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.asciiCapableNumberPad.rawValue, .asciiCapableNumberPad)
-    }
+        func testAsciiCapableNumberPadRawValueIsAsciiCapableNumberPadKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.asciiCapableNumberPad.rawValue, .asciiCapableNumberPad)
+        }
 
-    func testAlphabetRawValueIsAlphabetKeyboardType() {
-        XCTAssertEqual(PrismTextFieldContentType.alphabet.rawValue, .alphabet)
-    }
+        func testAlphabetRawValueIsAlphabetKeyboardType() {
+            XCTAssertEqual(PrismTextFieldContentType.alphabet.rawValue, .alphabet)
+        }
     #endif
 
     func testContentTypeEqualityComparison() {
@@ -534,21 +534,21 @@ final class PrismTextInputAutocapitalizationTests: XCTestCase {
     }
 
     #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
-    func testNeverRawValueIsNever() {
-        XCTAssertEqual(PrismTextInputAutocapitalization.never.rawValue, .never)
-    }
+        func testNeverRawValueIsNever() {
+            XCTAssertEqual(PrismTextInputAutocapitalization.never.rawValue, .never)
+        }
 
-    func testWordsRawValueIsWords() {
-        XCTAssertEqual(PrismTextInputAutocapitalization.words.rawValue, .words)
-    }
+        func testWordsRawValueIsWords() {
+            XCTAssertEqual(PrismTextInputAutocapitalization.words.rawValue, .words)
+        }
 
-    func testSentencesRawValueIsSentences() {
-        XCTAssertEqual(PrismTextInputAutocapitalization.sentences.rawValue, .sentences)
-    }
+        func testSentencesRawValueIsSentences() {
+            XCTAssertEqual(PrismTextInputAutocapitalization.sentences.rawValue, .sentences)
+        }
 
-    func testCharactersRawValueIsCharacters() {
-        XCTAssertEqual(PrismTextInputAutocapitalization.characters.rawValue, .characters)
-    }
+        func testCharactersRawValueIsCharacters() {
+            XCTAssertEqual(PrismTextInputAutocapitalization.characters.rawValue, .characters)
+        }
     #endif
 }
 

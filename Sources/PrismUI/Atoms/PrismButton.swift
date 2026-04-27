@@ -145,10 +145,11 @@ public struct PrismButton: PrismView {
         PrismButton(
             accessibility: nil,
             role: .none,
-            action: {}
-        ) {
-            PrismText.mocked()
-        }
+            action: {},
+            label: {
+                PrismText.mocked()
+            }
+        )
     }
 }
 

@@ -244,7 +244,7 @@ final class PrismUITests: XCTestCase {
     func testDesignTokensFontSizesAreMonotonicallyIncreasing() {
         let tokens = PrismDesignTokens.default
         let orderedTokens: [FontSizeToken] = [
-            .caption2, .caption, .footnote, .body, .title3, .title2, .title, .largeTitle
+            .caption2, .caption, .footnote, .body, .title3, .title2, .title, .largeTitle,
         ]
 
         for i in 0..<(orderedTokens.count - 1) {
@@ -451,7 +451,7 @@ final class PrismUITests: XCTestCase {
     func testPrismSpacingIsMonotonicallyIncreasing() {
         let theme = PrismDefaultSpacing()
         let orderedSpacing: [PrismSpacing] = [
-            .zero, .extraSmall, .small, .medium, .large, .extraLarge, .ultraLarge, .section
+            .zero, .extraSmall, .small, .medium, .large, .extraLarge, .ultraLarge, .section,
         ]
 
         for i in 0..<(orderedSpacing.count - 1) {
@@ -557,12 +557,13 @@ final class PrismUITests: XCTestCase {
             .ultraSmall, .ultraSmall2, .extraSmall, .extraSmall2,
             .small, .small2, .medium, .medium2,
             .large, .large2, .extraLarge, .extraLarge2,
-            .ultraLarge, .max
+            .ultraLarge, .max,
         ]
 
         for i in 0..<(orderedSizes.count - 1) {
             guard let current = orderedSizes[i].rawValue(for: theme),
-                  let next = orderedSizes[i + 1].rawValue(for: theme) else {
+                let next = orderedSizes[i + 1].rawValue(for: theme)
+            else {
                 XCTFail("Size values should not be nil for non-.none cases")
                 return
             }
@@ -580,7 +581,7 @@ final class PrismUITests: XCTestCase {
             .ultraSmall, .ultraSmall2, .extraSmall, .extraSmall2,
             .small, .small2, .medium, .medium2,
             .large, .large2, .extraLarge, .extraLarge2,
-            .ultraLarge, .max
+            .ultraLarge, .max,
         ]
 
         for size in nonNoneCases {
@@ -594,7 +595,7 @@ final class PrismUITests: XCTestCase {
             .ultraSmall, .ultraSmall2, .extraSmall, .extraSmall2,
             .small, .small2, .medium, .medium2,
             .large, .large2, .extraLarge, .extraLarge2,
-            .ultraLarge, .max
+            .ultraLarge, .max,
         ]
 
         for size in nonNoneCases {

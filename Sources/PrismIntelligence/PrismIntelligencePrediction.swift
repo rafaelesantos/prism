@@ -105,7 +105,8 @@ internal protocol PrismIntelligencePredictionRuntime: Sendable {
 
 #if canImport(CoreML)
     /// Thread-safe: `cache` dictionary is guarded by `NSLock`.
-    internal final class PrismCoreMLIntelligencePredictionRuntime: PrismIntelligencePredictionRuntime, @unchecked Sendable
+    internal final class PrismCoreMLIntelligencePredictionRuntime:
+        PrismIntelligencePredictionRuntime, @unchecked Sendable
     {
         private let lock = NSLock()
         private var cache: [URL: MLModel] = [:]
