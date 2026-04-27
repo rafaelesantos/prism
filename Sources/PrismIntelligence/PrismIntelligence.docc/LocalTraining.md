@@ -27,6 +27,21 @@ let model = try await intelligence.trainingTextClassifier(
 )
 ```
 
+### Escolha de Idioma
+
+Passe um ``PrismLocale`` explícito para treinar no idioma desejado:
+
+```swift
+let model = try await intelligence.trainingTextClassifier(
+    id: "support-intent",
+    name: "Support Intent",
+    locale: .portugueseBR,
+    maxIterations: 50
+)
+```
+
+Se nenhum locale for informado, ``PrismLocale/current`` é usado automaticamente.
+
 ### Configuração de Texto
 
 ```swift
@@ -85,7 +100,11 @@ let config = PrismTabularTrainingConfiguration(
     minLossReduction: 0.0,
     minChildWeight: 0.01,
     randomSeed: 42,
-    stepSize: 0.01
+    stepSize: 0.01,
+    featureColumns: ["sessions", "spent"],  // usa apenas estas features
+    earlyStoppingRounds: 10,                // para se não melhorar em 10 rodadas
+    rowSubsample: 0.8,                      // usa 80% das linhas por rodada
+    columnSubsample: 0.7                    // usa 70% das colunas por rodada
 )
 ```
 
@@ -119,6 +138,7 @@ catalog.clean() // Remove modelos órfãos
 ## Topics
 
 - ``PrismIntelligenceLocalTrainer``
+- ``PrismCodableTrainingData``
 - ``PrismTextTrainingSample``
 - ``PrismTextTrainingConfiguration``
 - ``PrismTabularTrainingConfiguration``

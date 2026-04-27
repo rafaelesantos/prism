@@ -8,21 +8,32 @@ Integração com modelos de linguagem remotos via HTTP.
 
 ### Uso via PrismIntelligenceClient
 
-A forma mais simples de usar um modelo remoto:
+A forma mais simples de usar um modelo remoto com autenticação por token:
 
 ```swift
 import PrismIntelligence
 
 let client = PrismIntelligenceClient.remote(
     endpoint: URL(string: "https://api.example.com/v1/generate")!,
-    model: "gpt-oss-120b",
-    providerName: "example-ai",
-    headers: [
-        "Authorization": "Bearer TOKEN"
-    ]
+    token: "sk-your-api-key",
+    model: "gpt-oss-120b"
 )
 
 let answer = try await client.generate("Crie um onboarding financeiro.")
+```
+
+Para headers customizados além do Bearer token:
+
+```swift
+let client = PrismIntelligenceClient.remote(
+    endpoint: URL(string: "https://api.example.com/v1/generate")!,
+    model: "gpt-oss-120b",
+    providerName: "example-ai",
+    headers: [
+        "Authorization": "Bearer TOKEN",
+        "X-Custom-Header": "value"
+    ]
+)
 ```
 
 ### Com Serializer Customizado

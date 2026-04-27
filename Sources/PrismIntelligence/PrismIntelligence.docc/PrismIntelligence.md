@@ -23,9 +23,10 @@ let label = try await local.classify(text: "Cobrar assinatura premium")
 let apple = PrismIntelligenceClient.apple()
 let summary = try await apple.generate("Resuma os pontos principais da tela.")
 
-// Modelo remoto
+// Modelo remoto com token
 let remote = PrismIntelligenceClient.remote(
     endpoint: URL(string: "https://api.example.com/v1/generate")!,
+    token: "sk-your-api-key",
     model: "gpt-oss-120b"
 )
 let answer = try await remote.generate("Crie um onboarding financeiro.")
@@ -40,6 +41,10 @@ let answer = try await remote.generate("Crie um onboarding financeiro.")
 ### Treino Local
 
 - ``LocalTraining``
+
+### Treino com Codable
+
+- <doc:CodableTrainingGuide>
 
 ### Inferência Local
 

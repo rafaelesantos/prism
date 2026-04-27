@@ -61,11 +61,13 @@ public final class PrismTextIntelligence {
     /// - Parameters:
     ///   - id: A unique identifier for the resulting model.
     ///   - name: A display name for the resulting model.
+    ///   - locale: An optional locale for training language. Defaults to ``PrismLocale/current``.
     ///   - maxIterations: An optional maximum number of training iterations.
     /// - Returns: A ``PrismIntelligenceResult`` indicating success or failure.
     public func trainingTextClassifier(
         id: String,
         name: String,
+        locale: PrismLocale? = nil,
         maxIterations: Int? = nil
     ) async -> PrismIntelligenceResult {
         if invalidRowCount > 0 {
@@ -74,13 +76,14 @@ public final class PrismTextIntelligence {
             )
         }
 
+        let resolvedLocale = locale ?? .current
         do {
             let model = try await trainer.trainTextClassifier(
                 data: data,
                 configuration: PrismTextTrainingConfiguration(
                     id: id,
                     name: name,
-                    localeIdentifier: PrismLocale.current.rawValue.identifier,
+                    localeIdentifier: resolvedLocale.identifier,
                     maxIterations: maxIterations
                 )
             )

@@ -283,6 +283,36 @@ public actor PrismIntelligenceClient {
         )
     }
 
+    /// Creates a client backed by a remote language model with Bearer token authentication.
+    ///
+    /// This is a convenience factory that automatically sets the `Authorization: Bearer <token>` header.
+    ///
+    /// - Parameters:
+    ///   - endpoint: The URL of the remote inference endpoint.
+    ///   - token: The authentication token sent as a Bearer token.
+    ///   - model: An optional model identifier sent to the remote API.
+    ///   - providerName: A label for the remote provider. Defaults to `"remote"`.
+    ///   - timeout: The request timeout interval in seconds. Defaults to 60.
+    ///   - transport: The networking transport used to perform HTTP requests.
+    /// - Returns: A configured ``PrismIntelligenceClient`` for remote generation.
+    public static func remote(
+        endpoint: URL,
+        token: String,
+        model: String? = nil,
+        providerName: String = "remote",
+        timeout: TimeInterval = 60,
+        transport: any PrismRemoteIntelligenceTransport = PrismURLSessionRemoteIntelligenceTransport()
+    ) -> PrismIntelligenceClient {
+        remote(
+            endpoint: endpoint,
+            model: model,
+            providerName: providerName,
+            headers: ["Authorization": "Bearer \(token)"],
+            timeout: timeout,
+            transport: transport
+        )
+    }
+
     /// Creates a client backed by a remote language model using a custom serializer.
     ///
     /// - Parameters:

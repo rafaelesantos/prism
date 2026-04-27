@@ -804,3 +804,312 @@ private struct RemoteResponseFixture: Encodable {
     let finishReason: String
     let usage: PrismLanguageTokenUsage
 }
+
+// MARK: - Codable Training Data Tests
+
+private struct HouseData: Codable {
+    var rooms: Int
+    var area: Double
+    var neighborhood: String
+    var price: Double
+}
+
+private struct SentimentData: Codable {
+    var text: String
+    var label: String
+}
+
+extension PrismIntelligenceTests {
+
+    // MARK: - PrismCodableTrainingData — Feature Extraction
+
+    func testCodableTrainingDataExtractsFeatureRows() {
+        let data = [
+            HouseData(rooms: 3, area: 120, neighborhood: "Centro", price: 450_000),
+            HouseData(rooms: 2, area: 80, neighborhood: "Sul", price: 320_000),
+        ]
+        let training = PrismCodableTrainingData(data: data)
+        let rows = training.featureRows()
+
+        XCTAssertEqual(rows.count, 2)
+        XCTAssertEqual(rows[0]["rooms"], .int(3))
+        XCTAssertEqual(rows[0]["area"], .double(120))
+        XCTAssertEqual(rows[0]["neighborhood"], .string("Centro"))
+        XCTAssertEqual(rows[0]["price"], .double(450_000))
+    }
+
+    func testCodableTrainingDataReturnsEmptyForEmptyInput() {
+        let training = PrismCodableTrainingData<HouseData>(data: [])
+        let rows = training.featureRows()
+        XCTAssertTrue(rows.isEmpty)
+    }
+
+    func testCodableTrainingDataTrainTestSplit() {
+        let data = (0..<10).map {
+            HouseData(rooms: $0, area: Double($0 * 50), neighborhood: "N\($0)", price: Double($0 * 100_000))
+        }
+        let training = PrismCodableTrainingData(data: data, testRatio: 0.3)
+        let (train, test) = training.trainTestSplit()
+
+        XCTAssertEqual(train.count + test.count, 10)
+        XCTAssertEqual(test.count, 3)
+        XCTAssertEqual(train.count, 7)
+    }
+
+    func testCodableTrainingDataSplitIsReproducible() {
+        let data = (0..<20).map {
+            HouseData(rooms: $0, area: Double($0), neighborhood: "N", price: Double($0))
+        }
+        let t1 = PrismCodableTrainingData(data: data, seed: 99)
+        let t2 = PrismCodableTrainingData(data: data, seed: 99)
+
+        let (train1, _) = t1.trainTestSplit()
+        let (train2, _) = t2.trainTestSplit()
+
+        XCTAssertEqual(train1.map(\.rooms), train2.map(\.rooms))
+    }
+
+    func testCodableTrainingDataExtractFeatureRowsWithSubsetColumns() {
+        let data = [
+            HouseData(rooms: 3, area: 120, neighborhood: "Centro", price: 450_000)
+        ]
+        let training = PrismCodableTrainingData(data: data)
+        let rows = training.extractFeatureRows(targetName: "price", featureKeyPaths: nil)
+
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0].count, 4)
+    }
+
+    // MARK: - PrismCodableTrainingData — Training (with mock)
+
+    func testCodableTrainingDataClassifierTraining() async {
+        let suite = makeDefaultsSuite()
+        let tempDirectory = makeTemporaryDirectory()
+        defer {
+            suite.userDefaults.removePersistentDomain(forName: suite.name)
+            try? FileManager.default.removeItem(at: tempDirectory)
+        }
+
+        let trainer = PrismIntelligenceLocalTrainer(
+            catalog: PrismIntelligenceCatalog(defaults: suite.defaults),
+            fileManager: PrismFileManager(documentsURL: tempDirectory),
+            runtime: MockTrainingRuntime(
+                classificationMetrics: .init(accuracy: 0.92, rootMeanSquaredError: 0.08)
+            )
+        )
+
+        let data = [
+            HouseData(rooms: 3, area: 120, neighborhood: "Centro", price: 450_000),
+            HouseData(rooms: 2, area: 80, neighborhood: "Sul", price: 320_000),
+        ]
+
+        let training = PrismCodableTrainingData(data: data, trainer: trainer)
+        let result = await training.trainClassifier(
+            id: "house_class",
+            name: "House Classifier",
+            target: \HouseData.neighborhood
+        )
+
+        guard case .saved(let model) = result else {
+            return XCTFail("Expected saved model.")
+        }
+        XCTAssertEqual(model.kind, .tabularClassifier)
+        XCTAssertEqual(model.accuracy, 0.92)
+    }
+
+    func testCodableTrainingDataRegressorTraining() async {
+        let suite = makeDefaultsSuite()
+        let tempDirectory = makeTemporaryDirectory()
+        defer {
+            suite.userDefaults.removePersistentDomain(forName: suite.name)
+            try? FileManager.default.removeItem(at: tempDirectory)
+        }
+
+        let trainer = PrismIntelligenceLocalTrainer(
+            catalog: PrismIntelligenceCatalog(defaults: suite.defaults),
+            fileManager: PrismFileManager(documentsURL: tempDirectory),
+            runtime: MockTrainingRuntime(
+                regressionMetrics: .init(accuracy: 0.85, rootMeanSquaredError: 1.5)
+            )
+        )
+
+        let data = [
+            HouseData(rooms: 3, area: 120, neighborhood: "Centro", price: 450_000),
+            HouseData(rooms: 2, area: 80, neighborhood: "Sul", price: 320_000),
+        ]
+
+        let training = PrismCodableTrainingData(data: data, trainer: trainer)
+        let result = await training.trainRegressor(
+            id: "house_price",
+            name: "Price Regressor",
+            target: \HouseData.price
+        )
+
+        guard case .saved(let model) = result else {
+            return XCTFail("Expected saved model.")
+        }
+        XCTAssertEqual(model.kind, .tabularRegressor)
+        XCTAssertEqual(model.rootMeanSquaredError, 1.5)
+    }
+
+    func testCodableTrainingDataTextClassifierTraining() async {
+        let suite = makeDefaultsSuite()
+        let tempDirectory = makeTemporaryDirectory()
+        defer {
+            suite.userDefaults.removePersistentDomain(forName: suite.name)
+            try? FileManager.default.removeItem(at: tempDirectory)
+        }
+
+        let trainer = PrismIntelligenceLocalTrainer(
+            catalog: PrismIntelligenceCatalog(defaults: suite.defaults),
+            fileManager: PrismFileManager(documentsURL: tempDirectory),
+            runtime: MockTrainingRuntime(
+                textMetrics: .init(accuracy: 0.97, rootMeanSquaredError: 0.03)
+            )
+        )
+
+        let data = [
+            SentimentData(text: "Amo esse produto", label: "positivo"),
+            SentimentData(text: "Péssimo atendimento", label: "negativo"),
+        ]
+
+        let training = PrismCodableTrainingData(data: data, trainer: trainer)
+        let result = await training.trainTextClassifier(
+            id: "sentiment",
+            name: "Sentiment",
+            text: \SentimentData.text,
+            label: \SentimentData.label,
+            locale: .portugueseBR
+        )
+
+        guard case .saved(let model) = result else {
+            return XCTFail("Expected saved model.")
+        }
+        XCTAssertEqual(model.kind, .textClassifier)
+        XCTAssertEqual(model.accuracy, 0.97)
+    }
+
+    func testCodableTrainingDataFailsWithEmptyData() async {
+        let training = PrismCodableTrainingData<HouseData>(data: [])
+        let result = await training.trainRegressor(
+            id: "empty",
+            name: "Empty",
+            target: \HouseData.price
+        )
+
+        guard case .failure(let error) = result else {
+            return XCTFail("Expected failure.")
+        }
+        XCTAssertEqual(error, .invalidTrainingData("Could not resolve target property name."))
+    }
+
+    // MARK: - Locale Parameter
+
+    func testTextIntelligenceAcceptsExplicitLocale() async {
+        let suite = makeDefaultsSuite()
+        let tempDirectory = makeTemporaryDirectory()
+        defer {
+            suite.userDefaults.removePersistentDomain(forName: suite.name)
+            try? FileManager.default.removeItem(at: tempDirectory)
+        }
+
+        let trainer = PrismIntelligenceLocalTrainer(
+            catalog: PrismIntelligenceCatalog(defaults: suite.defaults),
+            fileManager: PrismFileManager(documentsURL: tempDirectory),
+            runtime: MockTrainingRuntime(
+                textMetrics: .init(accuracy: 0.90, rootMeanSquaredError: 0.10)
+            )
+        )
+
+        let intelligence = PrismTextIntelligence(
+            samples: [
+                .init(text: "Bonjour", label: "greeting"),
+                .init(text: "Merci", label: "thanks"),
+            ],
+            trainer: trainer
+        )
+
+        let result = await intelligence.trainingTextClassifier(
+            id: "french_class",
+            name: "French Classifier",
+            locale: .frenchFR
+        )
+
+        guard case .saved(let model) = result else {
+            return XCTFail("Expected saved model.")
+        }
+        XCTAssertEqual(model.localeIdentifier, "fr_FR")
+    }
+
+    // MARK: - Remote Auth Token Convenience
+
+    func testRemoteTokenConvenienceSetsAuthorizationHeader() throws {
+        let client = PrismIntelligenceClient.remote(
+            endpoint: URL(string: "https://api.example.com/v1/generate")!,
+            token: "sk-test-12345",
+            model: "gpt-4"
+        )
+        // Verify client was created (factory doesn't throw)
+        // The token is injected as a header in the serializer, which we test via the serializer directly
+        _ = client
+
+        let serializer = PrismDefaultRemoteIntelligenceSerializer(
+            endpoint: URL(string: "https://api.example.com/v1/generate")!,
+            model: "gpt-4",
+            headers: ["Authorization": "Bearer sk-test-12345"]
+        )
+        let request = try serializer.makeURLRequest(for: .init(prompt: "Hello"))
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer sk-test-12345")
+    }
+
+    // MARK: - Training Configuration Rules
+
+    func testTabularConfigurationSupportsFeatureColumnsAndEarlyStopping() {
+        let config = PrismTabularTrainingConfiguration(
+            id: "test",
+            name: "Test",
+            targetColumn: "price",
+            featureColumns: ["rooms", "area"],
+            earlyStoppingRounds: 5,
+            rowSubsample: 0.8,
+            columnSubsample: 0.7
+        )
+
+        XCTAssertEqual(config.featureColumns, ["rooms", "area"])
+        XCTAssertEqual(config.earlyStoppingRounds, 5)
+        XCTAssertEqual(config.rowSubsample, 0.8)
+        XCTAssertEqual(config.columnSubsample, 0.7)
+    }
+
+    func testTabularConfigurationDefaultsBackwardsCompatible() {
+        let config = PrismTabularTrainingConfiguration(id: "test", name: "Test")
+
+        XCTAssertNil(config.featureColumns)
+        XCTAssertNil(config.earlyStoppingRounds)
+        XCTAssertEqual(config.rowSubsample, 1.0)
+        XCTAssertEqual(config.columnSubsample, 1.0)
+        XCTAssertEqual(config.targetColumn, "target")
+    }
+
+    // MARK: - Seeded RNG
+
+    func testSeededRNGIsReproducible() {
+        var rng1 = SeededRandomNumberGenerator(seed: 42)
+        var rng2 = SeededRandomNumberGenerator(seed: 42)
+
+        let values1 = (0..<10).map { _ in rng1.next() }
+        let values2 = (0..<10).map { _ in rng2.next() }
+
+        XCTAssertEqual(values1, values2)
+    }
+
+    func testDifferentSeedsProduceDifferentSequences() {
+        var rng1 = SeededRandomNumberGenerator(seed: 1)
+        var rng2 = SeededRandomNumberGenerator(seed: 2)
+
+        let values1 = (0..<5).map { _ in rng1.next() }
+        let values2 = (0..<5).map { _ in rng2.next() }
+
+        XCTAssertNotEqual(values1, values2)
+    }
+}

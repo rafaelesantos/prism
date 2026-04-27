@@ -72,6 +72,14 @@ public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
     public var randomSeed: Int
     /// The learning rate (step size) for each boosting round.
     public var stepSize: Double
+    /// An optional subset of feature column names to use. If `nil`, all columns except target are used.
+    public var featureColumns: [String]?
+    /// The number of early stopping rounds. Training stops if validation loss doesn't improve for this many rounds.
+    public var earlyStoppingRounds: Int?
+    /// Row subsample ratio per boosting round (0.0–1.0). Defaults to 1.0.
+    public var rowSubsample: Double
+    /// Column subsample ratio per boosting round (0.0–1.0). Defaults to 1.0.
+    public var columnSubsample: Double
 
     /// Creates a tabular training configuration.
     ///
@@ -85,6 +93,10 @@ public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
     ///   - minChildWeight: Minimum child weight. Defaults to 0.01.
     ///   - randomSeed: Random seed. Defaults to 42.
     ///   - stepSize: Learning rate. Defaults to 0.01.
+    ///   - featureColumns: Optional subset of feature columns. `nil` = all except target.
+    ///   - earlyStoppingRounds: Optional early stopping rounds.
+    ///   - rowSubsample: Row subsample ratio. Defaults to 1.0.
+    ///   - columnSubsample: Column subsample ratio. Defaults to 1.0.
     public init(
         id: String,
         name: String,
@@ -94,7 +106,11 @@ public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
         minLossReduction: Double = .zero,
         minChildWeight: Double = 0.01,
         randomSeed: Int = 42,
-        stepSize: Double = 0.01
+        stepSize: Double = 0.01,
+        featureColumns: [String]? = nil,
+        earlyStoppingRounds: Int? = nil,
+        rowSubsample: Double = 1.0,
+        columnSubsample: Double = 1.0
     ) {
         self.id = id
         self.name = name
@@ -105,6 +121,10 @@ public struct PrismTabularTrainingConfiguration: Sendable, Equatable {
         self.minChildWeight = minChildWeight
         self.randomSeed = randomSeed
         self.stepSize = stepSize
+        self.featureColumns = featureColumns
+        self.earlyStoppingRounds = earlyStoppingRounds
+        self.rowSubsample = rowSubsample
+        self.columnSubsample = columnSubsample
     }
 }
 
@@ -185,7 +205,11 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
         }
 
         #if canImport(CreateML) && canImport(TabularData)
-            let rows = data.map { row in
+            let filteredData = filterFeatureColumns(
+                data: data,
+                configuration: configuration
+            )
+            let rows = filteredData.map { row in
                 row.mapValues(\.foundationValue)
             }
             let jsonData = try JSONSerialization.data(withJSONObject: rows)
@@ -198,9 +222,9 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
                 minChildWeight: configuration.minChildWeight,
                 randomSeed: configuration.randomSeed,
                 stepSize: configuration.stepSize,
-                earlyStoppingRounds: nil,
-                rowSubsample: 1,
-                columnSubsample: 1
+                earlyStoppingRounds: configuration.earlyStoppingRounds,
+                rowSubsample: configuration.rowSubsample,
+                columnSubsample: configuration.columnSubsample
             )
 
             let regressor = try MLBoostedTreeRegressor(
@@ -240,7 +264,11 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
         }
 
         #if canImport(CreateML) && canImport(TabularData)
-            let rows = data.map { row in
+            let filteredData = filterFeatureColumns(
+                data: data,
+                configuration: configuration
+            )
+            let rows = filteredData.map { row in
                 row.mapValues(\.foundationValue)
             }
             let jsonData = try JSONSerialization.data(withJSONObject: rows)
@@ -253,9 +281,9 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
                 minChildWeight: configuration.minChildWeight,
                 randomSeed: configuration.randomSeed,
                 stepSize: configuration.stepSize,
-                earlyStoppingRounds: nil,
-                rowSubsample: 1,
-                columnSubsample: 1
+                earlyStoppingRounds: configuration.earlyStoppingRounds,
+                rowSubsample: configuration.rowSubsample,
+                columnSubsample: configuration.columnSubsample
             )
 
             let classifier = try MLBoostedTreeClassifier(
@@ -288,6 +316,17 @@ internal struct PrismCreateMLIntelligenceTrainingRuntime: PrismIntelligenceTrain
             return PrismLocale.current.naturalLanguage
         }
     #endif
+
+    private func filterFeatureColumns(
+        data: [PrismIntelligenceFeatureRow],
+        configuration: PrismTabularTrainingConfiguration
+    ) -> [PrismIntelligenceFeatureRow] {
+        guard let featureColumns = configuration.featureColumns else { return data }
+        let allowed = Set(featureColumns + [configuration.targetColumn])
+        return data.map { row in
+            row.filter { allowed.contains($0.key) }
+        }
+    }
 
     private func maximumTargetValue(
         in data: [PrismIntelligenceFeatureRow],
