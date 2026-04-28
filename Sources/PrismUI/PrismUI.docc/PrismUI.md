@@ -404,3 +404,20 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismAccessibilityTest``
 - ``PrismSnapshotTest``
 - ``PrismComponentBrowser``
+
+### Developer Tools
+
+- ``PrismComponentGenerator``
+- ``PrismComponentTemplate``
+- ``PrismTokenInspector``
+- ``PrismComponentDebugger``
+- ``PrismDebugInfo``
+- ``PrismDebugOverlay``
+- ``PrismLiveReloadServer``
+- ``PrismLiveReloadable``
+- ``PrismLiveReloadBanner``
+- ``PrismPrototyper``
+- ``PrismPrototypeScreen``
+- ``PrismPrototypeFlow``
+- ``PrismEnvironmentDebugger``
+- ``PrismEnvironmentSnapshot``

@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.10.0] - 2026-04-28
+
+### Added
+
+- **Component Generator**: `PrismComponentGenerator` — code generation from 6 templates (button, card, form, list, detail, settings)
+- **Token Inspector**: `PrismTokenInspector` — debug panel showing active theme tokens
+- **Component Debugger**: `PrismComponentDebugger` — render tracking with debug overlay
+- **Live Reload**: `PrismLiveReloadServer` — protocol-based live reload coordination
+- **Quick Prototyper**: `PrismPrototyper` — interactive screen builder with flow navigation
+- **Environment Debugger**: `PrismEnvironmentDebugger` — floating badge showing environment state
+- 20+ new tests
+
 ## [1.5.0] - 2026-04-28
 
 ### Added
