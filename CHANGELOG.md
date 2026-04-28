@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.3.0] - 2026-04-28
+
+### Added
+
+- feat(ui): add theme variants, snapshot testing, DocC guides, README/CHANGELOG update
+
+### Changed
+
+- Merge pull request #7 from rafaelesantos/feature/polish-and-docs
+- chore: resolve merge conflict in CHANGELOG.md
 
 ### Added
 
