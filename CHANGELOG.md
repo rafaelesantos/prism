@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.8.0] - 2026-04-28
+
+### Added
+
+- **Map Integration**: `PrismMap`, `PrismMapMarker`, `PrismMapAnnotation` with MapKit and themed tints
+- **Photo Picker**: `PrismPhotoPicker`, `PrismMultiPhotoPicker` wrapping PhotosUI
+- **Document Support**: `PrismDocument` protocol and `PrismDocumentView` scaffold
+- **Flexible Headers**: `PrismFlexibleHeader` (stretchy), `PrismParallaxHeader` (parallax + overlay)
+- **Gradients & Materials**: `PrismLinearGradient`, `PrismRadialGradient`, `PrismAngularGradient`, `PrismMaterial` (6 cases) with `prismMaterial()` modifier
+- **Toolbar**: `PrismToolbarPlacement` (7 presets), `PrismToolbarButton`, `PrismToolbarMenu` with themed styling
+- **Form Validation**: `PrismValidationRule` (required/email/minLength/maxLength/range/regex/custom), `PrismValidatedField`
+- **Preview Tools**: `PrismDevicePreview`, `PrismLocalePreview` for multi-device and RTL previews
+- **Onboarding**: `PrismOnboarding` paged walkthrough with progress dots and themed CTA
+- **Redacted Styles**: `PrismRedactedStyle` (shimmer/pulse/blur) with `prismRedacted()` modifier
+- **Notification Banner**: `PrismNotificationBanner` with swipe-to-dismiss, auto-timeout, 4 styles (info/success/warning/error)
+- 42 new tests (463 total, 85 suites)
+
+### Changed
+
+- DocC catalog updated with Map, Photos, Document, Headers, Gradients, Toolbar, Validation, Preview, Onboarding, Redacted, Banner sections
+
 ## [0.7.0] - 2026-04-28
 
 ### Added

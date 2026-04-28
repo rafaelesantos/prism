@@ -205,6 +205,61 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismContentUnavailable``
 - ``PrismSearchUnavailable``
 
+### Map Integration
+
+- ``PrismMap``
+- ``PrismMapMarker``
+- ``PrismMapAnnotation``
+
+### Photo Picker
+
+- ``PrismPhotoPicker``
+- ``PrismMultiPhotoPicker``
+
+### Document Support
+
+- ``PrismDocumentView``
+
+### Flexible Headers
+
+- ``PrismFlexibleHeader``
+- ``PrismParallaxHeader``
+
+### Gradients & Materials
+
+- ``PrismLinearGradient``
+- ``PrismRadialGradient``
+- ``PrismAngularGradient``
+- ``PrismMaterial``
+
+### Toolbar
+
+- ``PrismToolbarPlacement``
+- ``PrismToolbarButton``
+- ``PrismToolbarMenu``
+
+### Form Validation
+
+- ``PrismValidationRule``
+- ``PrismValidatedField``
+
+### Preview Tools
+
+- ``PrismDevicePreview``
+- ``PrismLocalePreview``
+
+### Onboarding
+
+- ``PrismOnboarding``
+
+### Redacted Styles
+
+- ``PrismRedactedStyle``
+
+### Notification Banner
+
+- ``PrismNotificationBanner``
+
 ### Testing
 
 - ``PrismPreviewCatalog``
