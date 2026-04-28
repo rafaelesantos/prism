@@ -139,6 +139,19 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 ### Animations
 
 - ``PrismAnimationPreset``
+- ``PrismSpringConfig``
+- ``PrismKeyframeView``
+- ``PrismDraggable``
+- ``PrismPinchable``
+- ``PrismRotatable``
+- ``PrismSharedElement``
+- ``PrismHeroTransition``
+- ``PrismGravityDrop``
+- ``PrismMomentumScroll``
+- ``PrismFloat``
+- ``PrismParticleEffect``
+- ``PrismStaggeredList``
+- ``PrismStaggerStyle``
 
 ### SwiftData Integration
 

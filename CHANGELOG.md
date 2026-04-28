@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.1.0] - 2026-04-28
+
+### Added
+
+- **Spring Configs**: `PrismSpringConfig` — 7 named presets (snappy, gentle, bouncy, stiff, dramatic, critical, rubber) with `prismSpring` modifier
+- **Keyframe Builder**: `PrismKeyframeView` — declarative keyframe animations with 4 preset sequences (popIn, dropIn, flipIn, heartbeat)
+- **Gesture Animations**: `PrismDraggable`, `PrismPinchable`, `PrismRotatable` — spring-back gesture-driven interactive animations
+- **Shared Transitions**: `PrismSharedElement`, `PrismHeroTransition` — matchedGeometryEffect wrappers with hero transition container
+- **Physics Animations**: `PrismGravityDrop`, `PrismMomentumScroll`, `PrismFloat`, `PrismParticleEffect` — gravity, momentum, bobbing, particle celebration effects
+- **Staggered Animations**: `PrismStaggeredList`, `prismStagger` modifier — 5 stagger styles (slideUp, slideLeft, fadeIn, scaleIn, slideRight)
+- 33 new tests (575 total, 120 suites)
+
+### Changed
+
+- DocC catalog updated with Animation System section
+
 ## [0.11.1] - 2026-04-28
 
 ### Changed
