@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.14.0] - 2026-04-28
+
+### Added
+
+- feat(ui): add comprehensive preview catalog — 13 preview providers for every component category
+
+### Changed
+
+- Merge pull request #19 from rafaelesantos/feature/previews-catalog
 ## [1.3.0] - 2026-04-28
 
 ### Added
