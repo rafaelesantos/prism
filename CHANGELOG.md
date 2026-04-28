@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.4.0] - 2026-04-28
+
+### Added
+
+- **Plugin Architecture**: `PrismPlugin` protocol + `PrismPluginRegistry` — register custom themes, color/spacing/radius overrides, and component factories without forking
+- `prismPlugin(theme:)` modifier to apply plugin-registered themes
+- 16 new tests (626 total, 129 suites)
+
+### Changed
+
+- DocC catalog updated with Plugin Architecture section
+
 ## [0.14.0] - 2026-04-28
 
 ### Added

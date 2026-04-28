@@ -389,6 +389,11 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 
 - ``PrismStorybook``
 
+### Plugin Architecture
+
+- ``PrismPlugin``
+- ``PrismPluginRegistry``
+
 ### Testing
 
 - ``PrismPreviewCatalog``
