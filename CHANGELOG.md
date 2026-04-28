@@ -23,7 +23,6 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Changed
 
 - DocC catalog updated with Widgets, Live Activities, App Intents, Charts, Animations, SwiftData, Token Export sections
-
 ## [0.3.0] - 2026-04-28
 
 ### Added
