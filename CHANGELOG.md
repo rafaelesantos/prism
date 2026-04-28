@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.7.0] - 2026-04-28
+
+### Added
+
+- **Lazy View**: `PrismLazyView` — deferred body evaluation with placeholder support
+- **Render Profiler**: `PrismRenderProfiler` — real-time render count and timing with debug overlay
+- **Memory Tracker**: `PrismMemoryTrackerV2` — mach_task_basic_info memory snapshots
+- **Image Downsampler**: `PrismImageDownsampler` — CGImageSource-based downsampling for memory efficiency
+- **Prefetch Coordinator**: `PrismPrefetchCoordinator` — protocol-based prefetch task management
+- 18+ new tests
+
 ## [1.5.0] - 2026-04-28
 
 ### Added

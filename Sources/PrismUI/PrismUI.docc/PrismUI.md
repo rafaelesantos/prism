@@ -361,6 +361,20 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismPerformanceBenchmark``
 - ``PrismMemoryTracker``
 
+### Performance V2
+
+- ``PrismLazyView``
+- ``PrismLazyNavigationDestination``
+- ``PrismRenderProfiler``
+- ``PrismRenderMetrics``
+- ``PrismProfilerOverlay``
+- ``PrismMemoryTrackerV2``
+- ``PrismMemorySnapshot``
+- ``PrismImageDownsampler``
+- ``PrismDownsampledImage``
+- ``PrismPrefetchCoordinator``
+- ``PrismPrefetchable``
+
 ### watchOS Complications
 
 - ``PrismComplicationGauge``
