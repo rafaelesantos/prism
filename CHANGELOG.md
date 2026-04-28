@@ -7,6 +7,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-04-28
+
+### Added
+
+- **Lazy View**: `PrismLazyView` — deferred body evaluation with placeholder support
+- **Render Profiler**: `PrismRenderProfiler` — real-time render count and timing with debug overlay
+- **Memory Tracker**: `PrismMemoryTrackerV2` — mach_task_basic_info memory snapshots
+- **Image Downsampler**: `PrismImageDownsampler` — CGImageSource-based downsampling for memory efficiency
+- **Prefetch Coordinator**: `PrismPrefetchCoordinator` — protocol-based prefetch task management
+- 29 new tests
+
 ## [1.6.0] - 2026-04-28
 
 ### Added
@@ -16,7 +27,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Voice Control Labels**: `PrismVoiceControlGroup` + modifiers for voice control accessibility
 - **WCAG Contrast Checker V2**: `PrismContrastChecker` — contrast ratio, level compliance, auto color suggestion
 - **Accessibility Announcements**: `PrismAccessibilityAnnouncer` — priority-based screen reader announcements
-- 20+ new tests
+- 25 new tests
 
 ## [1.5.0] - 2026-04-28
 
