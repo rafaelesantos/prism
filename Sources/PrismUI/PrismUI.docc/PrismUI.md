@@ -1,49 +1,90 @@
 # ``PrismUI``
 
-Design system adaptativo SwiftUI: átomos, moléculas, modificadores, tokens e temas.
+Apple-first design system with semantic tokens, adaptive theming, and accessibility built in.
 
-## Visão Geral
+## Overview
 
-PrismUI é o módulo de design system do Prism. Fornece componentes SwiftUI que funcionam de forma adaptativa em todas as plataformas Apple (iOS, macOS, tvOS, watchOS, visionOS).
+PrismUI provides a token-driven design foundation for building Apple-platform apps.
+Instead of wrapping every SwiftUI view, it enhances native views through semantic
+modifiers and a themeable token system. Complex components like buttons and text fields
+earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 
-### Hierarquia de Componentes
+### Design Principles
 
-```text
-PrismNavigationView
-    └── PrismScaffold
-            ├── PrismAdaptiveStack (ações)
-            └── Content
-                    ├── Átomos (PrismText, PrismButton, PrismSymbol...)
-                    └── Moléculas (PrismPrimaryButton, PrismTag...)
-```
-
-### Tokens e Temas
-
-O design system é token-driven. ``PrismDesignTokens`` define espaçamento, raios, fontes, durações de animação e breakpoints. Componentes resolvem tokens automaticamente com base na plataforma e classe de tamanho.
-
-Temas customizadas são criadas conformando ``PrismThemeProtocol`` e injetadas via SwiftUI environment.
-
-### Spectra Playground
-
-O app Spectra no diretório `playground/` demonstra todos os componentes interativamente.
+- **Apple-native first** — use SwiftUI primitives, wrap only when adding value
+- **Token-driven** — change the theme, change every component
+- **Accessible by default** — every component respects accessibility settings
+- **Platform-adaptive** — same API, platform-appropriate rendering
+- **Liquid Glass ready** — iOS 26 glass effects with graceful fallbacks
 
 ## Topics
 
-### Fundamentos
+### Tokens
 
-- ``DesignTokens``
-- ``Theming``
-- ``SemanticColors``
-- ``Accessibility``
+- ``ColorToken``
+- ``TypographyToken``
+- ``SpacingToken``
+- ``RadiusToken``
+- ``MotionToken``
+- ``ElevationToken``
 
-### Componentes
+### Theme
 
-- ``Atoms``
-- ``Molecules``
-- ``Modifiers``
+- ``PrismTheme``
+- ``DefaultTheme``
 
-### Layout Adaptativo
+### Primitives
 
-- ``AdaptiveUI``
-- ``Navigation``
-- ``Scaffold``
+- ``PrismButton``
+- ``PrismIcon``
+- ``PrismAsyncImage``
+- ``PrismTextField``
+- ``PrismCard``
+- ``PrismTag``
+- ``PrismDivider``
+- ``PrismLoadingState``
+
+### Composites
+
+- ``PrismBanner``
+- ``PrismCarousel``
+- ``PrismSearchBar``
+
+### Forms
+
+- ``PrismToggle``
+- ``PrismPicker``
+- ``PrismSlider``
+- ``PrismSecureField``
+- ``PrismDatePicker``
+
+### Lists
+
+- ``PrismRow``
+- ``PrismDisclosureRow``
+- ``PrismList``
+
+### Layout
+
+- ``PrismAdaptiveStack``
+- ``PrismGrid``
+- ``PrismSection``
+- ``PrismScaffold``
+- ``PrismSpacer``
+
+### Navigation
+
+- ``PrismNavigationView``
+- ``PrismTabView``
+
+### Accessibility
+
+- ``PrismAccessibilityAudit``
+- ``PrismReduceMotion``
+- ``PrismDynamicTypePreview``
+
+### Testing
+
+- ``PrismPreviewCatalog``
+- ``PrismThemeTest``
+- ``PrismAccessibilityTest``
