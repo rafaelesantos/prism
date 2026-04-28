@@ -1,6 +1,4 @@
-#if canImport(AppClip)
-import AppClip
-import CoreLocation
+import Foundation
 
 // MARK: - App Clip Region
 
@@ -48,6 +46,12 @@ public enum PrismAppClipExperience: Sendable {
 
 // MARK: - App Clip Client
 
+#if canImport(AppClip) && canImport(UIKit)
+import AppClip
+import CoreLocation
+import UIKit
+import StoreKit
+
 /// Client for handling App Clip invocations, location verification, and full app promotion.
 public final class PrismAppClipClient: Sendable {
 
@@ -62,8 +66,6 @@ public final class PrismAppClipClient: Sendable {
     /// Verifies whether the user's location matches the expected App Clip region.
     public func verifyLocation(latitude: Double, longitude: Double) async -> Bool {
         await withCheckedContinuation { continuation in
-            let activity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
-            activity.webpageURL = URL(string: "https://example.com")
             guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
                 continuation.resume(returning: false)
                 return

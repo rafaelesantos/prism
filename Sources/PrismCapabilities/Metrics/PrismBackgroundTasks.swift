@@ -1,5 +1,4 @@
-#if canImport(BackgroundTasks)
-import BackgroundTasks
+import Foundation
 
 // MARK: - Task Type
 
@@ -34,6 +33,9 @@ public struct PrismBackgroundTaskConfig: Sendable {
 }
 
 // MARK: - Background Task Client
+
+#if canImport(BackgroundTasks) && !os(macOS)
+import BackgroundTasks
 
 /// Client that wraps BGTaskScheduler for registering and scheduling background tasks.
 public final class PrismBackgroundTaskClient: Sendable {

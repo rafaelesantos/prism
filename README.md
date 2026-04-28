@@ -12,7 +12,7 @@
 
 A modular Swift package for building Apple-platform apps — shared foundation, networking, architecture, adaptive UI, media, and on-device intelligence.
 
-> **1054 tests** · **186 suites** · **8 modules** · **Swift 6.3 strict concurrency** · **DocC on every public API**
+> **1188 tests** · **212 suites** · **8 modules** · **Swift 6.3 strict concurrency** · **DocC on every public API**
 
 ---
 
@@ -38,7 +38,7 @@ A modular Swift package for building Apple-platform apps — shared foundation, 
 | `PrismUI` | Token-driven design system — 80+ components, 4 themes, Apple HIG |
 | `PrismVideo` | Video download helpers and media entities |
 | `PrismIntelligence` | CreateML training, CoreML inference, Apple Intelligence, remote LLM |
-| `PrismCapabilities` | Apple Developer Program capability wrappers — StoreKit, HealthKit, CloudKit, Apple Pay, etc. |
+| `PrismCapabilities` | Apple Developer Program capability wrappers — StoreKit, HealthKit, CloudKit, Apple Pay, CallKit, CoreBluetooth, NFC, Camera, GameKit, Location, Motion, Biometrics, App Intents, Nearby Interaction, MultipeerConnectivity |
 | `Prism` | Umbrella — `import Prism` gives you everything |
 
 ---

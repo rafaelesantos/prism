@@ -83,12 +83,13 @@ public final class PrismStoreKitClient {
     /// The set of product identifiers the user has purchased.
     public private(set) var purchasedProductIDs: Set<String> = []
 
-    private var transactionListener: Task<Void, Never>?
+    nonisolated(unsafe) private var transactionListener: Task<Void, Never>?
 
     public init() {}
 
     deinit {
-        transactionListener?.cancel()
+        let listener = transactionListener
+        listener?.cancel()
     }
 
     /// Fetches products from the App Store for the given identifiers.
@@ -179,7 +180,7 @@ public final class PrismStoreKitClient {
 
     // MARK: - Private
 
-    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    private nonisolated func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified: throw StoreKitError.notAvailableInStorefront
         case .verified(let value): return value

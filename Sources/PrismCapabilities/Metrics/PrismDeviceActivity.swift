@@ -1,5 +1,4 @@
-#if canImport(DeviceActivity)
-import DeviceActivity
+import Foundation
 
 // MARK: - Schedule
 
@@ -45,9 +44,12 @@ public struct PrismDeviceActivityEvent: Sendable {
 
 // MARK: - Device Activity Client
 
+#if canImport(DeviceActivity) && os(iOS)
+import DeviceActivity
+
 /// Client that wraps the DeviceActivity framework for Screen Time monitoring.
 public final class PrismDeviceActivityClient: Sendable {
-    private let center = DeviceActivityCenter()
+    private nonisolated(unsafe) let center = DeviceActivityCenter()
 
     public init() {}
 

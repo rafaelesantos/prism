@@ -1,5 +1,8 @@
 #if canImport(PassKit)
 import PassKit
+#if canImport(AppKit)
+import AppKit
+#endif
 
 // MARK: - Payment Item Type
 
@@ -114,9 +117,7 @@ public final class PrismApplePayClient {
             )
         }
 
-        guard let controller = PKPaymentAuthorizationController(paymentRequest: pkRequest) else {
-            return PrismPaymentResult(success: false)
-        }
+        let controller = PKPaymentAuthorizationController(paymentRequest: pkRequest)
 
         return await withCheckedContinuation { continuation in
             let delegate = PaymentDelegate { result in
@@ -154,18 +155,23 @@ private final class PaymentDelegate: NSObject, PKPaymentAuthorizationControllerD
         controller.dismiss()
     }
 
+    #if os(macOS)
+    func presentationWindow(for controller: PKPaymentAuthorizationController) -> NSWindow? {
+        NSApp?.mainWindow
+    }
+    #endif
+
     func paymentAuthorizationController(
         _ controller: PKPaymentAuthorizationController,
-        didAuthorizePayment payment: PKPayment,
-        handler: @escaping (PKPaymentAuthorizationResult) -> Void
-    ) {
+        didAuthorizePayment payment: PKPayment
+    ) async -> PKPaymentAuthorizationResult {
         let result = PrismPaymentResult(
             transactionID: payment.token.transactionIdentifier,
             token: payment.token.paymentData,
             success: true
         )
-        handler(PKPaymentAuthorizationResult(status: .success, errors: nil))
         completion(result)
+        return PKPaymentAuthorizationResult(status: .success, errors: nil)
     }
 }
 #endif

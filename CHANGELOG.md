@@ -7,6 +7,35 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-04-28
+
+### Added
+
+- **Core Location**: `PrismLocationClient` — authorization, continuous updates, geofencing, geocoding, and reverse geocoding
+- **MapKit**: `PrismMapClient` — directions, estimated travel time, and point-of-interest search
+- **CoreBluetooth**: `PrismBluetoothClient` — BLE scanning, connect, services, characteristics, notifications
+- **NearbyInteraction**: `PrismNearbyClient` — UWB peer discovery, distance and direction ranging
+- **MultipeerConnectivity**: `PrismMultipeerClient` — advertising, browsing, peer invitations, data exchange
+- **CallKit**: `PrismCallClient` — incoming/outgoing call reporting, call actions (answer, end, hold, mute)
+- **Core NFC**: `PrismNFCClient` — NDEF read/write, ISO 7816 tag commands
+- **Biometrics**: `PrismBiometricClient` — Face ID, Touch ID, Optic ID, passcode fallback via LocalAuthentication
+- **App Intents**: `PrismAppIntentClient` — intent donation, deletion, Siri shortcut suggestions
+- **Core Motion**: `PrismMotionClient` — accelerometer, gyroscope, device motion, pedometer, activity recognition, altimeter
+- **Camera**: `PrismCameraClient` — AVFoundation capture session, photo/video, barcode scanning, zoom, torch
+- **GameKit**: `PrismGameCenterClient` — authentication, leaderboards, achievements, matchmaking
+- `PrismLocationPermission`, `PrismLocationAccuracy`, `PrismLocation`, `PrismGeofenceRegion`, `PrismGeocodingResult` value types
+- `PrismMapRoute`, `PrismMapTransportType`, `PrismPOI` value types
+- `PrismBluetoothState`, `PrismPeripheral`, `PrismBLEService`, `PrismBLECharacteristic`, `PrismCharacteristicProperties` value types
+- `PrismNearbyObject`, `PrismNearbySessionState`, `PrismPeer`, `PrismMultipeerState` value types
+- `PrismCallType`, `PrismCallEndReason`, `PrismCallInfo`, `PrismBlockedCaller`, `PrismCallAction` value types
+- `PrismNFCTagType`, `PrismNDEFTypeNameFormat`, `PrismNDEFRecord`, `PrismNDEFMessage`, `PrismNFCReadResult` value types
+- `PrismBiometricType`, `PrismBiometricPolicy`, `PrismBiometricError`, `PrismBiometricResult` value types
+- `PrismIntentDonation`, `PrismShortcutPhrase`, `PrismIntentPrediction`, `PrismSiriTipStyle` value types
+- `PrismAccelerometerData`, `PrismGyroscopeData`, `PrismDeviceMotion`, `PrismPedometerData`, `PrismActivityType`, `PrismAltitudeData` value types
+- `PrismCameraPosition`, `PrismCaptureMode`, `PrismFlashMode`, `PrismCameraPermission`, `PrismPhotoSettings`, `PrismVideoSettings`, `PrismCapturedPhoto`, `PrismBarcodeSymbology`, `PrismBarcodeResult` value types
+- `PrismGameCenterPlayer`, `PrismLeaderboardScore`, `PrismLeaderboardScope`, `PrismAchievement`, `PrismMatchRequest`, `PrismMatchStatus` value types
+- 134 new tests across 10 capability suites
+
 ## [3.1.0] - 2026-04-28
 
 ### Added
