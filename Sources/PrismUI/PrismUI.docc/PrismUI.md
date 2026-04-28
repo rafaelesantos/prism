@@ -52,8 +52,19 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismScaffold``
 - ``PrismSpacer``
 
+### Navigation
+
+- ``PrismNavigationView``
+- ``PrismTabView``
+
 ### Accessibility
 
 - ``PrismAccessibilityAudit``
 - ``PrismReduceMotion``
 - ``PrismDynamicTypePreview``
+
+### Testing
+
+- ``PrismPreviewCatalog``
+- ``PrismThemeTest``
+- ``PrismAccessibilityTest``
