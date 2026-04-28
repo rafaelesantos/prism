@@ -10,6 +10,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- feat(ui): add accessibility v2, localization, performance, style protocols, environment setup, preview blocks, navigation path, observable, watchOS complications, visionOS volumes, macOS menu bar
+
+### Changed
+
+- Merge pull request #14 from rafaelesantos/feature/quality-dx-platform
+## [0.10.0] - 2026-04-28
+
+### Added
+
 - **Accessibility v2**: `prismAccessibility(label:hint:value:traits:)`, `prismAccessibilityHeader()`, `prismAccessibilityGroup()`, `prismAccessibilityAction()`, `prismAccessibilitySortPriority()`, `prismAnnounce()`
 - **Localization expansion**: 18 new `PrismStrings` keys (continue, getStarted, paste, save, done, edit, add, close, back, next, previous, share, settings, selectPhoto, untitled, noResults, tryAgain, errorOccurred)
 - **Performance benchmarks**: `prismBenchmark()` modifier with OSSignposter + render counting, `PrismMemoryTracker` for DEBUG memory profiling
