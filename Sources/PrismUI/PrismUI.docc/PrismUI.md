@@ -308,6 +308,48 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismSettingsView``
 - ``PrismSettingsSection``
 
+### Accessibility Modifiers
+
+### Style Protocols
+
+- ``PrismCustomButtonStyle``
+- ``PrismCustomCardStyle``
+- ``PrismElevatedCardStyle``
+- ``PrismOutlinedCardStyle``
+- ``PrismFlatCardStyle``
+
+### Navigation Path
+
+- ``PrismNavigationPath``
+
+### Observable Helpers
+
+- ``PrismViewModel``
+
+### Preview Blocks
+
+- ``PrismPreviewBlocks``
+
+### Performance
+
+- ``PrismPerformanceBenchmark``
+- ``PrismMemoryTracker``
+
+### watchOS Complications
+
+- ``PrismComplicationGauge``
+- ``PrismComplicationText``
+
+### visionOS Volumes
+
+- ``PrismVolumeView``
+- ``PrismOrnamentView``
+
+### macOS Menu Bar
+
+- ``PrismMenuBarContent``
+- ``PrismMenuBarButton``
+
 ### Testing
 
 - ``PrismPreviewCatalog``
