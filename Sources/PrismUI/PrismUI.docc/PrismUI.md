@@ -6,14 +6,16 @@ Apple-first design system with semantic tokens, adaptive theming, and accessibil
 
 PrismUI provides a token-driven design foundation for building Apple-platform apps.
 Instead of wrapping every SwiftUI view, it enhances native views through semantic
-modifiers and a themeable token system.
+modifiers and a themeable token system. Complex components like buttons and text fields
+earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 
 ### Design Principles
 
 - **Apple-native first** — use SwiftUI primitives, wrap only when adding value
 - **Token-driven** — change the theme, change every component
-- **Accessible by default** — every modifier respects accessibility settings
+- **Accessible by default** — every component respects accessibility settings
 - **Platform-adaptive** — same API, platform-appropriate rendering
+- **Liquid Glass ready** — iOS 26 glass effects with graceful fallbacks
 
 ## Topics
 
@@ -30,3 +32,28 @@ modifiers and a themeable token system.
 
 - ``PrismTheme``
 - ``DefaultTheme``
+
+### Primitives
+
+- ``PrismButton``
+- ``PrismIcon``
+- ``PrismAsyncImage``
+- ``PrismTextField``
+- ``PrismCard``
+- ``PrismTag``
+- ``PrismDivider``
+- ``PrismLoadingState``
+
+### Layout
+
+- ``PrismAdaptiveStack``
+- ``PrismGrid``
+- ``PrismSection``
+- ``PrismScaffold``
+- ``PrismSpacer``
+
+### Accessibility
+
+- ``PrismAccessibilityAudit``
+- ``PrismReduceMotion``
+- ``PrismDynamicTypePreview``
