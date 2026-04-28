@@ -10,6 +10,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- feat(ui): add map, photos, document, headers, gradients, toolbar, validation, previews, onboarding, redacted styles, notification banner
+
+### Changed
+
+- Merge pull request #12 from rafaelesantos/feature/comprehensive-expansion
+## [0.8.0] - 2026-04-28
+
+### Added
+
 - **Map Integration**: `PrismMap`, `PrismMapMarker`, `PrismMapAnnotation` with MapKit and themed tints
 - **Photo Picker**: `PrismPhotoPicker`, `PrismMultiPhotoPicker` wrapping PhotosUI
 - **Document Support**: `PrismDocument` protocol and `PrismDocumentView` scaffold
