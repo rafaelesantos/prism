@@ -1,0 +1,104 @@
+import SwiftUI
+
+/// Standardized loading/empty/error state views.
+public struct PrismLoadingState: View {
+
+    private let state: State
+
+    public init(_ state: State) {
+        self.state = state
+    }
+
+    public var body: some View {
+        switch state {
+        case .loading:
+            LoadingView()
+        case .empty(let title, let message, let icon):
+            EmptyStateView(title: title, message: message, icon: icon)
+        case .error(let message, let retry):
+            ErrorStateView(message: message, retry: retry)
+        }
+    }
+}
+
+// MARK: - State
+
+extension PrismLoadingState {
+
+    public enum State {
+        case loading
+        case empty(title: LocalizedStringKey, message: LocalizedStringKey?, icon: String?)
+        case error(LocalizedStringKey, retry: (() -> Void)?)
+    }
+}
+
+// MARK: - Subviews
+
+private struct LoadingView: View {
+    var body: some View {
+        VStack(spacing: SpacingToken.lg.rawValue) {
+            ProgressView()
+                .controlSize(.large)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct EmptyStateView: View {
+    @Environment(\.prismTheme) private var theme
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey?
+    let icon: String?
+
+    var body: some View {
+        VStack(spacing: SpacingToken.lg.rawValue) {
+            if let icon {
+                Image(systemName: icon)
+                    .font(.system(size: 48))
+                    .foregroundStyle(theme.color(.onBackgroundTertiary))
+            }
+
+            Text(title)
+                .font(TypographyToken.title3.font)
+                .foregroundStyle(theme.color(.onBackground))
+
+            if let message {
+                Text(message)
+                    .font(TypographyToken.body.font)
+                    .foregroundStyle(theme.color(.onBackgroundSecondary))
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(SpacingToken.xxl.rawValue)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct ErrorStateView: View {
+    @Environment(\.prismTheme) private var theme
+    let message: LocalizedStringKey
+    let retry: (() -> Void)?
+
+    var body: some View {
+        VStack(spacing: SpacingToken.lg.rawValue) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundStyle(theme.color(.error))
+
+            Text(message)
+                .font(TypographyToken.body.font)
+                .foregroundStyle(theme.color(.onBackgroundSecondary))
+                .multilineTextAlignment(.center)
+
+            if let retry {
+                Button(action: retry) {
+                    Text("Retry")
+                        .font(TypographyToken.headline.font)
+                        .foregroundStyle(theme.color(.interactive))
+                }
+            }
+        }
+        .padding(SpacingToken.xxl.rawValue)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
