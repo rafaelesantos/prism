@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.10.0] - 2026-04-28
+
+### Added
+
+- **Accessibility v2**: `prismAccessibility(label:hint:value:traits:)`, `prismAccessibilityHeader()`, `prismAccessibilityGroup()`, `prismAccessibilityAction()`, `prismAccessibilitySortPriority()`, `prismAnnounce()`
+- **Localization expansion**: 18 new `PrismStrings` keys (continue, getStarted, paste, save, done, edit, add, close, back, next, previous, share, settings, selectPhoto, untitled, noResults, tryAgain, errorOccurred)
+- **Performance benchmarks**: `prismBenchmark()` modifier with OSSignposter + render counting, `PrismMemoryTracker` for DEBUG memory profiling
+- **Style protocol system**: `PrismCustomButtonStyle`, `PrismCustomCardStyle` protocols with 3 built-in card styles (elevated, outlined, flat)
+- **Environment catalog**: `prismEnvironment(theme:colorScheme:)` single-call setup
+- **Preview blocks**: `PrismPreviewBlocks` with 6 ready-made previews (buttons, typography, colors, spacing, themes, radii)
+- **watchOS complications**: `PrismComplicationGauge`, `PrismComplicationText` with themed styling
+- **visionOS volumes**: `PrismVolumeView` for spatial content, `PrismOrnamentView` for glass ornaments
+- **macOS menu bar**: `PrismMenuBarContent`, `PrismMenuBarButton` with themed styling
+- **Navigation path**: `PrismNavigationPath` — type-safe push/pop/popToRoot/replace with `@Observable`
+- **Observable helpers**: `PrismViewModel` protocol, `prismObservable()` modifier for `@Observable` injection
+- 29 new tests (522 total, 108 suites)
+
+### Changed
+
+- DocC catalog updated with Accessibility Modifiers, Style Protocols, Navigation Path, Observable, Preview Blocks, Performance, Complications, Volumes, Menu Bar sections
+
 ## [0.9.0] - 2026-04-28
 
 ### Added
