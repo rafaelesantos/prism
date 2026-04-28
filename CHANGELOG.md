@@ -12,12 +12,21 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Theme variants**: DarkTheme (always-dark), HighContrastTheme (WCAG AAA), BrandTheme (configurable primary/secondary/accent)
 - **Snapshot testing**: PrismSnapshotTest with render, renderAll, and pixel-by-pixel compare — light, dark, large text, high contrast configurations
 - **DocC guides**: Getting Started, Using Tokens, Component Guide, Theming Guide — all with code examples
-- **16 new components**: PrismToast, PrismProgressBar, PrismAvatar, PrismMenu, PrismSegmentedControl, PrismStepper, PrismBottomSheet, PrismChip/ChipGroup, PrismTooltip, PrismEmptyState, PrismSwipeActions, PrismTextArea, PrismRating, PrismCountdownTimer, PrismPinField, PrismColorWell
 
 ### Changed
 
-- README rewritten with updated test counts (275+/43+), component list, theme table, and usage examples
+- README rewritten with updated test counts (273/43), component list, theme table, and usage examples
 - DocC catalog updated with all new components, theme variants, guides section, and PrismSnapshotTest
+
+## [0.2.0] - 2026-04-28
+
+### Added
+
+- feat(ui): add 16 new components — primitives, composites, forms, modifiers
+
+### Changed
+
+- Merge pull request #6 from rafaelesantos/feature/new-components
 
 ## [0.1.0] - 2026-04-28
 
