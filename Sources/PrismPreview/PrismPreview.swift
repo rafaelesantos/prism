@@ -12,7 +12,7 @@ import SwiftUI
 struct PrismPreview: App {
     var body: some Scene {
         WindowGroup {
-            PrismSymbol()
+            Text("Prism Preview")
         }
     }
 }

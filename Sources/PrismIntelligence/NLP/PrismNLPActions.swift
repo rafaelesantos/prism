@@ -35,7 +35,7 @@ public enum PrismEntityType: String, Sendable, CaseIterable {
 }
 
 /// A named entity extracted from text.
-public struct PrismEntity: Sendable, Equatable {
+public struct PrismNLPEntity: Sendable, Equatable {
     /// The entity text.
     public let text: String
     /// The entity type.
@@ -70,10 +70,10 @@ public struct PrismNLPActions: Sendable {
     }
 
     /// Extracts named entities from the given text.
-    public static func extractEntities(_ text: String) -> [PrismEntity] {
+    public static func extractEntities(_ text: String) -> [PrismNLPEntity] {
         let tagger = NLTagger(tagSchemes: [.nameType])
         tagger.string = text
-        var entities: [PrismEntity] = []
+        var entities: [PrismNLPEntity] = []
         let options: NLTagger.Options = [.omitWhitespace, .omitPunctuation]
         tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: options) { tag, range in
             guard let tag else { return true }
@@ -85,7 +85,7 @@ public struct PrismNLPActions: Sendable {
             default: entityType = nil
             }
             if let entityType {
-                entities.append(PrismEntity(text: String(text[range]), type: entityType, range: range))
+                entities.append(PrismNLPEntity(text: String(text[range]), type: entityType, range: range))
             }
             return true
         }

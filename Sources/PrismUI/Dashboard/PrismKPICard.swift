@@ -122,7 +122,7 @@ public struct PrismKPICard: View {
                     .foregroundStyle(theme.color(.onBackgroundTertiary))
             }
             if let sparklineData, !sparklineData.isEmpty {
-                PrismSparkline(data: sparklineData, trend: trend)
+                PrismKPISparkline(data: sparklineData, trend: trend)
                     .frame(height: 40)
             }
         }
@@ -154,7 +154,7 @@ public struct PrismKPICard: View {
 }
 
 /// Inline sparkline chart drawn with a simple path.
-struct PrismSparkline: View {
+struct PrismKPISparkline: View {
     @Environment(\.prismTheme) private var theme
 
     let data: [Double]

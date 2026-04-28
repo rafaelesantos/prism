@@ -48,7 +48,7 @@ public struct PrismSparklineRow: View {
             }
             Spacer()
             if !data.isEmpty {
-                PrismSparkline(data: data, trend: trend)
+                PrismSparkline(data: data, trendColoring: trend != nil)
                     .frame(width: 80, height: 28)
             }
         }
