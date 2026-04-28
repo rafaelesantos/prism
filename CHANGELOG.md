@@ -5,6 +5,20 @@ All notable changes to Prism will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Theme variants**: DarkTheme (always-dark), HighContrastTheme (WCAG AAA), BrandTheme (configurable primary/secondary/accent)
+- **Snapshot testing**: PrismSnapshotTest with render, renderAll, and pixel-by-pixel compare — light, dark, large text, high contrast configurations
+- **DocC guides**: Getting Started, Using Tokens, Component Guide, Theming Guide — all with code examples
+- **16 new components**: PrismToast, PrismProgressBar, PrismAvatar, PrismMenu, PrismSegmentedControl, PrismStepper, PrismBottomSheet, PrismChip/ChipGroup, PrismTooltip, PrismEmptyState, PrismSwipeActions, PrismTextArea, PrismRating, PrismCountdownTimer, PrismPinField, PrismColorWell
+
+### Changed
+
+- README rewritten with updated test counts (275+/43+), component list, theme table, and usage examples
+- DocC catalog updated with all new components, theme variants, guides section, and PrismSnapshotTest
+
 ## [0.1.0] - 2026-04-28
 
 ### Added
