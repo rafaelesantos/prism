@@ -132,6 +132,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Multipart Upload**: `PrismMultipartFormData` builder, `PrismUploadProgress` tracker, `PrismUploadTask` actor with AsyncStream progress
 - 27 new tests
 
+## [2.8.0] - 2026-04-28
+
+### Added
+
+- **Structured Logging**: `PrismStructuredLogger` actor — level-filtered, buffered logging with `PrismLogLevel`, `PrismLogEntry`, and pluggable `PrismLogDestination` protocol
+- **Crash Reporter**: `PrismCrashReporter` actor — collects `PrismCrashReport` structs with stack traces, app version, metadata, and optional callback
+- **Performance Traces**: `PrismPerformanceTracer` actor — hierarchical `PrismTraceSpan` with `beginSpan`/`endSpan` and auto-traced `measure()` helper
+- **Network Inspector**: `PrismNetworkInspector` actor — records `PrismNetworkLog` entries with aggregate `averageLatency` and `errorRate` metrics
+- **Analytics Funnel**: `PrismAnalyticsFunnel` actor — define ordered steps, record unique users per step, generate conversion rate reports
+- 25 new tests (785 total)
+
 ## [1.10.0] - 2026-04-28
 
 ### Added
