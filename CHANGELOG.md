@@ -70,6 +70,19 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Read Receipt Model**: `PrismReadReceipt` — userId, name, and readAt timestamp
 - 35 new tests
 
+## [2.4.0] - 2026-04-28
+
+### Added
+
+- **KPI Card**: `PrismKPICard` — metric card with title, value, trend, change percentage, sparkline, compact/expanded sizes
+- **Trend Enum**: `PrismTrend` — up/down/flat direction with semantic color coding (green/red/gray)
+- **Stat Grid**: `PrismStatGrid`, `PrismStatItem` — responsive grid of stat items with adaptive columns
+- **Activity Feed**: `PrismActivityFeed`, `PrismActivity`, `PrismActivityGroup` — chronological feed with avatars, relative timestamps, date grouping
+- **Timeline**: `PrismTimeline`, `PrismTimelineEvent`, `PrismEventStatus` — vertical timeline with connecting line and status dots (completed/current/upcoming/failed)
+- **Comparison Table**: `PrismComparisonTable`, `PrismComparisonFeature`, `PrismComparisonColumn`, `PrismFeatureValue` — feature comparison grid with highlighted column
+- **Sparkline Row**: `PrismSparklineRow` — inline label + value + sparkline with optional trend indicator
+- 30 new tests across all dashboard components
+
 ## [1.10.0] - 2026-04-28
 
 ### Added
