@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.6.0] - 2026-04-28
+
+### Added
+
+- feat(ui): add haptics, drag/drop, keyboard shortcuts, focus, undo, theme persistence, component browser
+
+### Changed
+
+- Merge pull request #10 from rafaelesantos/feature/platform-interactions
 
 ## [0.6.0] - 2026-04-28
 
