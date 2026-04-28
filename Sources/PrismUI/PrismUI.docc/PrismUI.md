@@ -182,6 +182,22 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismModelList``
 - ``PrismModelForm``
 
+### SwiftData V2
+
+- ``PrismModelView``
+- ``PrismModelDetailView``
+- ``PrismModelFormBuilder``
+- ``PrismFormField``
+- ``PrismMigrationHelper``
+- ``PrismMigrationStage``
+- ``PrismCloudSyncMonitor``
+- ``PrismSyncState``
+- ``PrismSyncStatusView``
+- ``PrismPredicateBuilder``
+- ``PrismFilterOperator``
+- ``PrismFilterField``
+- ``PrismFilterBar``
+
 ### Design Token Export
 
 - ``PrismTokenExport``
@@ -423,6 +439,21 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismPlugin``
 - ``PrismPluginRegistry``
 
+### Internationalization V2
+
+- ``PrismLayoutDirection``
+- ``PrismBidirectionalStack``
+- ``PrismDirectionalEdge``
+- ``PrismPluralCategory``
+- ``PrismPluralRule``
+- ``PrismPluralizedText``
+- ``PrismNumberFormatter``
+- ``PrismDateFormatter``
+- ``PrismRelativeTimeFormatter``
+- ``PrismLocalizedKey``
+- ``PrismStringExporter``
+- ``PrismMultiLocalePreview``
+
 ### Testing
 
 - ``PrismPreviewCatalog``
@@ -430,3 +461,20 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismAccessibilityTest``
 - ``PrismSnapshotTest``
 - ``PrismComponentBrowser``
+
+### Developer Tools
+
+- ``PrismComponentGenerator``
+- ``PrismComponentTemplate``
+- ``PrismTokenInspector``
+- ``PrismComponentDebugger``
+- ``PrismDebugInfo``
+- ``PrismDebugOverlay``
+- ``PrismLiveReloadServer``
+- ``PrismLiveReloadable``
+- ``PrismLiveReloadBanner``
+- ``PrismPrototyper``
+- ``PrismPrototypeScreen``
+- ``PrismPrototypeFlow``
+- ``PrismEnvironmentDebugger``
+- ``PrismEnvironmentSnapshot``

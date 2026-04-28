@@ -7,6 +7,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-04-28
+
+### Added
+
+- **RTL Layout**: `PrismLayoutDirection`, `PrismBidirectionalStack` — automatic RTL/LTR layout handling
+- **Pluralization**: `PrismPluralRule` — locale-aware plural categories with English, Arabic, Russian, Japanese rules
+- **Locale Formatters**: `PrismNumberFormatter`, `PrismDateFormatter`, `PrismRelativeTimeFormatter` — locale-sensitive formatting
+- **String Catalog**: `PrismLocalizedKey`, `PrismStringExporter` — localization key management
+- **Multi-Locale Preview**: `PrismMultiLocalePreview` — side-by-side locale comparison
+- 28 new tests
+
 ## [1.7.0] - 2026-04-28
 
 ### Added
