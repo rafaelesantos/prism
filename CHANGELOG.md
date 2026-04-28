@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.16.0] - 2026-04-28
+
+### Added
+
+- feat(ui): add developer experience tooling — code generator, token inspector, debugger, live reload, prototyper, environment debugger
+- feat(ui): add deep SwiftData integration — model view, form builder, migration helper, cloud sync, predicate builder
+- feat(ui): add Internationalization V2 — RTL layout, pluralization, locale formatters, string catalog, multi-locale preview
+- feat(ui): add accessibility v3 — color blindness simulation, contrast checker, focus order, voice control, announcements
+- feat(ui): add performance toolkit — lazy views, render profiler, memory tracker, image downsampler, prefetch coordinator
+
+### Changed
+
+- Merge feature/developer-experience into main
+- Merge feature/swiftdata-integration into main
+- Merge feature/internationalization-v2 into main
+- chore: ignore worktree dirs
+- Merge feature/performance-toolkit into main
 
 ## [1.10.0] - 2026-04-28
 
