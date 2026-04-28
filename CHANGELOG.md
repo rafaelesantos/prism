@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.8.0] - 2026-04-28
+
+### Added
+
+- **RTL Layout**: `PrismLayoutDirection`, `PrismBidirectionalStack` — automatic RTL/LTR layout handling
+- **Pluralization**: `PrismPluralRule` — locale-aware plural categories with English, Arabic, Russian, Japanese rules
+- **Locale Formatters**: `PrismNumberFormatter`, `PrismDateFormatter`, `PrismRelativeTimeFormatter` — locale-sensitive formatting
+- **String Catalog**: `PrismLocalizedKey`, `PrismStringExporter` — localization key management
+- **Multi-Locale Preview**: `PrismMultiLocalePreview` — side-by-side locale comparison
+- 18+ new tests
+
+## [1.10.0] - 2026-04-28
+
+### Added
+
+- **Component Generator**: `PrismComponentGenerator` — code generation from 6 templates (button, card, form, list, detail, settings)
+- **Token Inspector**: `PrismTokenInspector` — debug panel showing active theme tokens
+- **Component Debugger**: `PrismComponentDebugger` — render tracking with debug overlay
+- **Live Reload**: `PrismLiveReloadServer` — protocol-based live reload coordination
+- **Quick Prototyper**: `PrismPrototyper` — interactive screen builder with flow navigation
+- **Environment Debugger**: `PrismEnvironmentDebugger` — floating badge showing environment state
+- 20+ new tests
+
+## [1.9.0] - 2026-04-28
+
+### Added
+
+- **Model View**: `PrismModelView` — generic SwiftData CRUD list with detail view
+- **Model Form Builder**: `PrismModelFormBuilder` — declarative form generation from field definitions
+- **Migration Helper**: `PrismMigrationHelper` — ordered migration stage management
+- **CloudKit Sync**: `PrismCloudSyncMonitor` — sync state monitoring with status indicator view
+- **Predicate Builder**: `PrismPredicateBuilder` — chainable filter API with `PrismFilterBar` UI
+- 28 new tests (654 total, 140 suites)
+
 ## [1.5.0] - 2026-04-28
 
 ### Added
