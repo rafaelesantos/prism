@@ -10,6 +10,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
+- feat(ui): add context menu, gauge, group box, label styles, content transitions, sensory feedback, image resource, table, paste button, refreshable, TipKit, timeline, settings
+
+### Changed
+
+- Merge pull request #13 from rafaelesantos/feature/final-gaps-polish
+## [0.9.0] - 2026-04-28
+
+### Added
+
 - **Context Menu**: `prismContextMenu()` with optional preview support
 - **Gauge**: `PrismGauge` with semantic color tinting (error/warning/success by value range)
 - **GroupBox**: `PrismGroupBox` with themed background and optional label/title
