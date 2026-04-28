@@ -57,6 +57,15 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismProgressBar``
 - ``PrismAvatar``
 
+### Component Variants V2
+
+- ``PrismIconButton``
+- ``PrismExpandableCard``
+- ``PrismSkeletonView``
+- ``PrismSearchSuggestions``
+- ``PrismButtonGroup``
+- ``PrismSegmentedButtons``
+
 ### Composites
 
 - ``PrismAlert``

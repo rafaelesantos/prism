@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.2.0] - 2026-04-28
+
+### Added
+
+- **Icon Button**: `PrismIconButton` — compact circular icon button with 3 sizes (small/regular/large), destructive role support
+- **Expandable Card**: `PrismExpandableCard` — tap-to-expand card with spring animation, chevron indicator, accessibility hints
+- **Skeleton View**: `PrismSkeletonView` — shimmer loading placeholders with 5 layouts (text, avatar, card, list, custom)
+- **Search Suggestions**: `PrismSearchSuggestions` — autocomplete search with dropdown suggestion list, max items control
+- **Button Group**: `PrismButtonGroup` — horizontal button container with alignment and spacing control
+- **Segmented Buttons**: `PrismSegmentedButtons` — mutually exclusive option strip with animated selection
+- 20 new tests (595 total, 127 suites)
+
+### Changed
+
+- DocC catalog updated with Component Variants V2 section
+
 ## [0.12.0] - 2026-04-28
 
 ### Added
