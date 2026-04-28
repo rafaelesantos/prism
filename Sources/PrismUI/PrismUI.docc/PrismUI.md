@@ -478,3 +478,22 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - ``PrismPrototypeFlow``
 - ``PrismEnvironmentDebugger``
 - ``PrismEnvironmentSnapshot``
+
+### Dashboard
+
+- ``PrismTrend``
+- ``PrismKPISize``
+- ``PrismKPICard``
+- ``PrismStatItem``
+- ``PrismStatGrid``
+- ``PrismActivity``
+- ``PrismActivityFeed``
+- ``PrismActivityGroup``
+- ``PrismTimelineEvent``
+- ``PrismEventStatus``
+- ``PrismTimeline``
+- ``PrismFeatureValue``
+- ``PrismComparisonColumn``
+- ``PrismComparisonFeature``
+- ``PrismComparisonTable``
+- ``PrismSparklineRow``
