@@ -25,6 +25,9 @@ earn their wrapper by adding behavior beyond what raw SwiftUI provides.
 - <doc:UsingTokens>
 - <doc:ComponentGuide>
 - <doc:ThemingGuide>
+- <doc:MigrationGuide>
+- <doc:PluginGuide>
+- <doc:ArchitectureGuide>
 
 ### Tokens
 

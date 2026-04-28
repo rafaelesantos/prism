@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.5.0] - 2026-04-28
+
+### Added
+
+- **Migration Guide**: DocC article — step-by-step migration from raw SwiftUI to PrismUI tokens and components
+- **Plugin Guide**: DocC article — creating, installing, and querying plugins
+- **Architecture Guide**: DocC article — module graph, selective imports, design token flow, ecosystem split guidance
+
+### Changed
+
+- DocC catalog updated with 3 new guides (7 total)
+
 ## [0.11.1] - 2026-04-28
 
 ### Changed
