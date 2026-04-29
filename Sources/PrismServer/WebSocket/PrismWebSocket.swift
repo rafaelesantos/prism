@@ -196,7 +196,7 @@ public protocol PrismWebSocketHandler: Sendable {
 public actor PrismWebSocketConnection {
     private let sendFrame: @Sendable (PrismWebSocketFrame) async -> Void
     /// A unique identifier for this connection.
-    public let id: String
+    public nonisolated let id: String
 
     public init(id: String = UUID().uuidString, sendFrame: @escaping @Sendable (PrismWebSocketFrame) async -> Void) {
         self.id = id
