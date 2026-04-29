@@ -18,7 +18,7 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/rafaelesantos/prism"
+      "url": "https://github.com/byescaleira/prism"
     }
   ],
   "topbarCtaButton": {
@@ -30,12 +30,12 @@
     {
       "name": "GitHub",
       "icon": "github",
-      "url": "https://github.com/rafaelesantos/prism"
+      "url": "https://github.com/byescaleira/prism"
     },
     {
       "name": "Swift Package",
       "icon": "swift",
-      "url": "https://github.com/rafaelesantos/prism"
+      "url": "https://github.com/byescaleira/prism"
     }
   ],
   "navigation": [
@@ -161,6 +161,6 @@
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/rafaelesantos/prism"
+    "github": "https://github.com/byescaleira/prism"
   }
 }
