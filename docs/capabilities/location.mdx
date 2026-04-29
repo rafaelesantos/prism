@@ -1,0 +1,135 @@
+---
+title: "Location & Maps"
+description: "Core Location and MapKit integration — GPS tracking, geocoding, geofencing, and map annotations with Prism-native types."
+icon: "location-dot"
+---
+
+# Location & Maps
+
+PrismCapabilities wraps Core Location and MapKit into type-safe, `Sendable` APIs. Request permissions, track location, monitor geofences, and display maps without managing `CLLocationManager` delegates.
+
+## Location Client
+
+### Permissions
+
+```swift title="Request Location Permission"
+import PrismCapabilities
+
+let client = PrismLocationClient()
+
+// Check current status
+let permission = client.permissionStatus
+// .notDetermined, .restricted, .denied, .authorizedWhenInUse, .authorizedAlways
+
+// Request authorization
+try await client.requestWhenInUseAuthorization()
+```
+
+### Current Location
+
+```swift title="Get Current Location"
+let location = try await client.currentLocation(
+    accuracy: .best
+)
+
+print("Lat: \(location.latitude)")
+print("Lng: \(location.longitude)")
+print("Alt: \(location.altitude ?? 0)m")
+print("Accuracy: \(location.horizontalAccuracy)m")
+```
+
+### Continuous Tracking
+
+Stream location updates using `AsyncStream`:
+
+```swift title="Track Location"
+for await location in client.startUpdating(accuracy: .nearestTenMeters) {
+    print("\(location.latitude), \(location.longitude)")
+}
+```
+
+### Accuracy Levels
+
+| Level | Description |
+|-------|-------------|
+| `.best` | Highest accuracy — GPS |
+| `.nearestTenMeters` | ~10m precision |
+| `.hundredMeters` | ~100m precision |
+| `.kilometer` | ~1km precision |
+| `.threeKilometers` | ~3km — lowest power |
+
+### PrismLocation
+
+All location data uses the `PrismLocation` struct:
+
+```swift
+public struct PrismLocation: Sendable {
+    public let latitude: Double
+    public let longitude: Double
+    public let altitude: Double?
+    public let horizontalAccuracy: Double
+    public let timestamp: Date
+}
+```
+
+## Geofencing
+
+Monitor enter/exit events for circular geographic regions:
+
+```swift title="Geofence Monitoring"
+let region = PrismGeofenceRegion(
+    id: "office",
+    latitude: 37.7749,
+    longitude: -122.4194,
+    radius: 200  // meters
+)
+
+try await client.startMonitoring(region: region)
+
+for await event in client.geofenceEvents {
+    switch event {
+    case .entered(let region):
+        print("Entered \(region.id)")
+    case .exited(let region):
+        print("Exited \(region.id)")
+    }
+}
+```
+
+<Tip>
+  iOS limits geofence monitoring to 20 regions per app. Choose your regions wisely.
+</Tip>
+
+## Map Client
+
+`PrismMapClient` provides MapKit utilities for geocoding and search:
+
+```swift title="Geocoding"
+let mapClient = PrismMapClient()
+
+// Forward geocode
+let coordinates = try await mapClient.geocode(
+    address: "1 Apple Park Way, Cupertino, CA"
+)
+
+// Reverse geocode
+let placemark = try await mapClient.reverseGeocode(
+    latitude: 37.3349,
+    longitude: -122.0090
+)
+print(placemark.locality ?? "Unknown city")
+```
+
+### Points of Interest Search
+
+```swift title="Search Nearby"
+let results = try await mapClient.search(
+    query: "coffee",
+    near: PrismLocation(latitude: 37.7749, longitude: -122.4194),
+    radius: 1000
+)
+
+for place in results {
+    print("\(place.name) — \(place.distance)m away")
+}
+```

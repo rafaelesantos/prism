@@ -1,0 +1,256 @@
+---
+title: "NLP & RAG"
+description: "Sentiment analysis, named entity extraction, embeddings, and retrieval-augmented generation — all on-device."
+icon: "magnifying-glass"
+---
+
+# NLP & RAG
+
+PrismIntelligence includes NLP utilities built on Apple's NaturalLanguage framework and a complete RAG (Retrieval-Augmented Generation) pipeline using in-memory vector search.
+
+## Sentiment Analysis
+
+Analyze the sentiment of any text:
+
+```swift title="Sentiment Analysis"
+import PrismIntelligence
+
+let sentiment = PrismNLPActions.analyzeSentiment("I absolutely love this product!")
+// .positive
+
+let mixed = PrismNLPActions.analyzeSentiment("The design is great but the battery is terrible")
+// .mixed
+```
+
+Sentiment returns one of four values:
+
+| Sentiment | Description |
+|-----------|-------------|
+| `.positive` | Text expresses positive sentiment |
+| `.negative` | Text expresses negative sentiment |
+| `.neutral` | Text has no strong sentiment |
+| `.mixed` | Text contains both positive and negative sentiment |
+
+## Named Entity Extraction
+
+Extract people, places, organizations, and dates from text:
+
+```swift title="Entity Extraction"
+import PrismIntelligence
+
+let text = "Tim Cook announced the new iPhone at Apple Park on June 9th."
+let entities = PrismNLPActions.extractEntities(text)
+
+for entity in entities {
+    print("\(entity.type): \(entity.text)")
+}
+// person: Tim Cook
+// organization: Apple
+// place: Apple Park
+// date: June 9th
+```
+
+Each `PrismNLPEntity` includes:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `text` | `String` | The extracted entity text |
+| `type` | `PrismEntityType` | `.person`, `.place`, `.organization`, or `.date` |
+| `range` | `Range<String.Index>` | Position within the source string |
+
+## Embedding Store
+
+`PrismEmbeddingStore` is an actor-isolated vector store for similarity search:
+
+```swift title="Embedding Store"
+import PrismIntelligence
+
+let store = PrismEmbeddingStore()
+
+// Add embeddings
+await store.add(PrismEmbedding(
+    id: "doc-1",
+    vector: [0.1, 0.8, 0.3, 0.5],
+    metadata: ["title": "Swift Concurrency Guide"]
+))
+
+await store.add(PrismEmbedding(
+    id: "doc-2",
+    vector: [0.9, 0.2, 0.1, 0.4],
+    metadata: ["title": "SwiftUI Layout System"]
+))
+
+await store.add(PrismEmbedding(
+    id: "doc-3",
+    vector: [0.15, 0.75, 0.35, 0.45],
+    metadata: ["title": "Async/Await Patterns"]
+))
+
+// Search by similarity
+let results = await store.search(
+    query: [0.12, 0.78, 0.32, 0.48],
+    topK: 2
+)
+
+for result in results {
+    print("\(result.embedding.id): \(result.similarity)")
+}
+// doc-3: 0.998
+// doc-1: 0.995
+```
+
+<Tip>
+  The embedding store uses cosine similarity for ranking. Vectors don't need to be normalized — the similarity calculation handles it internally.
+</Tip>
+
+## Text Chunker
+
+Split long documents into overlapping chunks for embedding ingestion:
+
+```swift title="Text Chunking"
+import PrismIntelligence
+
+let chunker = PrismTextChunker()
+let longText = "Swift is a powerful programming language..."
+
+let chunks = chunker.chunk(longText, size: 500, overlap: 50)
+// Each chunk is ~500 characters with 50-character overlap between neighbors
+```
+
+## RAG Pipeline
+
+`PrismRAGPipeline` combines chunking, embedding storage, and retrieval into a single workflow:
+
+```swift title="RAG Configuration"
+import PrismIntelligence
+
+let config = PrismRAGConfig(
+    chunkSize: 500,    // Characters per chunk
+    overlapSize: 50,   // Overlap between chunks
+    topK: 3            // Number of results to retrieve
+)
+```
+
+### Configuration
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `chunkSize` | `500` | Number of characters per text chunk |
+| `overlapSize` | `50` | Character overlap between consecutive chunks |
+| `topK` | `3` | Number of top results to retrieve during search |
+
+### RAG Response
+
+Query results include the answer, source chunks, and a confidence score:
+
+```swift title="RAG Response"
+let response = PrismRAGResponse(
+    answer: "Swift concurrency uses structured concurrency...",
+    sources: ["Chapter 3: ...", "Chapter 5: ..."],
+    confidence: 0.87
+)
+
+print(response.answer)
+print("Sources: \(response.sources.count)")
+print("Confidence: \(response.confidence)")
+```
+
+## Structured Output
+
+`PrismStructuredParser` extracts structured data from raw LLM text output:
+
+```swift title="Parse JSON from Text"
+import PrismIntelligence
+
+let parser = PrismStructuredParser()
+
+// Extract JSON from mixed text
+let text = """
+Here's the data you requested:
+{"name": "Alice", "age": 30, "role": "engineer"}
+Let me know if you need more.
+"""
+
+struct Person: Decodable {
+    let name: String
+    let age: Int
+    let role: String
+}
+
+if let person: Person = parser.parse(text, as: Person.self) {
+    print(person.name) // Alice
+}
+```
+
+### Extract JSON
+
+Pull the first JSON object or array from mixed text:
+
+```swift title="Extract JSON"
+let raw = "The results are: [1, 2, 3] and that's all."
+let json = parser.extractJSON(raw)
+// "[1, 2, 3]"
+```
+
+### Extract Key-Value Pairs
+
+Parse `key: value` lines into a dictionary:
+
+```swift title="Key-Value Extraction"
+let report = """
+Name: Alice Johnson
+Role: Senior Engineer
+Team: Platform
+Start Date: 2023-01-15
+"""
+
+let pairs = parser.extractKeyValues(report)
+// ["Name": "Alice Johnson", "Role": "Senior Engineer",
+//  "Team": "Platform", "Start Date": "2023-01-15"]
+```
+
+## Complete Example
+
+```swift title="Document Q&A with RAG"
+import PrismIntelligence
+
+// 1. Configure the pipeline
+let config = PrismRAGConfig(chunkSize: 300, overlapSize: 30, topK: 3)
+let chunker = PrismTextChunker()
+let store = PrismEmbeddingStore()
+
+// 2. Ingest documents
+let documents = [
+    "Swift concurrency introduces structured concurrency with async/await...",
+    "Actors in Swift provide data isolation for concurrent access...",
+    "Task groups allow spawning multiple child tasks that run concurrently..."
+]
+
+for (index, doc) in documents.enumerated() {
+    let chunks = chunker.chunk(doc, size: config.chunkSize, overlap: config.overlapSize)
+    for (chunkIndex, chunk) in chunks.enumerated() {
+        // In production, generate real embeddings from a model
+        let embedding = PrismEmbedding(
+            id: "doc-\(index)-chunk-\(chunkIndex)",
+            vector: generateEmbedding(chunk),
+            metadata: ["source": "doc-\(index)", "text": chunk]
+        )
+        await store.add(embedding)
+    }
+}
+
+// 3. Query
+let queryVector = generateEmbedding("How do actors work in Swift?")
+let results = await store.search(query: queryVector, topK: config.topK)
+
+// 4. Build context from retrieved chunks
+let context = results.map { $0.embedding.metadata["text"] ?? "" }
+    .joined(separator: "\n\n")
+
+print("Retrieved \(results.count) chunks")
+print("Top similarity: \(results.first?.similarity ?? 0)")
+
+// 5. Analyze sentiment of the query
+let sentiment = PrismNLPActions.analyzeSentiment("How do actors work in Swift?")
+print("Query sentiment: \(sentiment)") // .neutral
+```

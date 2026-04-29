@@ -1,0 +1,226 @@
+---
+title: "Connectivity & Hardware"
+description: "Bluetooth, NFC, Multipeer, Nearby Interaction, CallKit, CoreMotion, and GameKit — hardware and connectivity APIs with Prism-native types."
+icon: "bluetooth"
+---
+
+# Connectivity & Hardware
+
+PrismCapabilities wraps Apple's hardware and connectivity frameworks into `Sendable`, actor-based APIs. Scan for Bluetooth peripherals, read NFC tags, connect peer-to-peer, and access motion sensors.
+
+## Bluetooth
+
+`PrismBluetoothClient` wraps CoreBluetooth for BLE device scanning and communication:
+
+```swift title="Scan for Devices"
+import PrismCapabilities
+
+let bluetooth = PrismBluetoothClient()
+
+// Check Bluetooth state
+let state = await bluetooth.state
+// .poweredOn, .poweredOff, .unauthorized, .unsupported, etc.
+
+// Scan for peripherals
+for await peripheral in bluetooth.scan(services: nil) {
+    print("Found: \(peripheral.name ?? "Unknown")")
+    print("RSSI: \(peripheral.rssi)")
+    
+    // Connect to a device
+    try await bluetooth.connect(to: peripheral)
+    break
+}
+```
+
+### Discover Services & Characteristics
+
+```swift title="Read Characteristic"
+let services = try await bluetooth.discoverServices(
+    for: peripheral
+)
+
+for service in services {
+    let characteristics = try await bluetooth.discoverCharacteristics(
+        for: service
+    )
+    
+    for char in characteristics {
+        if char.isReadable {
+            let data = try await bluetooth.readValue(
+                for: char
+            )
+            print("Value: \(data)")
+        }
+    }
+}
+```
+
+---
+
+## NFC
+
+`PrismNFCClient` reads NFC tags on supported devices:
+
+```swift title="Read NFC Tag"
+let nfc = PrismNFCClient()
+
+guard nfc.isAvailable else {
+    print("NFC not supported on this device")
+    return
+}
+
+let tag = try await nfc.scan(message: "Hold near an NFC tag")
+
+switch tag {
+case .ndef(let records):
+    for record in records {
+        print("Payload: \(record.payload)")
+    }
+case .iso7816(let apdu):
+    print("ISO 7816 tag: \(apdu)")
+}
+```
+
+<Tip>
+  NFC is only available on iPhone 7 and later. Add the `NFCReaderUsageDescription` key to your `Info.plist`.
+</Tip>
+
+---
+
+## Multipeer Connectivity
+
+`PrismMultipeerClient` enables peer-to-peer communication over Wi-Fi and Bluetooth:
+
+```swift title="Multipeer Session"
+let multipeer = PrismMultipeerClient(
+    serviceType: "my-app",
+    displayName: "Alice's iPhone"
+)
+
+// Start advertising and browsing
+try await multipeer.start()
+
+// Discover peers
+for await peer in multipeer.discoveredPeers {
+    print("Found peer: \(peer.displayName)")
+    try await multipeer.invite(peer)
+}
+
+// Send data to connected peers
+let data = "Hello!".data(using: .utf8)!
+try await multipeer.send(data, to: .all)
+
+// Receive data
+for await (data, sender) in multipeer.receivedData {
+    let message = String(data: data, encoding: .utf8)!
+    print("\(sender.displayName): \(message)")
+}
+```
+
+---
+
+## Nearby Interaction
+
+`PrismNearbyClient` uses the U1 chip for precise spatial awareness:
+
+```swift title="Nearby Interaction"
+let nearby = PrismNearbyClient()
+
+guard nearby.isSupported else {
+    print("Nearby Interaction not supported")
+    return
+}
+
+for await update in nearby.peerUpdates {
+    if let distance = update.distance {
+        print("Distance: \(distance)m")
+    }
+    if let direction = update.direction {
+        print("Direction: \(direction)")
+    }
+}
+```
+
+---
+
+## CallKit
+
+`PrismCallClient` integrates with the system call UI for VoIP apps:
+
+```swift title="Report Incoming Call"
+let calls = PrismCallClient()
+
+try await calls.reportIncomingCall(
+    uuid: UUID(),
+    handle: "+1-555-0123",
+    displayName: "John Doe",
+    hasVideo: false
+)
+
+// Listen for call events
+for await event in calls.callEvents {
+    switch event {
+    case .answered(let uuid):
+        print("Call answered: \(uuid)")
+    case .ended(let uuid):
+        print("Call ended: \(uuid)")
+    case .held(let uuid, let onHold):
+        print("Call \(uuid) hold: \(onHold)")
+    }
+}
+```
+
+---
+
+## CoreMotion
+
+`PrismMotionClient` provides access to accelerometer, gyroscope, and pedometer data:
+
+```swift title="Motion Data"
+let motion = PrismMotionClient()
+
+// Accelerometer stream
+for await data in motion.accelerometerUpdates(interval: 0.1) {
+    print("x: \(data.x), y: \(data.y), z: \(data.z)")
+}
+```
+
+```swift title="Pedometer"
+// Step counting
+let steps = try await motion.pedometerData(
+    from: Calendar.current.startOfDay(for: .now),
+    to: .now
+)
+print("Steps today: \(steps.numberOfSteps)")
+print("Distance: \(steps.distance ?? 0)m")
+```
+
+---
+
+## GameKit
+
+`PrismGameCenterClient` wraps GameKit for leaderboards and achievements:
+
+```swift title="Game Center"
+let gameCenter = PrismGameCenterClient()
+
+// Authenticate the player
+let player = try await gameCenter.authenticate()
+print("Player: \(player.displayName)")
+
+// Submit a score
+try await gameCenter.submitScore(
+    value: 42_000,
+    leaderboardID: "high_scores"
+)
+
+// Report an achievement
+try await gameCenter.reportAchievement(
+    id: "first_win",
+    percentComplete: 100
+)
+```
+
+<Tip>
+  Game Center authentication presents a system UI on first launch. Call `authenticate()` early in your app lifecycle — ideally during onboarding.
+</Tip>

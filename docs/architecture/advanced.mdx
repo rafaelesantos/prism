@@ -1,0 +1,261 @@
+---
+title: "Advanced Features"
+description: "State persistence, time-travel debugging, undo/redo, derived stores, and testing utilities."
+icon: "flask"
+---
+
+# Advanced Features
+
+PrismArchitecture ships with several advanced tools for debugging, persistence, and testing.
+
+## State Persistence
+
+Persist state across app launches using `PrismPersistenceStrategy`. Three built-in strategies are provided:
+
+### Disk Persistence
+
+Saves state as JSON files to the Documents directory:
+
+```swift title="Disk Persistence"
+let persistence = PrismDiskPersistence()
+
+// Save
+try persistence.save(appState, key: "app_state")
+
+// Load
+let loaded: AppState? = try persistence.load(key: "app_state")
+
+// Clear
+try persistence.clear(key: "app_state")
+```
+
+You can specify a custom directory:
+
+```swift
+let persistence = PrismDiskPersistence(
+    directory: FileManager.default.temporaryDirectory
+)
+```
+
+### UserDefaults Persistence
+
+Stores state in UserDefaults for lightweight data:
+
+```swift title="UserDefaults Persistence"
+let persistence = PrismUserDefaultsPersistence()
+
+try persistence.save(settings, key: "user_settings")
+let settings: Settings? = try persistence.load(key: "user_settings")
+```
+
+### Keychain Persistence
+
+Stores sensitive state in the system Keychain:
+
+```swift title="Keychain Persistence"
+let persistence = PrismKeychainPersistence()
+
+try persistence.save(credentials, key: "auth_credentials")
+let creds: Credentials? = try persistence.load(key: "auth_credentials")
+```
+
+### Custom Strategy
+
+Implement `PrismPersistenceStrategy` for any backend:
+
+```swift title="Custom Persistence"
+struct CloudPersistence: PrismPersistenceStrategy {
+    func save<State: Codable & Sendable>(_ state: State, key: String) throws {
+        let data = try JSONEncoder().encode(state)
+        // Upload to your cloud service
+    }
+
+    func load<State: Codable & Sendable>(key: String) throws -> State? {
+        // Download from your cloud service
+        return nil
+    }
+
+    func clear(key: String) throws {
+        // Delete from your cloud service
+    }
+}
+```
+
+## Time-Travel Debugger
+
+`PrismTimeTravelDebugger` records state snapshots at every action, letting you navigate through your app's history:
+
+```swift title="Time Travel Setup"
+let debugger = PrismTimeTravelDebugger<AppState>(maxSnapshots: 100)
+
+// Record a snapshot after each action
+debugger.record(state: store.state, action: "\(action)")
+
+// Navigate through history
+if debugger.canGoBack {
+    let snapshot = debugger.goBack()
+    store.replaceState(with: snapshot.state)
+}
+
+if debugger.canGoForward {
+    let snapshot = debugger.goForward()
+    store.replaceState(with: snapshot.state)
+}
+```
+
+### Inspecting Snapshots
+
+Each snapshot captures the state, action description, timestamp, and position:
+
+```swift title="Snapshot Inspection"
+for snapshot in debugger.snapshots {
+    print("[\(snapshot.index)] \(snapshot.action) at \(snapshot.timestamp)")
+}
+
+// Jump to a specific point in history
+let snapshot = debugger.goTo(index: 5)
+```
+
+<Tip>
+  Set `maxSnapshots` to limit memory usage. Old snapshots are evicted when the limit is exceeded.
+</Tip>
+
+## Undo / Redo
+
+`PrismUndoRedoStack` provides a classic undo/redo mechanism:
+
+```swift title="Undo / Redo"
+let undoRedo = PrismUndoRedoStack<AppState>(maxStackSize: 50)
+
+// Before mutating state, push the current state
+undoRedo.push(store.state)
+store.send(.deleteItem(at: index))
+
+// Undo
+if undoRedo.canUndo, let previous = undoRedo.undo() {
+    store.replaceState(with: previous)
+}
+
+// Redo
+if undoRedo.canRedo, let next = undoRedo.redo() {
+    store.replaceState(with: next)
+}
+```
+
+The redo stack is automatically cleared when a new state is pushed, matching standard undo/redo behavior.
+
+## Derived Store
+
+`PrismDerivedStore` provides a read-only view into a parent store that only notifies when the derived value actually changes:
+
+```swift title="Derived Store"
+struct AppState: PrismState {
+    var users: [User] = []
+    var selectedFilter: Filter = .all
+}
+
+// Derive a filtered user list
+let filteredUsers = store.derive { state in
+    state.users.filter { $0.matches(state.selectedFilter) }
+}
+
+// Use in SwiftUI
+struct UserListView: View {
+    let derived: PrismDerivedStore<AppState, [User]>
+
+    var body: some View {
+        List(derived.value) { user in
+            Text(user.name)
+        }
+    }
+}
+```
+
+`PrismDerivedStore` uses `Equatable` on the local state to avoid unnecessary SwiftUI re-renders.
+
+## Testing with PrismTestStore
+
+`PrismTestStore` wraps `PrismStore` with testing utilities for deterministic assertions:
+
+```swift title="PrismTestStore"
+@MainActor
+func testIncrement() async {
+    let testStore = PrismTestStore(
+        initialState: CounterState(),
+        reduce: { state, action in
+            switch action {
+            case .increment: state.count += 1
+            case .decrement: state.count -= 1
+            }
+            return .none
+        }
+    )
+
+    testStore.send(.increment)
+    XCTAssertEqual(testStore.state.count, 1)
+
+    testStore.send(.decrement)
+    XCTAssertEqual(testStore.state.count, 0)
+}
+```
+
+### Testing Async Effects
+
+Use `waitForEffects()` to wait for in-flight effects to complete before asserting:
+
+```swift title="Testing Effects"
+@MainActor
+func testFetchUsers() async {
+    let testStore = PrismTestStore(
+        initialState: UserState(),
+        reducer: UserReducer()
+    )
+
+    testStore.send(.fetchUsers)
+    XCTAssertTrue(testStore.state.isLoading)
+
+    // Wait for the async effect to complete
+    try await testStore.waitForEffects()
+
+    XCTAssertFalse(testStore.state.isLoading)
+    XCTAssertFalse(testStore.state.users.isEmpty)
+}
+```
+
+### Testing with Middleware
+
+```swift title="Testing Middleware"
+@MainActor
+func testAnalyticsMiddleware() async {
+    var trackedEvents: [String] = []
+
+    let middleware = PrismSideEffect<AppState, AppAction> { _, action in
+        switch action {
+        case .purchase:
+            return .run { _ in trackedEvents.append("purchase") }
+        default:
+            return .none
+        }
+    }
+
+    let testStore = PrismTestStore(
+        initialState: AppState(),
+        reducer: AppReducer().handling(with: middleware)
+    )
+
+    testStore.send(.purchase(item))
+    try await testStore.waitForEffects()
+
+    XCTAssertEqual(trackedEvents, ["purchase"])
+}
+```
+
+## Summary
+
+| Feature | Type | Purpose |
+|---------|------|---------|
+| Persistence | `PrismPersistenceStrategy` | Save/load state across launches |
+| Time Travel | `PrismTimeTravelDebugger` | Navigate through state history |
+| Undo/Redo | `PrismUndoRedoStack` | Classic undo/redo with stack |
+| Derived Store | `PrismDerivedStore` | Efficient read-only projections |
+| Test Store | `PrismTestStore` | Deterministic testing utilities |

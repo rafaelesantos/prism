@@ -1,0 +1,192 @@
+---
+title: "Layout & Navigation"
+description: "Responsive layouts, navigation containers, and multi-platform navigation with PrismRouter integration."
+icon: "table-layout"
+---
+
+# Layout & Navigation
+
+PrismUI provides layout primitives that adapt to screen size and platform, plus navigation components that bridge `PrismArchitecture`'s router with SwiftUI.
+
+## PrismGrid
+
+Responsive grid that automatically adapts column count based on available width:
+
+```swift title="Responsive Grid"
+PrismGrid(products, minItemWidth: 280, spacing: .lg) { product in
+    PrismCard {
+        VStack(alignment: .leading) {
+            Text(product.name)
+                .prismTypography(.headline)
+            Text(product.price)
+                .prismTypography(.body)
+        }
+    }
+}
+```
+
+The grid uses `LazyVGrid` with `.adaptive(minimum:)` under the hood — on iPhone it shows 1 column, on iPad 2–3, on Mac as many as fit.
+
+## PrismStack
+
+A directional stack that switches between `HStack` and `VStack` based on a size threshold:
+
+```swift title="Adaptive Stack"
+PrismStack(threshold: 500) {
+    infoPanel
+    detailPanel
+}
+```
+
+## PrismSection
+
+Themed section container with optional header, footer, and dividers:
+
+```swift title="Section"
+PrismSection("Account") {
+    PrismRow("Email", detail: "user@example.com")
+    PrismRow("Plan", detail: "Pro")
+}
+```
+
+## PrismScaffold
+
+Full-screen scaffold with a structured header, content area, and footer:
+
+```swift title="Scaffold"
+PrismScaffold(
+    header: { PrismToolbar(title: "Dashboard") },
+    content: { mainContent },
+    footer: { PrismTabView(selection: $tab) { /* tabs */ } }
+)
+```
+
+## PrismDepthStack
+
+A visionOS spatial layout container for placing views at different depth levels:
+
+```swift title="Depth Stack (visionOS)"
+PrismDepthStack {
+    backgroundLayer
+        .prismDepth(0)
+    contentLayer
+        .prismDepth(50)
+    overlayLayer
+        .prismDepth(100)
+}
+```
+
+## PrismSpacer
+
+Token-aware spacer that uses `SpacingToken` values:
+
+```swift title="Spacer"
+VStack {
+    header
+    PrismSpacer(.xl)
+    content
+}
+```
+
+---
+
+# Navigation
+
+## PrismNavigationView
+
+Bridges `PrismRouter` from the Architecture module with SwiftUI's `NavigationStack`, sheets, and full-screen covers:
+
+```swift title="Navigation Setup"
+enum AppRoute: PrismRoutable {
+    case home
+    case detail(id: String)
+    case settings
+}
+
+struct RootView: View {
+    @State private var router = PrismRouter<AppRoute>()
+
+    var body: some View {
+        PrismNavigationView(router: router) {
+            HomeView(router: router)
+        } destination: { route in
+            switch route {
+            case .home:
+                HomeView(router: router)
+            case .detail(let id):
+                DetailView(id: id)
+            case .settings:
+                SettingsView()
+            }
+        }
+    }
+}
+```
+
+Navigate with the router's type-safe API:
+
+```swift title="Navigation Actions"
+// Push onto stack
+router.push(.detail(id: "42"))
+
+// Present as sheet
+router.present(.settings)
+
+// Present full-screen cover
+router.presentFullScreen(.settings)
+
+// Pop / dismiss
+router.pop()
+router.dismiss()
+router.popToRoot()
+```
+
+## PrismTabView
+
+Themed tab bar with badge support:
+
+```swift title="Tab View"
+PrismTabView(selection: $selectedTab) {
+    HomeView()
+        .prismTab("Home", icon: "house", tag: .home)
+    SearchView()
+        .prismTab("Search", icon: "magnifyingglass", tag: .search)
+    ProfileView()
+        .prismTab("Profile", icon: "person", tag: .profile, badge: 3)
+}
+```
+
+## PrismSplitView
+
+Adaptive sidebar navigation for iPad and Mac:
+
+```swift title="Split View"
+PrismSplitView {
+    SidebarView(selection: $selection)
+} detail: {
+    DetailView(item: selection)
+}
+```
+
+## PrismSheet
+
+Themed sheet presentation with detents:
+
+```swift title="Sheet"
+PrismSheet(isPresented: $showFilter, detents: [.medium, .large]) {
+    FilterView()
+}
+```
+
+## Platform-Specific
+
+| Component | Platform | Description |
+|-----------|----------|-------------|
+| `PrismMenuBarExtra` | macOS | Menu bar item with popover content |
+| `PrismSettings` | macOS | Settings window with tabbed panes |
+| `PrismNavigationPath` | All | Type-erased navigation path wrapper |
+| `PrismVolumeView` | visionOS | 3D volume window container |
+
+<Tip>
+  `PrismNavigationView` handles the binding between `PrismRouter.path`, `presentedRoute`, and `fullScreenRoute` automatically. You only interact with the router — the SwiftUI bindings are managed for you.
+</Tip>

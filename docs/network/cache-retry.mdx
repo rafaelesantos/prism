@@ -1,0 +1,212 @@
+---
+title: "Caching & Retry"
+description: "Actor-based LRU response caching and configurable retry policies with exponential backoff and linear strategies."
+icon: "arrows-rotate"
+---
+
+# Caching & Retry
+
+PrismNetwork provides two complementary resilience layers: an actor-based response cache with LRU eviction and TTL, and pluggable retry policies for automatic request retries.
+
+## Response Cache
+
+### PrismResponseCache
+
+An actor-isolated LRU cache that stores response data with time-to-live:
+
+```swift title="Basic Cache Usage"
+import PrismNetwork
+
+let cache = PrismResponseCache(maxSize: 100)
+
+// Store a response
+let entry = PrismCacheEntry(
+    data: responseData,
+    statusCode: 200,
+    headers: ["Content-Type": "application/json"],
+    ttl: .seconds(300) // 5 minutes
+)
+await cache.set("users:list", entry: entry)
+
+// Retrieve from cache
+if let cached = await cache.get("users:list") {
+    let users = try JSONDecoder().decode([User].self, from: cached.data)
+}
+```
+
+### Cache Policies
+
+`PrismCachePolicy` controls how requests interact with the cache layer:
+
+| Policy | Behavior |
+|--------|----------|
+| `.networkOnly` | Always fetch from network, ignore cache |
+| `.cacheFirst` | Return cached data if available; otherwise fetch from network |
+| `.cacheThenNetwork` | Return cached data immediately, then revalidate from network |
+| `.staleWhileRevalidate` | Serve stale cache while revalidating in the background |
+
+```swift title="Using Cache Policies"
+// Always fresh data
+let fresh = await cache.get("users:list", policy: .networkOnly)
+
+// Prefer cache, fallback to network
+let fast = await cache.get("users:list", policy: .cacheFirst)
+
+// Instant stale data + background refresh
+let optimistic = await cache.get("users:list", policy: .staleWhileRevalidate)
+```
+
+### Cache Entry
+
+Each `PrismCacheEntry` tracks its creation time and TTL:
+
+```swift title="Cache Entry Properties"
+let entry = PrismCacheEntry(
+    data: data,
+    statusCode: 200,
+    headers: ["ETag": "abc123"],
+    cachedAt: Date(),
+    ttl: .seconds(600) // 10 minutes
+)
+
+entry.isExpired  // true if cachedAt + ttl < now
+```
+
+<Tip>
+  The LRU cache automatically evicts the least recently accessed entries when the cache exceeds `maxSize`. Expired entries are also cleaned up on access.
+</Tip>
+
+## Retry Policies
+
+### PrismRetryPolicy Protocol
+
+Implement this protocol to define custom retry logic:
+
+```swift title="Protocol Definition"
+public protocol PrismRetryPolicy: Sendable {
+    func shouldRetry(for error: Error, attempt: Int) -> Bool
+    func delay(for attempt: Int) -> Duration
+}
+```
+
+### Exponential Backoff
+
+`PrismExponentialBackoff` increases the delay exponentially with random jitter to prevent thundering herd:
+
+```swift title="Exponential Backoff"
+let policy = PrismExponentialBackoff(
+    baseDelay: .seconds(1),   // first retry after ~1s
+    maxDelay: .seconds(30),   // cap at 30s
+    maxAttempts: 3            // give up after 3 retries
+)
+
+// Attempt 0: ~1s delay
+// Attempt 1: ~2s delay (+ jitter)
+// Attempt 2: ~4s delay (+ jitter)
+// Attempt 3: gives up
+```
+
+The delay formula is: `min(baseDelay × 2^attempt + jitter, maxDelay)` where jitter is a random value between 0 and 0.5 seconds.
+
+### Linear Retry
+
+`PrismLinearRetry` uses a constant delay between attempts:
+
+```swift title="Linear Retry"
+let policy = PrismLinearRetry(
+    fixedDelay: .seconds(2),
+    maxAttempts: 5
+)
+
+// Every retry waits exactly 2 seconds
+```
+
+### Custom Retry Policy
+
+Implement the protocol for fine-grained control:
+
+```swift title="Custom Policy"
+struct SmartRetryPolicy: PrismRetryPolicy {
+    func shouldRetry(for error: Error, attempt: Int) -> Bool {
+        guard attempt < 3 else { return false }
+
+        // Only retry network errors, not client errors
+        if let networkError = error as? PrismNetworkError {
+            switch networkError {
+            case .noConnectivity, .serverError:
+                return true
+            case .unauthorized, .forbidden, .badRequest:
+                return false
+            default:
+                return false
+            }
+        }
+        return false
+    }
+
+    func delay(for attempt: Int) -> Duration {
+        switch attempt {
+        case 0: return .seconds(1)
+        case 1: return .seconds(3)
+        default: return .seconds(10)
+        }
+    }
+}
+```
+
+## Combining Cache + Retry
+
+Use both layers together for resilient networking:
+
+```swift title="Resilient Network Layer"
+import PrismNetwork
+
+struct ResilientClient {
+    let adapter = PrismNetworkAdapter()
+    let cache = PrismResponseCache(maxSize: 200)
+    let retryPolicy = PrismExponentialBackoff(maxAttempts: 3)
+
+    func fetch<T: Decodable & Sendable>(
+        key: String,
+        request: some PrismNetworkRequest
+    ) async throws -> T where T == request.Response {
+        // Check cache first
+        if let cached = await cache.get(key) {
+            if let decoded = try? JSONDecoder().decode(T.self, from: cached.data) {
+                return decoded
+            }
+        }
+
+        // Retry with backoff
+        var lastError: Error?
+        for attempt in 0...retryPolicy.maxAttempts {
+            do {
+                let result = try await adapter.request(on: request)
+
+                // Cache the response
+                let data = try JSONEncoder().encode(result)
+                let entry = PrismCacheEntry(data: data, ttl: .seconds(300))
+                await cache.set(key, entry: entry)
+
+                return result
+            } catch {
+                lastError = error
+                guard retryPolicy.shouldRetry(for: error, attempt: attempt) else { break }
+                try await Task.sleep(for: retryPolicy.delay(for: attempt))
+            }
+        }
+        throw lastError ?? PrismNetworkError.invalidResponse
+    }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Advanced Features" icon="wand-magic-sparkles" href="/network/advanced-network">
+    Request deduplication, offline queues, multipart uploads, and GraphQL.
+  </Card>
+  <Card title="WebSocket Client" icon="plug" href="/network/websocket-client">
+    Real-time communication with the WebSocket client.
+  </Card>
+</CardGroup>

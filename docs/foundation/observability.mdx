@@ -1,0 +1,197 @@
+---
+title: "Observability"
+description: "Performance tracing, structured logging, crash reporting, analytics funnels, and network inspection."
+icon: "chart-line"
+---
+
+# Observability
+
+PrismFoundation provides actor-based observability tools for measuring performance, structured logging, crash reporting, and analytics tracking — all designed for Swift concurrency.
+
+## Performance Tracing
+
+`PrismPerformanceTracer` measures operation durations using hierarchical spans. It's an actor, so it's safe to use from any concurrency context.
+
+### PrismTraceSpan
+
+Each span captures timing and metadata:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `UUID` | Unique span identifier |
+| `name` | `String` | Human-readable operation name |
+| `startTime` | `Date` | When the span started |
+| `endTime` | `Date?` | When the span ended |
+| `duration` | `Duration?` | Wall-clock duration |
+| `metadata` | `[String: String]` | Arbitrary key-value pairs |
+| `children` | `[PrismTraceSpan]` | Nested child spans |
+
+### Using the Tracer
+
+```swift title="Manual Span Management"
+import PrismFoundation
+
+let tracer = PrismPerformanceTracer()
+
+// Start a span
+let spanID = await tracer.beginSpan(
+    name: "fetchUsers",
+    metadata: ["endpoint": "/api/users"]
+)
+
+// ... do work ...
+
+// End the span
+await tracer.endSpan(id: spanID)
+
+// Check completed spans
+let spans = await tracer.completedSpans
+print(spans.first?.duration) // e.g., Duration.seconds(0.42)
+```
+
+```swift title="Automatic Measurement"
+let result = await tracer.measure(name: "databaseQuery") {
+    try await database.query("SELECT * FROM users")
+}
+// Span is automatically started and completed
+```
+
+<Tip>
+  Use `measure(name:)` for most cases — it handles span lifecycle automatically and returns the operation result.
+</Tip>
+
+## Structured Logging
+
+`PrismStructuredLogger` provides leveled logging with metadata, source location, and category grouping.
+
+### Log Levels
+
+Ordered from least to most critical:
+
+```
+trace → debug → info → warning → error → critical
+```
+
+### PrismLogEntry
+
+Each log entry captures:
+
+```swift title="Creating Log Entries"
+import PrismFoundation
+
+let entry = PrismLogEntry(
+    level: .warning,
+    message: "Rate limit approaching threshold",
+    category: "api",
+    metadata: [
+        "current": "450",
+        "limit": "500",
+        "endpoint": "/api/users"
+    ]
+)
+
+print(entry.level)     // .warning
+print(entry.category)  // "api"
+print(entry.file)      // Auto-captured source file
+print(entry.line)      // Auto-captured source line
+```
+
+## Crash Reporting
+
+`PrismCrashReporter` is an actor that collects crash reports and notifies a callback.
+
+### PrismCrashReport
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `UUID` | Unique report identifier |
+| `message` | `String` | Crash description |
+| `stackTrace` | `String?` | Stack trace at crash time |
+| `timestamp` | `Date` | When the crash occurred |
+| `appVersion` | `String?` | App version at crash time |
+| `metadata` | `[String: String]` | Additional context |
+
+```swift title="Recording Crashes"
+import PrismFoundation
+
+let reporter = PrismCrashReporter { report in
+    // Send to your crash reporting service
+    print("Crash: \(report.message)")
+}
+
+await reporter.record(
+    PrismCrashReport(
+        message: "Unexpected nil in user session",
+        appVersion: "2.1.0",
+        metadata: ["screen": "checkout"]
+    )
+)
+
+let allReports = await reporter.reports
+```
+
+## Analytics Funnels
+
+`PrismAnalyticsFunnel` tracks user progression through a sequence of steps, computing conversion rates between each stage.
+
+```swift title="Funnel Tracking"
+import PrismFoundation
+
+let funnel = PrismAnalyticsFunnel()
+
+// Define the funnel steps
+await funnel.define(steps: [
+    "landing_page",
+    "signup_form",
+    "email_verified",
+    "first_purchase"
+])
+
+// Record user events
+await funnel.record(step: "landing_page", userId: "user_1")
+await funnel.record(step: "landing_page", userId: "user_2")
+await funnel.record(step: "landing_page", userId: "user_3")
+await funnel.record(step: "signup_form", userId: "user_1")
+await funnel.record(step: "signup_form", userId: "user_2")
+await funnel.record(step: "email_verified", userId: "user_1")
+await funnel.record(step: "first_purchase", userId: "user_1")
+
+// Generate a report with conversion rates
+let report = await funnel.report()
+for step in report {
+    let rate = step.conversionRate.map { "\(Int($0 * 100))%" } ?? "—"
+    print("\(step.name): \(step.count) users (\(rate) conversion)")
+}
+// landing_page: 3 users (— conversion)
+// signup_form: 2 users (66% conversion)
+// email_verified: 1 users (50% conversion)
+// first_purchase: 1 users (100% conversion)
+```
+
+## Network Inspector
+
+`PrismNetworkInspector` intercepts and records network requests for debugging and diagnostics.
+
+```swift title="Network Inspection"
+import PrismFoundation
+
+let inspector = PrismNetworkInspector()
+// Attach to network client for request/response logging
+```
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Performance Tracing" icon="stopwatch">
+    Actor-based span tracing with hierarchical children, metadata, and automatic `measure()` helper.
+  </Card>
+  <Card title="Structured Logging" icon="rectangle-list">
+    Six severity levels with category grouping, metadata, and auto-captured source location.
+  </Card>
+  <Card title="Crash Reporting" icon="triangle-exclamation">
+    Actor-isolated crash report collection with async callback notification.
+  </Card>
+  <Card title="Analytics Funnels" icon="filter">
+    Step-by-step user progression tracking with automatic conversion rate computation.
+  </Card>
+</CardGroup>

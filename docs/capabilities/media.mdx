@@ -1,0 +1,113 @@
+---
+title: "Camera & Media"
+description: "AVFoundation camera capture with Prism-native types — photo and video capture, flash control, and quality settings."
+icon: "camera"
+---
+
+# Camera & Media
+
+`PrismCameraClient` wraps AVFoundation's capture pipeline into a clean, `Sendable` API. Capture photos and video without managing `AVCaptureSession`, delegates, or output configurations directly.
+
+## Permissions
+
+```swift title="Camera Permission"
+import PrismCapabilities
+
+let permission = PrismCameraClient.permissionStatus
+// .notDetermined, .restricted, .denied, .authorized
+
+// Request access
+let granted = try await PrismCameraClient.requestAccess()
+```
+
+## Camera Positions
+
+| Position | Description |
+|----------|-------------|
+| `.front` | Front-facing (selfie) camera |
+| `.back` | Rear-facing camera |
+| `.external` | External camera (iPad, Mac) |
+
+## Photo Capture
+
+```swift title="Capture a Photo"
+let camera = PrismCameraClient(position: .back)
+
+try await camera.start()
+
+let settings = PrismPhotoSettings(
+    flashMode: .auto,
+    isHDREnabled: true,
+    quality: .high
+)
+
+let photo = try await camera.capturePhoto(settings: settings)
+// photo.imageData contains the captured JPEG/HEIC data
+
+await camera.stop()
+```
+
+### Photo Quality Levels
+
+| Quality | Description |
+|---------|-------------|
+| `.low` | Smallest file size, reduced resolution |
+| `.medium` | Balanced quality and size |
+| `.high` | High-resolution output |
+| `.maximum` | Full sensor resolution |
+
+### Flash Modes
+
+| Mode | Behavior |
+|------|----------|
+| `.off` | Flash disabled |
+| `.on` | Flash always fires |
+| `.auto` | Flash fires when needed |
+
+## Video Capture
+
+Switch to video mode for recording:
+
+```swift title="Record Video"
+let camera = PrismCameraClient(
+    position: .back,
+    mode: .video
+)
+
+try await camera.start()
+
+// Start recording
+try await camera.startRecording()
+
+// ... record for desired duration ...
+
+// Stop and get the file URL
+let videoURL = try await camera.stopRecording()
+print("Video saved to: \(videoURL)")
+
+await camera.stop()
+```
+
+## Switching Cameras
+
+```swift title="Switch Camera"
+// Switch from back to front
+try await camera.switchPosition(to: .front)
+```
+
+<Tip>
+  Always call `camera.stop()` when you're done. The camera session holds hardware resources and will prevent other apps from accessing the camera.
+</Tip>
+
+## Photo Picker
+
+For selecting existing media from the photo library, use `PrismPhotoPicker` from PrismUI:
+
+```swift title="Photo Picker (PrismUI)"
+import PrismUI
+
+PrismPhotoPicker(
+    selection: $selectedImage,
+    filter: .images
+)
+```

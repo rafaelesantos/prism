@@ -1,0 +1,233 @@
+---
+title: "Advanced UI"
+description: "Animations, accessibility tools, performance utilities, view modifiers, rich text, SwiftData integration, widgets, internationalization, and developer tools."
+icon: "wand-magic-sparkles"
+---
+
+# Advanced UI
+
+PrismUI includes specialized utilities for animation, accessibility auditing, performance optimization, and developer tooling.
+
+## Animation
+
+Six animation systems for building fluid, physical interactions:
+
+| Component | Description |
+|-----------|-------------|
+| `PrismSpringConfig` | Pre-tuned spring configurations (bouncy, snappy, smooth) |
+| `PrismKeyframeBuilder` | Keyframe-based animation sequences |
+| `PrismPhysicsAnimation` | Gravity, friction, and collision-based animations |
+| `PrismSharedTransition` | Hero/shared element transitions between views |
+| `PrismStaggeredAnimation` | Cascading animations for list items |
+| `PrismGestureAnimation` | Gesture-driven interactive animations |
+
+```swift title="Staggered List Animation"
+ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+    ItemRow(item: item)
+        .prismStaggered(index: index, total: items.count)
+}
+```
+
+```swift title="Spring Configurations"
+withAnimation(PrismSpringConfig.bouncy.animation) {
+    isExpanded.toggle()
+}
+```
+
+## Accessibility
+
+Built-in tools for auditing and ensuring accessibility compliance:
+
+```swift title="Accessibility Audit"
+PrismAccessibilityAudit {
+    YourContentView()
+}
+// Reports: contrast issues, missing labels, touch target sizes, focus order problems
+```
+
+| Component | Description |
+|-----------|-------------|
+| `PrismAccessibilityAudit` | Scans a view hierarchy for a11y violations |
+| `PrismContrastChecker` | Verifies WCAG AA/AAA contrast ratios between color pairs |
+| `PrismColorBlindnessSimulator` | Renders views through color blindness filters (protanopia, deuteranopia, tritanopia) |
+| `PrismDynamicTypePreview` | Previews views at all Dynamic Type sizes |
+| `PrismFocusOrder` | Defines explicit keyboard/VoiceOver focus traversal order |
+| `PrismReduceMotion` | Provides reduced-motion alternatives for animations |
+| `PrismVoiceControlLabel` | Adds voice control labels for hands-free navigation |
+| `PrismAccessibilityAnnouncement` | Posts VoiceOver announcements programmatically |
+
+```swift title="Contrast Check"
+let passes = PrismContrastChecker.meetsAA(
+    foreground: theme.color(.onBackground),
+    background: theme.color(.background)
+)
+```
+
+## Performance
+
+Utilities for optimizing rendering and memory in large UIs:
+
+| Component | Description |
+|-----------|-------------|
+| `PrismLazyView` | Defers view creation until it appears on screen |
+| `PrismImageDownsampler` | Downsizes images to display size before rendering |
+| `PrismMemoryTracker` | Monitors memory usage and warns on thresholds |
+| `PrismPrefetchCoordinator` | Pre-loads data for upcoming scroll positions |
+| `PrismRenderProfiler` | Measures view body evaluation and render time |
+
+```swift title="Image Downsampling"
+PrismImageDownsampler(
+    url: highResURL,
+    targetSize: CGSize(width: 200, height: 200)
+)
+```
+
+## View Modifiers
+
+25+ view modifiers for common UI patterns:
+
+| Modifier | Description |
+|----------|-------------|
+| `.prismAnimation()` | Apply token-based animation timing |
+| `.prismScroll()` | Themed scroll indicators and bounce |
+| `.prismHover()` | Hover state effects (macOS, iPadOS) |
+| `.prismGlass()` | Frosted glass material background |
+| `.prismResponsive()` | Adapt layout based on size class |
+| `.prismTypography()` | Apply typography token |
+| `.prismSkeleton()` | Show skeleton placeholder when loading |
+| `.prismTransition()` | Token-based view transitions |
+| `.prismContentTransition()` | Animated content changes |
+| `.prismSwipeActions()` | Swipeable row actions |
+| `.prismContextMenu()` | Themed context menu |
+| `.prismToolbar()` | Toolbar configuration |
+| `.prismRefreshable()` | Pull-to-refresh |
+| `.prismFocus()` | Focus state management |
+| `.prismKeyboardShortcut()` | Keyboard shortcut binding |
+| `.prismSpacing()` | Token-based padding/margin |
+| `.prismShape()` | Clip to themed shapes |
+| `.prismOrnament()` | visionOS ornament placement |
+| `.prismMotion()` | Motion-sensor reactive effects |
+| `.prismRedacted()` | Redacted/placeholder content |
+| `.prismLabelStyle()` | Custom label styling |
+| `.prismSensoryFeedback()` | Haptic/audio feedback |
+| `.prismSharing()` | Share sheet integration |
+| `.prismUndo()` | Undo/redo gesture support |
+| `.prismAnalytics()` | Track view impressions |
+| `.prismPerformance()` | Render performance monitoring |
+
+## Rich Text
+
+| Component | Description |
+|-----------|-------------|
+| `PrismMarkdownView` | Renders Markdown with themed styling |
+| `PrismRichTextEditor` | WYSIWYG rich text editor |
+| `PrismSyntaxHighlighter` | Code syntax highlighting for 20+ languages |
+| `PrismAttributedStringBuilder` | Fluent API for building `AttributedString` |
+
+```swift title="Markdown"
+PrismMarkdownView("""
+# Hello World
+This is **bold** and this is `code`.
+""")
+```
+
+## SwiftData Integration
+
+Components that bridge SwiftData models with PrismUI:
+
+| Component | Description |
+|-----------|-------------|
+| `PrismModelView` | Detail view auto-generated from a SwiftData model |
+| `PrismModelList` | List view with search, sort, and pagination for a model |
+| `PrismModelFormBuilder` | Auto-generated edit form from model properties |
+| `PrismPredicateBuilder` | Visual predicate/filter builder UI |
+| `PrismMigrationHelper` | Migration status and progress view |
+| `PrismCloudSyncStatus` | iCloud sync status indicator |
+
+```swift title="Auto-Generated Model List"
+PrismModelList(
+    modelType: Task.self,
+    sortBy: \.createdAt,
+    searchKeyPath: \.title
+) { task in
+    TaskRow(task: task)
+}
+```
+
+## Widgets & Live Activities
+
+| Component | Description |
+|-----------|-------------|
+| `PrismWidgetView` | Base widget view with theme and token support |
+| `PrismLiveActivity` | Live Activity builder with themed content |
+| `PrismComplication` | watchOS complication templates |
+
+## Internationalization
+
+| Component | Description |
+|-----------|-------------|
+| `PrismStringCatalog` | Type-safe string catalog access |
+| `PrismPluralization` | Pluralization rules for multiple locales |
+| `PrismLayoutDirection` | RTL/LTR layout adaptation |
+| `PrismLocaleFormatters` | Locale-aware number, date, and currency formatters |
+| `PrismLocalePreviewHelper` | Preview views in multiple locales side by side |
+
+## Drag & Drop
+
+```swift title="Drag and Drop"
+PrismDragDrop(items: $tasks) { task in
+    TaskRow(task: task)
+} onReorder: { from, to in
+    tasks.move(fromOffsets: from, toOffset: to)
+}
+```
+
+## Developer Tools
+
+Tools for building, inspecting, and testing your design system:
+
+```swift title="Storybook"
+PrismStorybook {
+    PrismStorybook.Section("Buttons") {
+        PrismButton("Filled", variant: .filled) {}
+        PrismButton("Outlined", variant: .outlined) {}
+        PrismButton("Ghost", variant: .ghost) {}
+    }
+    PrismStorybook.Section("Cards") {
+        PrismCard { Text("Default") }
+    }
+}
+```
+
+| Tool | Description |
+|------|-------------|
+| `PrismStorybook` | Interactive component catalog |
+| `PrismComponentBrowser` | Browsable component gallery with search |
+| `PrismTokenInspector` | Visual inspector for all design tokens |
+| `PrismPrototyper` | Rapid prototyping canvas |
+| `PrismLiveReload` | Hot-reload preview updates |
+| `PrismComponentDebugger` | View hierarchy and state debugger |
+| `PrismEnvironmentDebugger` | Environment values inspector |
+| `PrismComponentGenerator` | Code-gen scaffolding for new components |
+
+## Testing
+
+| Tool | Description |
+|------|-------------|
+| `PrismPreviewCatalog` | All components in a single preview |
+| `PrismSnapshotTest` | Pixel-perfect snapshot testing |
+| `PrismAccessibilityTest` | Automated a11y test assertions |
+| `PrismPerformanceBenchmark` | Render performance benchmarking |
+| `PrismThemeTest` | Verify theme token coverage |
+| `PrismDevicePreview` | Preview on multiple device sizes |
+| `PrismPreviewProviders` | Reusable preview data providers |
+| `PrismPreviewBlocks` | Composable preview building blocks |
+| `PrismThemeEditor` | Live theme editing in previews |
+
+## Export & Plugin
+
+| Tool | Description |
+|------|-------------|
+| `PrismFigmaSync` | Sync tokens with Figma variables |
+| `PrismTokenExport` | Export tokens to JSON/CSS/Tailwind formats |
+| `PrismPlugin` | Plugin protocol for extending PrismUI with custom components |

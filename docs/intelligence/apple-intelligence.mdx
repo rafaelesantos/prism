@@ -1,0 +1,190 @@
+---
+title: "Apple Intelligence"
+description: "Generate text using Apple's FoundationModels framework with system models, adapters, and streaming."
+icon: "apple"
+---
+
+# Apple Intelligence
+
+PrismIntelligence integrates with Apple's FoundationModels framework to provide on-device language generation. All processing happens locally — no data leaves the device.
+
+<Warning>
+  Apple Intelligence requires **iOS 26.0+** / **macOS 26.0+**. On older versions, the provider reports itself as unavailable via `PrismIntelligenceStatus`.
+</Warning>
+
+## Configuration
+
+Set up the provider with a model reference and optional system instructions:
+
+```swift title="Apple Intelligence Configuration"
+import PrismIntelligence
+
+// Use the default system model
+let config = PrismAppleIntelligenceConfiguration(
+    model: .system(useCase: .general),
+    instructions: "You are a helpful cooking assistant."
+)
+```
+
+### Model References
+
+Choose between the system model and custom adapters:
+
+```swift title="Model References"
+// Built-in system model for general use
+let general = PrismAppleIntelligenceModelReference.system(useCase: .general)
+
+// System model optimized for content tagging
+let tagger = PrismAppleIntelligenceModelReference.system(useCase: .contentTagging)
+
+// A named adapter registered with the system
+let customAdapter = PrismAppleIntelligenceModelReference.adapterName("my-fine-tuned-model")
+
+// An adapter loaded from a local file
+let fileAdapter = PrismAppleIntelligenceModelReference.adapterFile(
+    URL(fileURLWithPath: "/path/to/adapter.mlmodelc")
+)
+```
+
+### Use Cases
+
+| Use Case | Description |
+|----------|-------------|
+| `.general` | General-purpose language generation |
+| `.contentTagging` | Content tagging and categorization |
+
+## Language Generation
+
+Use `PrismLanguageIntelligence` for text generation:
+
+```swift title="Generate Text"
+import PrismIntelligence
+
+let provider = PrismAppleIntelligenceProvider(
+    configuration: .init(
+        model: .system(useCase: .general),
+        instructions: "You are a concise recipe assistant."
+    )
+)
+
+let request = PrismLanguageIntelligenceRequest(
+    prompt: "Give me a quick pasta recipe"
+)
+
+let response = try await provider.generate(request: request)
+print(response.text)
+```
+
+### Streaming
+
+Stream tokens as they're generated for real-time UI updates:
+
+```swift title="Streaming Generation"
+let request = PrismLanguageIntelligenceRequest(
+    prompt: "Explain Swift concurrency in simple terms"
+)
+
+for try await chunk in provider.stream(request: request) {
+    print(chunk.text, terminator: "")
+}
+```
+
+## Checking Availability
+
+Query whether Apple Intelligence is available on the current device:
+
+```swift title="Availability Check"
+let provider = PrismAppleIntelligenceProvider(
+    configuration: .init()
+)
+
+let status = await provider.status()
+
+if status.isAvailable {
+    print("Apple Intelligence ready")
+    print("Streaming: \(status.supportsStreaming)")
+    print("Adapters: \(status.supportsModelAdapters)")
+} else {
+    print("Not available: \(status.reason ?? "unknown")")
+}
+```
+
+## Remote LLM Provider
+
+For devices without Apple Intelligence support, or to use external models, use `PrismRemoteIntelligenceProvider`:
+
+```swift title="Remote Provider"
+import PrismIntelligence
+
+let remote = PrismRemoteIntelligenceProvider(
+    endpoint: URL(string: "https://api.example.com/v1/chat")!,
+    apiKey: "sk-...",
+    model: "gpt-4"
+)
+
+let request = PrismLanguageIntelligenceRequest(
+    prompt: "Summarize this article"
+)
+
+let response = try await remote.generate(request: request)
+```
+
+## Provider Fallback Pattern
+
+Combine Apple Intelligence with a remote fallback:
+
+```swift title="Provider Fallback"
+import PrismIntelligence
+
+func generateText(prompt: String) async throws -> String {
+    let appleProvider = PrismAppleIntelligenceProvider(
+        configuration: .init()
+    )
+
+    let status = await appleProvider.status()
+    let request = PrismLanguageIntelligenceRequest(prompt: prompt)
+
+    if status.isAvailable {
+        let response = try await appleProvider.generate(request: request)
+        return response.text
+    }
+
+    // Fall back to remote
+    let remote = PrismRemoteIntelligenceProvider(
+        endpoint: URL(string: "https://api.example.com/v1/chat")!,
+        apiKey: "sk-..."
+    )
+    let response = try await remote.generate(request: request)
+    return response.text
+}
+```
+
+<Tip>
+  Apple Intelligence runs entirely on-device. This means zero latency from network round-trips and full privacy — no data leaves the user's device. Prefer it over remote providers when available.
+</Tip>
+
+## Complete Example
+
+```swift title="Content Tagging with Apple Intelligence"
+import PrismIntelligence
+
+let provider = PrismAppleIntelligenceProvider(
+    configuration: .init(
+        model: .system(useCase: .contentTagging),
+        instructions: "Tag content with relevant categories. Return tags as a comma-separated list."
+    )
+)
+
+let articles = [
+    "Apple announces new MacBook Pro with M5 chip",
+    "Champions League final ends in dramatic penalty shootout",
+    "New study links Mediterranean diet to longevity"
+]
+
+for article in articles {
+    let request = PrismLanguageIntelligenceRequest(prompt: article)
+    let response = try await provider.generate(request: request)
+    print("\(article)")
+    print("  Tags: \(response.text)\n")
+}
+```

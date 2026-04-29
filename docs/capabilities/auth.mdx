@@ -1,0 +1,119 @@
+---
+title: "Authentication"
+description: "Biometric authentication and Sign in with Apple — Face ID, Touch ID, Optic ID, and Apple ID integration wrapped in Prism-native APIs."
+icon: "fingerprint"
+---
+
+# Authentication
+
+PrismCapabilities provides type-safe wrappers around Apple's `LocalAuthentication` and `AuthenticationServices` frameworks. Authenticate users with biometrics or Apple ID without touching `LAContext` or `ASAuthorizationController` directly.
+
+<CardGroup cols={2}>
+  <Card title="Biometric Auth" icon="fingerprint">
+    Face ID, Touch ID, and Optic ID with policy selection, error mapping, and device capability detection.
+  </Card>
+  <Card title="Sign in with Apple" icon="apple">
+    Full Apple ID flow — authorization requests, credential handling, and revocation detection.
+  </Card>
+</CardGroup>
+
+## Biometric Authentication
+
+### Device Capability
+
+Query which biometric type is available on the current device:
+
+```swift title="Check Biometric Type"
+import PrismCapabilities
+
+let biometricType = PrismBiometricClient.availableBiometricType()
+
+switch biometricType {
+case .faceID:    print("Face ID available")
+case .touchID:   print("Touch ID available")
+case .opticID:   print("Optic ID available (Vision Pro)")
+case .none:      print("No biometrics available")
+}
+```
+
+### Authentication Policies
+
+Choose the level of fallback you want:
+
+| Policy | Behavior |
+|--------|----------|
+| `.deviceOwnerAuthenticationWithBiometrics` | Biometrics only — no fallback |
+| `.deviceOwnerAuthentication` | Biometrics with device passcode fallback |
+
+### Authenticate
+
+```swift title="Biometric Authentication"
+let result = await PrismBiometricClient.authenticate(
+    reason: "Unlock your vault",
+    policy: .deviceOwnerAuthenticationWithBiometrics
+)
+
+switch result {
+case .success:
+    print("Authenticated!")
+case .failure(let error):
+    switch error {
+    case .userCancel:       print("User cancelled")
+    case .biometryLockout:  print("Too many failed attempts")
+    case .biometryNotEnrolled: print("No biometrics enrolled")
+    default:                print("Auth failed: \(error)")
+    }
+}
+```
+
+### Error Types
+
+`PrismBiometricError` maps all common `LAError` codes:
+
+| Error | Description |
+|-------|-------------|
+| `.authenticationFailed` | Invalid credentials provided |
+| `.userCancel` | User tapped Cancel |
+| `.userFallback` | User tapped the fallback button |
+| `.systemCancel` | System interrupted authentication |
+| `.passcodeNotSet` | No passcode configured on device |
+| `.biometryNotAvailable` | Hardware not available |
+| `.biometryNotEnrolled` | No biometric data enrolled |
+| `.biometryLockout` | Too many failed attempts |
+
+## Sign in with Apple
+
+`PrismSignInWithApple` wraps `ASAuthorizationController` for Apple ID login:
+
+```swift title="Sign in with Apple"
+let client = PrismSignInWithApple()
+
+let credential = try await client.signIn(
+    scopes: [.fullName, .email]
+)
+
+print("User ID: \(credential.userID)")
+print("Email: \(credential.email ?? "not shared")")
+print("Name: \(credential.fullName ?? "not shared")")
+```
+
+<Tip>
+  Store the `userID` from the credential — it's stable across sessions. The email and name are only provided on the **first** authorization.
+</Tip>
+
+### Credential State
+
+Check if a previously authorized user is still valid:
+
+```swift title="Check Credential State"
+let state = try await client.credentialState(
+    forUserID: savedUserID
+)
+
+switch state {
+case .authorized:    print("Still valid")
+case .revoked:       print("User revoked access")
+case .notFound:      print("No credential found")
+case .transferred:   print("Transferred to new device")
+}
+```

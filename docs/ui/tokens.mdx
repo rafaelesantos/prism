@@ -1,0 +1,164 @@
+---
+title: "Design Tokens"
+description: "Semantic design tokens for colors, spacing, typography, corner radius, elevation, and motion — the foundation of every PrismUI component."
+icon: "swatchbook"
+---
+
+# Design Tokens
+
+Design tokens are named constants that encode your design decisions. PrismUI uses six token families to keep your UI consistent across every component and platform.
+
+## ColorToken
+
+Semantic color tokens map to purposes, not hues. The active `PrismTheme` resolves each token to a concrete `Color`.
+
+```swift title="ColorToken Cases"
+public enum ColorToken: String, Sendable, CaseIterable {
+    // Brand
+    case brand, brandVariant
+
+    // Backgrounds
+    case background, backgroundSecondary, backgroundTertiary
+
+    // Surfaces
+    case surface, surfaceSecondary, surfaceElevated
+
+    // Content (text & icons)
+    case onBackground, onBackgroundSecondary, onBackgroundTertiary
+    case onSurface, onSurfaceSecondary, onBrand
+
+    // Borders & Separators
+    case border, borderSubtle, separator
+
+    // Interactive States
+    case interactive, interactiveHover, interactivePressed, interactiveDisabled
+
+    // Feedback
+    case success, warning, error, info
+
+    // Utility
+    case shadow, overlay
+}
+```
+
+```swift title="Using Color Tokens"
+@Environment(\.prismTheme) private var theme
+
+Text("Status: Active")
+    .foregroundStyle(theme.color(.success))
+    .padding()
+    .background(theme.color(.surface))
+    .overlay(
+        RoundedRectangle(cornerRadius: RadiusToken.sm.rawValue)
+            .stroke(theme.color(.border), lineWidth: 1)
+    )
+```
+
+## SpacingToken
+
+A consistent spacing scale based on a 4pt grid:
+
+| Token | Value |
+|-------|-------|
+| `.xxs` | 2pt |
+| `.xs` | 4pt |
+| `.sm` | 8pt |
+| `.md` | 12pt |
+| `.lg` | 16pt |
+| `.xl` | 24pt |
+| `.xxl` | 32pt |
+| `.xxxl` | 48pt |
+
+```swift title="Using Spacing Tokens"
+VStack(spacing: SpacingToken.md.rawValue) {
+    Text("Title")
+    Text("Subtitle")
+}
+.padding(SpacingToken.lg.rawValue)
+```
+
+## TypographyToken
+
+Type scale tokens for consistent text sizing:
+
+| Token | Use Case |
+|-------|----------|
+| `.largeTitle` | Screen titles |
+| `.title` | Section headings |
+| `.title2` | Subsection headings |
+| `.title3` | Card titles |
+| `.headline` | Emphasized body text |
+| `.body` | Primary content |
+| `.callout` | Secondary content |
+| `.subheadline` | Labels |
+| `.footnote` | Captions |
+| `.caption` | Small metadata |
+| `.caption2` | Fine print |
+
+```swift title="Using Typography Tokens"
+Text("Welcome Back")
+    .prismTypography(.largeTitle)
+
+Text("Your dashboard is ready")
+    .prismTypography(.subheadline)
+```
+
+## RadiusToken
+
+Corner radius scale for consistent roundness:
+
+| Token | Value |
+|-------|-------|
+| `.none` | 0 |
+| `.xs` | 2pt |
+| `.sm` | 4pt |
+| `.md` | 8pt |
+| `.lg` | 12pt |
+| `.xl` | 16pt |
+| `.xxl` | 24pt |
+| `.full` | 9999pt (pill) |
+
+```swift title="Using Radius Tokens"
+RoundedRectangle(cornerRadius: RadiusToken.lg.rawValue)
+    .fill(theme.color(.surface))
+```
+
+## ElevationToken
+
+Shadow/elevation levels for depth hierarchy:
+
+| Token | Description |
+|-------|-------------|
+| `.none` | Flat, no shadow |
+| `.low` | Subtle lift — cards |
+| `.medium` | Moderate — dropdowns, popovers |
+| `.high` | Prominent — modals, dialogs |
+
+```swift title="Using Elevation Tokens"
+PrismCard {
+    Text("Elevated Card")
+}
+.prismElevation(.medium)
+```
+
+## MotionToken
+
+Animation timing presets for consistent motion:
+
+| Token | Duration | Use Case |
+|-------|----------|----------|
+| `.instant` | 100ms | Toggle, switch |
+| `.fast` | 150ms | Hover, focus |
+| `.normal` | 250ms | Expand, collapse |
+| `.slow` | 350ms | Page transition |
+| `.deliberate` | 500ms | Onboarding, attention |
+
+```swift title="Using Motion Tokens"
+withAnimation(MotionToken.normal.animation) {
+    isExpanded.toggle()
+}
+```
+
+<Tip>
+  Every PrismUI component uses these tokens internally. When you change your theme or token values, the entire component library updates automatically.
+</Tip>

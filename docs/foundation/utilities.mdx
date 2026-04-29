@@ -1,0 +1,130 @@
+---
+title: "Utilities"
+description: "UserDefaults wrapper, date formatting, file management, locale handling, and Swift type extensions."
+icon: "toolbox"
+---
+
+# Utilities
+
+PrismFoundation includes a set of lightweight utilities for common tasks — persistent storage, date formatting, file management, localization, and convenient Swift extensions.
+
+## PrismDefaults
+
+A `UserDefaults` wrapper with `Codable` type support. Uses a dedicated `"prism.defaults"` suite by default.
+
+```swift title="Storing and Retrieving Values"
+import PrismFoundation
+
+let defaults = PrismDefaults()
+
+// Store a Codable value
+struct Settings: Codable {
+    var theme: String
+    var fontSize: Int
+}
+
+let settings = Settings(theme: "dark", fontSize: 14)
+defaults.set(settings, for: "userSettings")
+
+// Retrieve it later
+let saved: Settings? = defaults.get(for: "userSettings")
+print(saved?.theme) // "dark"
+
+// Remove a key
+defaults.set(nil as Settings?, for: "userSettings")
+```
+
+<Tip>
+  Pass a custom `UserDefaults` instance via `PrismDefaults(userDefaults:)` for app groups or testing.
+</Tip>
+
+## PrismDateFormatter
+
+Utilities for consistent date formatting across your app.
+
+```swift title="Date Formatting"
+import PrismFoundation
+
+let formatter = PrismDateFormatter()
+// Format dates using predefined styles
+```
+
+## PrismFileManager
+
+File system operations with a Prism-native API.
+
+```swift title="File Operations"
+import PrismFoundation
+
+let fileManager = PrismFileManager()
+// Read, write, and manage files
+```
+
+## PrismFilePrivacy
+
+File protection levels for sensitive data on disk.
+
+```swift title="File Privacy"
+import PrismFoundation
+
+let privacy = PrismFilePrivacy()
+// Set protection levels on files
+```
+
+## PrismBundle
+
+Access to bundle resources (strings, images, data files) through a typed API.
+
+```swift title="Bundle Access"
+import PrismFoundation
+
+let bundle = PrismBundle()
+// Load resources from the app bundle
+```
+
+## Locale Handling
+
+`PrismLocale` and `PrismLocaleManager` provide locale-aware formatting and management.
+
+```swift title="Locale Management"
+import PrismFoundation
+
+let localeManager = PrismLocaleManager()
+// Manage app locale, format numbers and currencies
+```
+
+## Extensions
+
+PrismFoundation extends common Swift types with convenience methods:
+
+<CardGroup cols={2}>
+  <Card title="Array Extensions" icon="list">
+    Safe subscript access, chunking, unique filtering, and more.
+  </Card>
+  <Card title="String Extensions" icon="font">
+    Trimming, regex matching, slug generation, and encoding utilities.
+  </Card>
+  <Card title="Data Extensions" icon="binary">
+    Hex encoding, hashing shortcuts, and Codable helpers.
+  </Card>
+  <Card title="Date Extensions" icon="calendar">
+    Relative date formatting, component extraction, and comparison helpers.
+  </Card>
+  <Card title="Encodable Extensions" icon="code">
+    `.data()` and `.json` properties for quick JSON serialization.
+  </Card>
+  <Card title="Numeric Extensions" icon="hashtag">
+    `BinaryInteger` and `BinaryFloatingPoint` formatting, clamping, and conversion helpers.
+  </Card>
+</CardGroup>
+
+```swift title="Extension Examples"
+import PrismFoundation
+
+// Encodable → JSON string
+let user = User(id: UUID(), name: "Alice", email: "alice@example.com")
+let json = try user.json  // JSON string
+
+// Encodable → Data
+let data = try user.data() // JSON Data
+```

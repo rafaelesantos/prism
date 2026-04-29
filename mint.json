@@ -25,7 +25,16 @@
     "name": "Get Started",
     "url": "/docs/introduction"
   },
-  "tabs": [],
+  "tabs": [
+    {
+      "name": "Server",
+      "url": "docs/core"
+    },
+    {
+      "name": "Client",
+      "url": "docs/architecture"
+    }
+  ],
   "anchors": [
     {
       "name": "GitHub",
@@ -157,6 +166,73 @@
         "docs/testing/test-client",
         "docs/testing/request-builder",
         "docs/testing/assertions"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "docs/architecture/store",
+        "docs/architecture/reducer",
+        "docs/architecture/middleware",
+        "docs/architecture/router",
+        "docs/architecture/advanced"
+      ]
+    },
+    {
+      "group": "UI Components",
+      "pages": [
+        "docs/ui/theme",
+        "docs/ui/tokens",
+        "docs/ui/components",
+        "docs/ui/layout-navigation",
+        "docs/ui/forms",
+        "docs/ui/composites",
+        "docs/ui/advanced-ui"
+      ]
+    },
+    {
+      "group": "Network Client",
+      "pages": [
+        "docs/network/client",
+        "docs/network/endpoints",
+        "docs/network/cache-retry",
+        "docs/network/advanced-network",
+        "docs/network/websocket-client"
+      ]
+    },
+    {
+      "group": "Foundation",
+      "pages": [
+        "docs/foundation/protocols",
+        "docs/foundation/utilities",
+        "docs/foundation/observability",
+        "docs/foundation/resources"
+      ]
+    },
+    {
+      "group": "Intelligence",
+      "pages": [
+        "docs/intelligence/overview",
+        "docs/intelligence/training",
+        "docs/intelligence/apple-intelligence",
+        "docs/intelligence/nlp-rag"
+      ]
+    },
+    {
+      "group": "Capabilities",
+      "pages": [
+        "docs/capabilities/auth",
+        "docs/capabilities/location",
+        "docs/capabilities/media",
+        "docs/capabilities/health",
+        "docs/capabilities/platform",
+        "docs/capabilities/connectivity"
+      ]
+    },
+    {
+      "group": "Video",
+      "pages": [
+        "docs/video/overview"
       ]
     }
   ],

@@ -1,0 +1,141 @@
+---
+title: "Video"
+description: "Video metadata, download management with progress streaming, resolution detection, and export — built on AVFoundation."
+icon: "video"
+---
+
+# PrismVideo
+
+PrismVideo provides an actor-based video downloader with progress streaming, video metadata modeling, and resolution detection — all built on AVFoundation with zero third-party dependencies.
+
+<CardGroup cols={3}>
+  <Card title="Video Entity" icon="film">
+    Type-safe metadata model with URL, title, duration, resolution, and thumbnail.
+  </Card>
+  <Card title="Async Downloader" icon="download">
+    Actor-isolated download with `AsyncStream` progress updates and export session management.
+  </Card>
+  <Card title="Resolution Detection" icon="expand">
+    Automatic resolution classification — 4K, 1080p, 720p, SD — from pixel dimensions.
+  </Card>
+</CardGroup>
+
+## Video Entity
+
+`PrismVideoEntity` models video metadata:
+
+```swift title="Video Entity"
+import PrismVideo
+
+let video = PrismVideoEntity(
+    url: URL(string: "https://example.com/video.mp4")!,
+    title: "WWDC Keynote 2025",
+    duration: 7200,
+    resolution: .fullHD,
+    type: .mp4,
+    thumb: URL(string: "https://example.com/thumb.jpg")
+)
+
+print(video.title)          // "WWDC Keynote 2025"
+print(video.resolution)     // .fullHD
+print(video.duration ?? 0)  // 7200.0
+```
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `UUID` | Unique identifier |
+| `url` | `URL` | Video source URL |
+| `title` | `String` | Display title |
+| `duration` | `TimeInterval?` | Duration in seconds |
+| `resolution` | `PrismVideoResolution?` | Detected resolution |
+| `type` | `AVFileType` | Container format (default: `.mp4`) |
+| `thumb` | `URL?` | Thumbnail image URL |
+
+## Video Resolution
+
+`PrismVideoResolution` auto-classifies from pixel height:
+
+```swift title="Resolution Detection"
+let resolution = PrismVideoResolution(rawValue: 1080)
+// .fullHD
+
+let res4k = PrismVideoResolution(rawValue: 2160)
+// ._4K
+```
+
+| Case | Label | Pixel Range |
+|------|-------|-------------|
+| `._4K` | 4K | 2160+ |
+| `.fullHD` | 1080p HD | 1080–2159 |
+| `.HD` | 720p HD | 720–1079 |
+| `.SD` | SD | 0–719 |
+
+## Video Downloader
+
+`PrismVideoDownloader` is an actor that downloads and exports video with real-time progress via `AsyncStream`:
+
+```swift title="Download Video with Progress"
+let downloader = PrismVideoDownloader(
+    video: URL(string: "https://example.com/video.mp4")!,
+    with: "keynote",
+    for: .mp4
+)
+
+for await status in downloader.download() {
+    switch status {
+    case .downloading(let progress, _):
+        print("Progress: \(Int(progress * 100))%")
+        
+    case .completed(let fileURL):
+        print("Downloaded to: \(fileURL)")
+        
+    case .error(let error):
+        print("Failed: \(error.errorDescription ?? "")")
+    }
+}
+```
+
+### Download Status
+
+| Status | Description |
+|--------|-------------|
+| `.downloading(progress:session:)` | Download in progress — `progress` is 0.0–1.0, `session` is the underlying `AVAssetExportSession` |
+| `.completed(URL)` | Download finished — URL points to the exported file in the temp directory |
+| `.error(PrismVideoError)` | Download failed with a typed error |
+
+### How It Works
+
+1. Loads the remote `AVURLAsset` and verifies it's playable
+2. Extracts video and audio tracks into an `AVMutableComposition`
+3. Exports using `AVAssetExportSession` with highest quality preset
+4. Streams progress at 100ms intervals via a Timer publisher
+5. Yields the final file URL on completion
+
+<Tip>
+  The exported file lands in the system temp directory. Move it to a permanent location if you need to keep it beyond the current session.
+</Tip>
+
+## Video Errors
+
+`PrismVideoError` conforms to `PrismError` with descriptions, failure reasons, and recovery suggestions:
+
+| Error | Description | Recovery Suggestion |
+|-------|-------------|---------------------|
+| `.assetNotPlayable` | The AVAsset could not be prepared for playback | Try reloading or verifying the video source |
+| `.missingTracks` | Source file lacks valid video or audio tracks | Ensure the file has at least one video or audio track |
+| `.failedToCreateExportSession` | AVAssetExportSession could not be initialized | Check export configurations or try different parameters |
+| `.custom(message:)` | Custom error with user-provided message | — |
+
+```swift title="Error Handling"
+for await status in downloader.download() {
+    if case .error(let error) = status {
+        error.log()  // Logs via PrismFoundation's os.Logger
+        
+        if let suggestion = error.recoverySuggestion {
+            print("Try: \(suggestion)")
+        }
+    }
+}
+```

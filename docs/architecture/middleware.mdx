@@ -1,0 +1,196 @@
+---
+title: "Middleware"
+description: "Intercept actions with PrismMiddleware for logging, analytics, and cross-cutting concerns."
+icon: "layer-group"
+---
+
+# Middleware
+
+Middleware observes every action after it's reduced and can produce additional effects. Use middleware for cross-cutting concerns that shouldn't live inside the reducer — logging, analytics, persistence, crash reporting.
+
+## PrismMiddleware Protocol
+
+```swift title="Protocol Definition"
+@MainActor
+public protocol PrismMiddleware: Sendable {
+    associatedtype State: Sendable
+    associatedtype Action: Sendable
+
+    func run(
+        state: State,
+        action: Action
+    ) -> PrismEffect<Action>
+}
+```
+
+The middleware receives the **post-reduction** state and the action that was dispatched. It returns an effect that can dispatch further actions.
+
+### Custom Middleware
+
+```swift title="Logging Middleware"
+struct LoggingMiddleware: PrismMiddleware {
+    func run(state: AppState, action: AppAction) -> PrismEffect<AppAction> {
+        print("[Action] \(action)")
+        print("[State]  count=\(state.count)")
+        return .none
+    }
+}
+```
+
+### Attaching to a Store
+
+Pass middleware as the third argument when creating a store:
+
+```swift title="Store with Middleware"
+let store = PrismStore(
+    initialState: AppState(),
+    reducer: AppReducer(),
+    middleware: LoggingMiddleware()
+)
+```
+
+Or compose it with the reducer directly:
+
+```swift
+let combined = AppReducer().handling(with: LoggingMiddleware())
+let store = PrismStore(initialState: AppState(), reducer: combined)
+```
+
+## PrismSideEffect
+
+`PrismSideEffect` is a closure-based middleware. Use it when you don't need a dedicated type:
+
+```swift title="Inline Side Effect"
+let analytics = PrismSideEffect<AppState, AppAction> { state, action in
+    switch action {
+    case .purchase(let item):
+        return .run { _ in
+            await AnalyticsService.track("purchase", properties: ["item": item.id])
+        }
+    default:
+        return .none
+    }
+}
+```
+
+### `.none`
+
+A no-op side effect that always returns `.none`:
+
+```swift
+let noop = PrismSideEffect<AppState, AppAction>.none
+```
+
+### `.combine`
+
+Merge multiple side effects into one. All run concurrently for each action:
+
+```swift title="Combined Middleware"
+let combined = PrismSideEffect.combine(
+    PrismSideEffect { state, action in
+        print("[LOG] \(action)")
+        return .none
+    },
+    PrismSideEffect { state, action in
+        switch action {
+        case .userSignedIn:
+            return .run { _ in await Analytics.track("sign_in") }
+        default:
+            return .none
+        }
+    },
+    PrismSideEffect { state, action in
+        switch action {
+        case .error(let e):
+            return .run { _ in await CrashReporter.log(e) }
+        default:
+            return .none
+        }
+    }
+)
+```
+
+## Practical Examples
+
+### Analytics Middleware
+
+Track specific user interactions without polluting reducer logic:
+
+```swift title="Analytics Middleware"
+struct AnalyticsMiddleware: PrismMiddleware {
+    func run(state: AppState, action: AppAction) -> PrismEffect<AppAction> {
+        let event: String? = switch action {
+        case .addToCart:     "add_to_cart"
+        case .checkout:      "begin_checkout"
+        case .purchaseComplete: "purchase"
+        default: nil
+        }
+
+        guard let event else { return .none }
+
+        return .run { _ in
+            await AnalyticsService.track(event, properties: [
+                "cart_total": "\(state.cart.total)",
+                "item_count": "\(state.cart.items.count)"
+            ])
+        }
+    }
+}
+```
+
+### Persistence Middleware
+
+Auto-save state to disk after certain actions:
+
+```swift title="Persistence Middleware"
+struct PersistenceMiddleware: PrismMiddleware {
+    let persistence = PrismDiskPersistence()
+
+    func run(state: AppState, action: AppAction) -> PrismEffect<AppAction> {
+        switch action {
+        case .add, .remove, .update:
+            return .run { [state] _ in
+                try? persistence.save(state.items, key: "saved_items")
+            }
+        default:
+            return .none
+        }
+    }
+}
+```
+
+### Error Reporting Middleware
+
+Capture errors globally:
+
+```swift title="Error Reporting"
+struct ErrorMiddleware: PrismMiddleware {
+    func run(state: AppState, action: AppAction) -> PrismEffect<AppAction> {
+        switch action {
+        case .networkError(let error):
+            return .run { _ in
+                await ErrorReporter.report(error, context: [
+                    "screen": state.currentScreen.rawValue
+                ])
+            }
+        default:
+            return .none
+        }
+    }
+}
+```
+
+<Tip>
+  Middleware runs **after** the reducer. The `state` parameter already reflects the changes from the current action. This means you can react to the new state, not the old one.
+</Tip>
+
+## Middleware vs. Effects
+
+| Use Case | Middleware | Reducer Effect |
+|----------|-----------|----------------|
+| Logging all actions | Middleware | — |
+| Analytics tracking | Middleware | — |
+| Feature-specific async work | — | Effect |
+| Side effects tied to business logic | — | Effect |
+| Cross-cutting concerns | Middleware | — |
+| Auto-persistence | Middleware | — |

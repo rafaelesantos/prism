@@ -1,0 +1,279 @@
+---
+title: "Advanced Features"
+description: "Request deduplication, offline queues, multipart uploads, upload progress tracking, and a typed GraphQL client."
+icon: "wand-magic-sparkles"
+---
+
+# Advanced Features
+
+PrismNetwork includes several advanced capabilities beyond basic HTTP: request deduplication, offline request queueing, multipart file uploads with progress, and a typed GraphQL client.
+
+## Request Deduplication
+
+`PrismRequestDeduplicator` coalesces identical in-flight requests so only one network call is made per unique key. Subsequent callers receive the same result.
+
+```swift title="Deduplication"
+import PrismNetwork
+
+let deduplicator = PrismRequestDeduplicator()
+
+// Multiple concurrent calls → only one network request
+async let user1 = deduplicator.deduplicate({
+    try await fetchUser(id: "42")
+}, key: "user:42")
+
+async let user2 = deduplicator.deduplicate({
+    try await fetchUser(id: "42")
+}, key: "user:42")
+
+// Both return the same result from a single network call
+let (result1, result2) = try await (user1, user2)
+```
+
+Generate deduplication keys from request properties:
+
+```swift title="Key Generation"
+let key = PrismRequestDeduplicator.key(
+    url: URL(string: "https://api.example.com/users/42")!,
+    method: "GET",
+    body: nil
+)
+// → "GET:https://api.example.com/users/42"
+```
+
+<Tip>
+  Deduplication is ideal for screens that trigger the same API call from multiple SwiftUI views. The first caller initiates the request; subsequent callers await the same `Task`.
+</Tip>
+
+## Offline Queue
+
+`PrismOfflineQueue` stores failed requests when the device is offline and replays them when connectivity returns.
+
+```swift title="Offline Queue"
+import PrismNetwork
+
+let queue = PrismOfflineQueue(
+    autoFlush: true,
+    flushHandler: { requests in
+        for request in requests {
+            let (_, _) = try await URLSession.shared.data(for: request.urlRequest)
+        }
+    }
+)
+
+// Enqueue a request for later
+let urlRequest = URLRequest(url: URL(string: "https://api.example.com/sync")!)
+let queued = PrismQueuedRequest(
+    urlRequest: urlRequest,
+    priority: 10
+)
+await queue.enqueue(queued)
+
+// Check queue size
+let count = await queue.count
+```
+
+### Queued Request Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `UUID` | Unique identifier |
+| `urlRequest` | `URLRequest` | The request to execute |
+| `createdAt` | `Date` | When the request was queued |
+| `retryCount` | `Int` | Number of retries attempted |
+| `priority` | `Int` | Higher values execute first |
+
+When `autoFlush` is enabled, the queue monitors network connectivity and automatically replays queued requests when the device comes back online.
+
+## Multipart Uploads
+
+### Building Multipart Form Data
+
+`PrismMultipartFormData` assembles `multipart/form-data` request bodies:
+
+```swift title="Multipart Form Data"
+import PrismNetwork
+
+var formData = PrismMultipartFormData()
+
+// Add a file
+let imageData = try Data(contentsOf: imageURL)
+formData.append(
+    data: imageData,
+    name: "avatar",
+    fileName: "profile.jpg",
+    mimeType: "image/jpeg"
+)
+
+// Add text fields
+formData.append(string: "Alice", name: "username")
+formData.append(string: "Hello world", name: "bio")
+
+// Build the body and content type
+let (body, contentType) = formData.build()
+
+// Create the request
+var request = URLRequest(url: uploadURL)
+request.httpMethod = "POST"
+request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+request.httpBody = body
+```
+
+### Upload with Progress
+
+`PrismUploadTask` wraps `URLSession` upload with an `AsyncStream` of progress updates:
+
+```swift title="Upload with Progress"
+import PrismNetwork
+
+var request = URLRequest(url: uploadURL)
+request.httpMethod = "POST"
+request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+
+let uploadTask = PrismUploadTask(
+    request: request,
+    data: body
+)
+
+for await progress in uploadTask.upload() {
+    print("Uploaded: \(Int(progress.fractionCompleted * 100))%")
+    print("Bytes: \(progress.bytesUploaded) / \(progress.totalBytes)")
+}
+print("Upload complete!")
+```
+
+### Complete Upload Example
+
+```swift title="Full Upload Flow"
+import PrismNetwork
+
+func uploadPhoto(_ imageData: Data) async {
+    var formData = PrismMultipartFormData()
+    formData.append(
+        data: imageData,
+        name: "photo",
+        fileName: "photo.jpg",
+        mimeType: "image/jpeg"
+    )
+    formData.append(string: "Vacation photo", name: "caption")
+
+    let (body, contentType) = formData.build()
+
+    var request = URLRequest(url: URL(string: "https://api.example.com/photos")!)
+    request.httpMethod = "POST"
+    request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+
+    let task = PrismUploadTask(request: request, data: body)
+
+    for await progress in task.upload() {
+        // Update UI progress bar
+        await MainActor.run {
+            progressView.progress = progress.fractionCompleted
+        }
+    }
+}
+```
+
+## GraphQL Client
+
+`PrismGraphQLClient` sends typed queries and mutations, returning decoded responses with error handling.
+
+### Setup
+
+```swift title="GraphQL Client Setup"
+import PrismNetwork
+
+let graphql = PrismGraphQLClient(
+    endpointURL: URL(string: "https://api.example.com/graphql")!,
+    additionalHeaders: [
+        "Authorization": "Bearer \(token)"
+    ]
+)
+```
+
+### Queries
+
+```swift title="GraphQL Query"
+struct UserData: Decodable, Sendable {
+    struct User: Decodable, Sendable {
+        let id: String
+        let name: String
+        let email: String
+    }
+    let user: User
+}
+
+let query = PrismGraphQLQuery(
+    query: """
+    query GetUser($id: ID!) {
+        user(id: $id) {
+            id
+            name
+            email
+        }
+    }
+    """,
+    variables: ["id": "42"],
+    operationName: "GetUser"
+)
+
+let response: PrismGraphQLResponse<UserData> = try await graphql.execute(query)
+
+if let user = response.data?.user {
+    print(user.name)
+}
+
+if let errors = response.errors {
+    for error in errors {
+        print("GraphQL error: \(error.message)")
+        if let locations = error.locations {
+            for loc in locations {
+                print("  at line \(loc.line), column \(loc.column)")
+            }
+        }
+    }
+}
+```
+
+### Mutations
+
+```swift title="GraphQL Mutation"
+struct CreateResult: Decodable, Sendable {
+    struct CreateUser: Decodable, Sendable {
+        let id: String
+        let name: String
+    }
+    let createUser: CreateUser
+}
+
+let mutation = PrismGraphQLQuery(
+    query: """
+    mutation CreateUser($input: CreateUserInput!) {
+        createUser(input: $input) {
+            id
+            name
+        }
+    }
+    """,
+    variables: [
+        "input": ["name": "Alice", "email": "alice@example.com"]
+    ]
+)
+
+let result: PrismGraphQLResponse<CreateResult> = try await graphql.execute(mutation)
+```
+
+<Tip>
+  `PrismGraphQLClient` is an actor, making it safe to call from multiple concurrent tasks. It automatically sets the `Content-Type` to `application/json` for all requests.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="WebSocket Client" icon="plug" href="/network/websocket-client">
+    Real-time bidirectional communication.
+  </Card>
+  <Card title="Network Client" icon="globe" href="/network/client">
+    Core HTTP client and request patterns.
+  </Card>
+</CardGroup>

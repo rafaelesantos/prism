@@ -1,0 +1,110 @@
+---
+title: "Resource System"
+description: "Typed string resources, image resources, and structured log messages used across Prism modules."
+icon: "box-archive"
+---
+
+# Resource System
+
+PrismFoundation provides a typed resource system for strings, images, and log messages. Instead of raw string literals scattered through code, resources are defined as enum cases with compile-time safety.
+
+## PrismResourceString
+
+Typed string resources ensure you never mistype a key or use a stale string constant.
+
+```swift title="Defining String Resources"
+import PrismFoundation
+
+enum AppStrings: PrismResourceString {
+    case welcomeTitle
+    case welcomeSubtitle
+    case errorGeneric
+    case errorNetwork
+}
+```
+
+## PrismResourceImage
+
+Typed image resources with the same pattern — reference images by enum case instead of raw string names.
+
+```swift title="Defining Image Resources"
+import PrismFoundation
+
+enum AppImages: PrismResourceImage {
+    case logo
+    case placeholder
+    case avatar
+}
+```
+
+## Log Messages
+
+PrismFoundation uses typed log messages for structured logging across modules.
+
+### PrismResourceLogMessage
+
+The base protocol for typed log messages. Each module defines its own message enum conforming to this protocol.
+
+### PrismFoundationLogMessage
+
+The built-in log message type used by PrismFoundation itself:
+
+```swift title="Foundation Log Messages"
+import PrismFoundation
+
+// Used internally by PrismEntity and PrismError
+// .message(String) — informational log
+// .error(Error) — error log
+
+let logger = PrismFoundationLogger()
+logger.info(.message("Application started"))
+logger.error(.error(someError))
+```
+
+## Resource Pattern
+
+All Prism resource types follow the same pattern:
+
+1. Define an enum conforming to the resource protocol
+2. Each case represents a specific resource
+3. The framework resolves cases to actual values at runtime
+
+```swift title="Complete Resource Example"
+import PrismFoundation
+
+// String resources
+enum Strings: PrismResourceString {
+    case loginTitle
+    case loginButton
+    case loginError
+}
+
+// Image resources
+enum Images: PrismResourceImage {
+    case appIcon
+    case onboardingBackground
+}
+
+// Log messages for your module
+enum MyLogMessage: PrismResourceLogMessage {
+    case userLoggedIn(userId: String)
+    case syncCompleted(count: Int)
+    case syncFailed(error: Error)
+}
+```
+
+<Tip>
+  The resource system is designed so each module (PrismNetwork, PrismUI, etc.) defines its own resource enums. This keeps log messages, strings, and images scoped and type-safe within their module.
+</Tip>
+
+<CardGroup cols={3}>
+  <Card title="PrismResourceString" icon="font">
+    Compile-time safe string resource references. No more typos in string keys.
+  </Card>
+  <Card title="PrismResourceImage" icon="image">
+    Typed image references resolved from asset catalogs at runtime.
+  </Card>
+  <Card title="PrismResourceLogMessage" icon="message">
+    Per-module typed log messages with associated values for structured logging.
+  </Card>
+</CardGroup>

@@ -1,0 +1,224 @@
+---
+title: "Store"
+description: "The observable hub that holds state, dispatches actions, and manages effects in PrismArchitecture."
+icon: "database"
+---
+
+# PrismStore
+
+`PrismStore` is the central piece of PrismArchitecture. It owns your application state, processes actions through a reducer, executes asynchronous effects, and supports scoping to derive child stores for sub-features.
+
+```swift title="Minimal Counter"
+import PrismArchitecture
+
+struct CounterState: Sendable, Equatable {
+    var count = 0
+}
+
+enum CounterAction: Sendable {
+    case increment
+    case decrement
+}
+
+let store = PrismStore(
+    initialState: CounterState(),
+    reduce: { state, action in
+        switch action {
+        case .increment: state.count += 1
+        case .decrement: state.count -= 1
+        }
+        return .none
+    }
+)
+
+store.send(.increment)
+// store.state.count == 1
+```
+
+## Creating a Store
+
+There are three ways to create a store:
+
+### Closure-based
+
+Pass a closure that mutates state and returns an effect:
+
+```swift title="Closure Init"
+let store = PrismStore(
+    initialState: AppState(),
+    reduce: { state, action -> PrismEffect<AppAction> in
+        switch action {
+        case .loadData:
+            state.isLoading = true
+            return .run { send in
+                let data = try await fetchData()
+                send(.dataLoaded(data))
+            }
+        case .dataLoaded(let data):
+            state.isLoading = false
+            state.items = data
+            return .none
+        }
+    }
+)
+```
+
+### Typed Reducer
+
+Pass a type conforming to `PrismReducer`:
+
+```swift title="Typed Reducer Init"
+struct CounterReducer: PrismReducer {
+    typealias State = CounterState
+    typealias Action = CounterAction
+
+    func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
+        switch action {
+        case .increment: state.count += 1
+        case .decrement: state.count -= 1
+        }
+        return .none
+    }
+}
+
+let store = PrismStore(
+    initialState: CounterState(),
+    reducer: CounterReducer()
+)
+```
+
+### With Middleware
+
+Attach middleware for cross-cutting concerns like logging:
+
+```swift title="Store with Middleware"
+let store = PrismStore(
+    initialState: AppState(),
+    reducer: AppReducer(),
+    middleware: LoggingMiddleware()
+)
+```
+
+## Sending Actions
+
+Dispatch actions synchronously with `send(_:)` or asynchronously with `dispatch(action:)`:
+
+```swift title="Dispatching Actions"
+// Synchronous
+store.send(.increment)
+
+// Async context
+Task {
+    await store.dispatch(action: .fetchItems)
+}
+```
+
+## Observing State in SwiftUI
+
+`PrismStore` is `@Observable`, so SwiftUI views re-render automatically when state changes:
+
+```swift title="SwiftUI View"
+struct CounterView: View {
+    let store: PrismStore<CounterState, CounterAction>
+
+    var body: some View {
+        VStack {
+            Text("Count: \(store.state.count)")
+            HStack {
+                Button("−") { store.send(.decrement) }
+                Button("+") { store.send(.increment) }
+            }
+        }
+    }
+}
+```
+
+## Scoping
+
+Derive child stores that focus on a subset of state and actions. The child stays synchronized with the parent — actions sent to the child are transformed and forwarded upstream.
+
+```swift title="Scoping a Store"
+struct AppState: Sendable, Equatable {
+    var counter = CounterState()
+    var settings = SettingsState()
+}
+
+enum AppAction: Sendable {
+    case counter(CounterAction)
+    case settings(SettingsAction)
+}
+
+let counterStore = store.scope(
+    state: \.counter,
+    action: AppAction.counter
+)
+
+// Or with just a state key path (same action type)
+let simpleScope = store.scope(state: \.counter)
+```
+
+<Tip>
+  Scoped stores are lightweight. They don't duplicate state — they project a view of the parent's state and forward actions back. Use them freely to isolate sub-features.
+</Tip>
+
+## Cancelling Effects
+
+Cancel all in-flight asynchronous effects:
+
+```swift title="Cancel Effects"
+store.cancelEffects()
+```
+
+This is useful when navigating away from a screen or tearing down a feature.
+
+## Full Example
+
+A realistic todo list feature with async persistence:
+
+```swift title="Todo Feature"
+struct TodoState: Sendable, Equatable {
+    var items: [String] = []
+    var isLoading = false
+    var error: String?
+}
+
+enum TodoAction: Sendable {
+    case load
+    case loaded([String])
+    case failed(String)
+    case add(String)
+    case remove(Int)
+}
+
+let todoStore = PrismStore(
+    initialState: TodoState(),
+    reduce: { state, action in
+        switch action {
+        case .load:
+            state.isLoading = true
+            return .run { send in
+                do {
+                    let items = try await TodoService.fetchAll()
+                    send(.loaded(items))
+                } catch {
+                    send(.failed(error.localizedDescription))
+                }
+            }
+        case .loaded(let items):
+            state.isLoading = false
+            state.items = items
+            return .none
+        case .failed(let message):
+            state.isLoading = false
+            state.error = message
+            return .none
+        case .add(let item):
+            state.items.append(item)
+            return .none
+        case .remove(let index):
+            state.items.remove(at: index)
+            return .none
+        }
+    }
+)
+```

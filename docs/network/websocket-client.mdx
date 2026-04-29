@@ -1,0 +1,243 @@
+---
+title: "WebSocket Client"
+description: "Real-time bidirectional communication with PrismNetworkSocketClient, type-safe endpoints, and command protocols."
+icon: "plug"
+---
+
+# WebSocket Client
+
+PrismNetwork includes a WebSocket client built on Apple's `Network.framework` (`NWConnection`). Define type-safe socket endpoints, connect with an async stream, and send structured commands.
+
+## Architecture
+
+<CardGroup cols={3}>
+  <Card title="PrismNetworkSocketEndpoint" icon="link">
+    Protocol defining host, port, and NWParameters for a WebSocket connection.
+  </Card>
+  <Card title="PrismNetworkSocketClient" icon="plug">
+    Protocol with `connect(to:)` and `send(command:)` methods.
+  </Card>
+  <Card title="PrismNetworkSocketAdapter" icon="gear">
+    Actor-based implementation wrapping NWConnection with frame-level buffering.
+  </Card>
+</CardGroup>
+
+## Defining a WebSocket Endpoint
+
+Implement `PrismNetworkSocketEndpoint` to describe where to connect:
+
+```swift title="ChatSocketEndpoint.swift"
+import PrismNetwork
+import Network
+
+enum ChatSocketEndpoint: PrismNetworkSocketEndpoint {
+    case production
+    case staging
+
+    var host: NWEndpoint.Host {
+        switch self {
+        case .production: return "ws.chat.example.com"
+        case .staging:    return "ws-staging.chat.example.com"
+        }
+    }
+
+    var port: NWEndpoint.Port {
+        get throws {
+            switch self {
+            case .production: return .https  // 443
+            case .staging:    return 8443
+            }
+        }
+    }
+
+    var parameters: NWParameters {
+        let tlsOptions = NWProtocolTLS.Options()
+        let wsOptions = NWProtocolWebSocket.Options()
+        let params = NWParameters(tls: tlsOptions)
+        params.defaultProtocolStack.applicationProtocols.insert(wsOptions, at: 0)
+        return params
+    }
+}
+```
+
+<Tip>
+  Use `NWParameters` to configure TLS, WebSocket protocol options, and connection timeouts. For unencrypted connections, use `NWParameters.tcp` with WebSocket options.
+</Tip>
+
+## Connecting
+
+`PrismNetworkSocketAdapter` returns an `AsyncStream<Data>` of received frames:
+
+```swift title="Connecting to WebSocket"
+import PrismNetwork
+
+let socket = PrismNetworkSocketAdapter()
+
+let stream = try await socket.connect(to: ChatSocketEndpoint.production)
+
+// Process incoming messages
+for await data in stream {
+    if let message = String(data: data, encoding: .utf8) {
+        print("Received: \(message)")
+    }
+}
+
+print("Connection closed")
+```
+
+The stream automatically handles:
+- **Buffering**: Incoming data is buffered and split on newline boundaries (`\n` or `\r\n`)
+- **Clean termination**: The stream finishes when the connection closes or fails
+- **Cleanup**: Disconnecting cancels the underlying `NWConnection`
+
+## Sending Commands
+
+Define typed commands by conforming to `PrismNetworkSocketCommand`:
+
+```swift title="Chat Commands"
+import PrismNetwork
+
+enum ChatCommand: PrismNetworkSocketCommand {
+    case join(room: String, user: String)
+    case message(room: String, text: String)
+    case leave(room: String)
+    case typing(room: String, isTyping: Bool)
+
+    var message: String {
+        switch self {
+        case .join(let room, let user):
+            return #"{"type":"join","room":"\#(room)","user":"\#(user)"}"#
+        case .message(let room, let text):
+            return #"{"type":"message","room":"\#(room)","text":"\#(text)"}"#
+        case .leave(let room):
+            return #"{"type":"leave","room":"\#(room)"}"#
+        case .typing(let room, let isTyping):
+            return #"{"type":"typing","room":"\#(room)","isTyping":\#(isTyping)}"#
+        }
+    }
+}
+```
+
+Send commands over the connection:
+
+```swift title="Sending Messages"
+// Join a room
+try await socket.send(command: ChatCommand.join(room: "general", user: "alice"))
+
+// Send a message
+try await socket.send(command: ChatCommand.message(room: "general", text: "Hello!"))
+
+// Signal typing
+try await socket.send(command: ChatCommand.typing(room: "general", isTyping: true))
+```
+
+<Warning>
+  `send(command:)` throws `PrismNetworkError.noConnectivity` if no active connection exists. Always connect before sending commands.
+</Warning>
+
+## Using Socket Requests
+
+For structured request patterns, use `PrismNetworkSocketRequest`:
+
+```swift title="Socket Request Pattern"
+import PrismNetwork
+
+struct ChatSocketRequest: PrismNetworkSocketRequest {
+    let endpoint: (any PrismNetworkSocketEndpoint)?
+
+    init(environment: ChatSocketEndpoint = .production) {
+        self.endpoint = environment
+    }
+}
+
+// Connect using the request
+let request = ChatSocketRequest()
+let stream = try await socket.connect(with: request)
+```
+
+## Complete Chat Client Example
+
+```swift title="ChatClient.swift"
+import PrismNetwork
+import Foundation
+
+actor ChatClient {
+    private let socket = PrismNetworkSocketAdapter()
+    private var messageHandler: ((ChatMessage) -> Void)?
+
+    struct ChatMessage: Decodable {
+        let type: String
+        let room: String
+        let user: String?
+        let text: String?
+    }
+
+    func connect(to endpoint: ChatSocketEndpoint) async throws {
+        let stream = try await socket.connect(to: endpoint)
+
+        Task {
+            for await data in stream {
+                if let message = try? JSONDecoder().decode(ChatMessage.self, from: data) {
+                    messageHandler?(message)
+                }
+            }
+        }
+    }
+
+    func onMessage(_ handler: @escaping (ChatMessage) -> Void) {
+        messageHandler = handler
+    }
+
+    func join(room: String, user: String) async throws {
+        try await socket.send(command: ChatCommand.join(room: room, user: user))
+    }
+
+    func send(text: String, to room: String) async throws {
+        try await socket.send(command: ChatCommand.message(room: room, text: text))
+    }
+}
+```
+
+### Using the Chat Client
+
+```swift title="Using ChatClient"
+let chat = ChatClient()
+
+await chat.onMessage { message in
+    switch message.type {
+    case "message":
+        print("\(message.user ?? "?"): \(message.text ?? "")")
+    case "join":
+        print("\(message.user ?? "?") joined \(message.room)")
+    case "leave":
+        print("\(message.user ?? "?") left \(message.room)")
+    default:
+        break
+    }
+}
+
+try await chat.connect(to: .production)
+try await chat.join(room: "general", user: "alice")
+try await chat.send(text: "Hello everyone!", to: "general")
+```
+
+## Frame Protocol
+
+`PrismNetworkSocketAdapter` uses newline-delimited framing:
+
+- Incoming data is buffered until a `\n` (or `\r\n`) delimiter is found
+- Each complete line is emitted as a `Data` frame on the async stream
+- A trailing newline is automatically appended to outgoing commands if not present
+
+This makes it compatible with JSON-per-line protocols common in real-time applications.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Network Client" icon="globe" href="/network/client">
+    HTTP client and type-safe request patterns.
+  </Card>
+  <Card title="Advanced Features" icon="wand-magic-sparkles" href="/network/advanced-network">
+    Request deduplication, offline queues, and GraphQL.
+  </Card>
+</CardGroup>

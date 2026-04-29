@@ -1,0 +1,247 @@
+---
+title: "Type-Safe Endpoints"
+description: "Define HTTP endpoints with PrismNetworkEndpoint — scheme, host, path, method, headers, body, caching, and timeout."
+icon: "route"
+---
+
+# Type-Safe Endpoints
+
+`PrismNetworkEndpoint` is the foundation of PrismNetwork. Each endpoint describes a single API call — the URL, HTTP method, headers, body, and caching behavior. Typically modeled as an `enum` with one case per API operation.
+
+## PrismNetworkEndpoint Protocol
+
+```swift title="Protocol Definition"
+public protocol PrismNetworkEndpoint: PrismLogger, Sendable {
+    var scheme: PrismNetworkScheme { get }         // default: .https
+    var host: String { get }
+    var path: String { get }
+    var method: PrismNetworkMethod { get }          // default: .get
+    var queryItems: [URLQueryItem]? { get }         // default: nil
+    var headers: [String: String] { get }           // default: [:]
+    var body: (any Encodable)? { get }              // default: nil
+    var timeoutInterval: TimeInterval? { get }      // default: nil
+    var cacheInterval: TimeInterval? { get }        // default: nil
+}
+```
+
+Only `host` and `path` are required — everything else has a default value.
+
+## Enum-Based Pattern
+
+The recommended pattern is one enum per API domain:
+
+```swift title="ProductEndpoint.swift"
+import PrismNetwork
+
+enum ProductEndpoint: PrismNetworkEndpoint {
+    case list(page: Int, limit: Int)
+    case detail(id: String)
+    case create(name: String, price: Double)
+    case update(id: String, name: String)
+    case delete(id: String)
+
+    var host: String { "api.store.com" }
+
+    var path: String {
+        switch self {
+        case .list:              return "/v1/products"
+        case .detail(let id):    return "/v1/products/\(id)"
+        case .create:            return "/v1/products"
+        case .update(let id, _): return "/v1/products/\(id)"
+        case .delete(let id):    return "/v1/products/\(id)"
+        }
+    }
+
+    var method: PrismNetworkMethod {
+        switch self {
+        case .list, .detail: return .get
+        case .create:        return .post
+        case .update:        return .put
+        case .delete:        return .delete
+        }
+    }
+
+    var queryItems: [URLQueryItem]? {
+        switch self {
+        case .list(let page, let limit):
+            return [
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "limit", value: "\(limit)")
+            ]
+        default:
+            return nil
+        }
+    }
+
+    var headers: [String: String] {
+        [
+            "Content-Type": PrismNetworkHeaderType.json.rawValue,
+            "Accept": PrismNetworkHeaderType.json.rawValue
+        ]
+    }
+
+    var body: (any Encodable)? {
+        switch self {
+        case .create(let name, let price):
+            return ["name": name, "price": price] as [String: Any]
+        case .update(_, let name):
+            return ["name": name]
+        default:
+            return nil
+        }
+    }
+
+    var cacheInterval: TimeInterval? {
+        switch self {
+        case .list:   return 60      // cache for 1 minute
+        case .detail: return 300     // cache for 5 minutes
+        default:      return nil     // no caching for mutations
+        }
+    }
+}
+```
+
+## HTTP Methods
+
+`PrismNetworkMethod` supports all standard methods:
+
+| Case | Raw Value | Usage |
+|------|-----------|-------|
+| `.get` | `GET` | Retrieve resources |
+| `.post` | `POST` | Create resources |
+| `.put` | `PUT` | Replace resources |
+| `.patch` | `PATCH` | Partial updates |
+| `.delete` | `DELETE` | Remove resources |
+
+## URL Schemes
+
+`PrismNetworkScheme` supports HTTP, HTTPS, and WebSocket protocols:
+
+| Case | Value | Usage |
+|------|-------|-------|
+| `.http` | `http` | Unencrypted HTTP |
+| `.https` | `https` | Encrypted HTTP (default) |
+| `.ws` | `ws` | Unencrypted WebSocket |
+| `.wss` | `wss` | Encrypted WebSocket |
+
+## Content Types
+
+`PrismNetworkHeaderType` provides constants for common `Content-Type` values:
+
+```swift title="Header Types"
+// Common types
+PrismNetworkHeaderType.json.rawValue          // "application/json"
+PrismNetworkHeaderType.formURLEncoded.rawValue // "application/x-www-form-urlencoded"
+PrismNetworkHeaderType.multipartFormData.rawValue // "multipart/form-data"
+PrismNetworkHeaderType.plainText.rawValue     // "text/plain"
+PrismNetworkHeaderType.html.rawValue          // "text/html"
+PrismNetworkHeaderType.octetStream.rawValue   // "application/octet-stream"
+
+// Media types
+PrismNetworkHeaderType.jpeg.rawValue  // "image/jpeg"
+PrismNetworkHeaderType.png.rawValue   // "image/png"
+PrismNetworkHeaderType.mp4.rawValue   // "video/mp4"
+PrismNetworkHeaderType.pdf.rawValue   // "application/pdf"
+
+// Wildcards
+PrismNetworkHeaderType.any.rawValue   // "*/*"
+PrismNetworkHeaderType.image.rawValue // "image/*"
+```
+
+## Computed URL & Request
+
+Every endpoint exposes a computed `url` and `request` built from its properties:
+
+```swift title="URL Construction"
+let endpoint = ProductEndpoint.list(page: 1, limit: 20)
+
+// Get the fully constructed URL
+let url = try endpoint.url
+// → https://api.store.com/v1/products?page=1&limit=20
+
+// Get a configured URLRequest
+let urlRequest = try endpoint.request
+// → GET https://api.store.com/v1/products?page=1&limit=20
+//   Content-Type: application/json
+//   Accept: application/json
+```
+
+<Tip>
+  The `url` and `request` properties are throwing — they throw `PrismNetworkError.invalidURL` if `URLComponents` fails to construct a valid URL from the endpoint's scheme, host, path, and query items.
+</Tip>
+
+## Caching Behavior
+
+Set `cacheInterval` to enable automatic response caching for GET requests:
+
+```swift title="Endpoint Caching"
+var cacheInterval: TimeInterval? {
+    switch self {
+    case .list:   return 60   // 1 minute
+    case .detail: return 300  // 5 minutes
+    default:      return nil  // no cache
+    }
+}
+```
+
+The `PrismNetworkAdapter` stores responses in `URLCache` with an expiration timestamp. On subsequent requests:
+1. If a cached response exists and hasn't expired → returns cached data
+2. If cached data exists but can't be decoded → evicts the entry and fetches fresh
+3. If no cache or expired → fetches from network and caches the result
+
+<Warning>
+  Caching only applies to GET requests. Setting `cacheInterval` on POST, PUT, PATCH, or DELETE endpoints has no effect.
+</Warning>
+
+## Timeout Configuration
+
+Set `timeoutInterval` to override the default URLSession timeout:
+
+```swift title="Custom Timeout"
+var timeoutInterval: TimeInterval? {
+    switch self {
+    case .upload: return 120  // 2 minutes for uploads
+    default:      return nil  // use session default
+    }
+}
+```
+
+## Authentication Patterns
+
+Add authentication headers per-endpoint:
+
+```swift title="Auth Headers"
+enum AuthEndpoint: PrismNetworkEndpoint {
+    case profile
+    case refresh(token: String)
+
+    var host: String { "auth.example.com" }
+    var path: String { /* ... */ }
+
+    var headers: [String: String] {
+        switch self {
+        case .profile:
+            return [
+                "Authorization": "Bearer \(TokenStore.accessToken)",
+                "Content-Type": PrismNetworkHeaderType.json.rawValue
+            ]
+        case .refresh(let token):
+            return [
+                "X-Refresh-Token": token,
+                "Content-Type": PrismNetworkHeaderType.json.rawValue
+            ]
+        }
+    }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Network Client" icon="globe" href="/network/client">
+    Execute endpoints through PrismNetworkClient.
+  </Card>
+  <Card title="Caching & Retry" icon="arrows-rotate" href="/network/cache-retry">
+    Advanced caching policies and retry strategies.
+  </Card>
+</CardGroup>

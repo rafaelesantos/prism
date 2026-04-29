@@ -1,0 +1,166 @@
+---
+title: "Core Protocols"
+description: "Base protocols that all Prism modules build on — PrismEntity, PrismError, PrismMock, PrismLogger, and PrismSystemLogger."
+icon: "shapes"
+---
+
+# Core Protocols
+
+PrismFoundation defines the base protocols used across every Prism module. They provide consistent patterns for modeling data, handling errors, generating test fixtures, and logging.
+
+## PrismEntity
+
+The standard protocol for data models. Combines `Codable`, `Equatable`, `Hashable`, `CustomStringConvertible`, and `PrismLogger` into a single conformance with automatic JSON serialization and logging.
+
+```swift title="Defining an Entity"
+import PrismFoundation
+
+struct User: PrismEntity {
+    let id: UUID
+    let name: String
+    let email: String
+}
+
+let user = User(id: UUID(), name: "Alice", email: "alice@example.com")
+
+// Auto-generated JSON description
+print(user.description)
+// {"id":"...","name":"Alice","email":"alice@example.com"}
+
+// Log the entity via os.Logger
+user.log()
+```
+
+<Tip>
+  `PrismEntity` arrays also conform automatically — `[User]` is itself a `PrismEntity` and can call `.log()` directly.
+</Tip>
+
+## PrismError
+
+A typed error protocol that extends `Error`, `LocalizedError`, and `PrismLogger`. Provides structured error descriptions with failure reasons and recovery suggestions.
+
+```swift title="Defining a Custom Error"
+import PrismFoundation
+
+enum PaymentError: PrismError {
+    case insufficientFunds(required: Decimal, available: Decimal)
+    case cardExpired
+
+    var errorDescription: String? {
+        switch self {
+        case .insufficientFunds(let required, let available):
+            return "Insufficient funds: need \(required), have \(available)"
+        case .cardExpired:
+            return "Payment card has expired"
+        }
+    }
+
+    var failureReason: String? {
+        switch self {
+        case .insufficientFunds:
+            return "The account balance is below the required amount."
+        case .cardExpired:
+            return "The card expiration date is in the past."
+        }
+    }
+
+    var recoverySuggestion: String? {
+        switch self {
+        case .insufficientFunds:
+            return "Add funds to your account and try again."
+        case .cardExpired:
+            return "Update your payment method with a valid card."
+        }
+    }
+}
+
+// Logs error, failure reason, and recovery suggestion automatically
+PaymentError.cardExpired.log()
+```
+
+## PrismMock
+
+A protocol for generating test data. Provides a `mock` instance and a `mocks` array (default: 10 items).
+
+```swift title="Defining Mock Data"
+import PrismFoundation
+
+struct Product: PrismEntity, PrismMock {
+    let id: UUID
+    let name: String
+    let price: Double
+
+    static var mock: Product {
+        Product(id: UUID(), name: "Widget", price: 9.99)
+    }
+}
+
+// Single mock instance
+let product = Product.mock
+
+// Array of 10 mock instances
+let products = Product.mocks
+```
+
+<Tip>
+  Override `static var mocks: [Self]` if you need a custom collection size or varied data.
+</Tip>
+
+## PrismLogger
+
+The simplest logging protocol — a single `log()` method. Both `PrismEntity` and `PrismError` conform to it, so any model or error can log itself.
+
+```swift title="Custom Logger Conformance"
+struct APIRequest: PrismLogger {
+    let method: String
+    let path: String
+
+    func log() {
+        print("[\(method)] \(path)")
+    }
+}
+```
+
+## PrismSystemLogger
+
+A more structured logging protocol that wraps `os.Logger` with typed log messages.
+
+```swift title="System Logger"
+import os
+import PrismFoundation
+
+struct NetworkLogger: PrismSystemLogger {
+    typealias Message = PrismNetworkLogMessage
+
+    let logger = Logger(subsystem: "com.app", category: "network")
+
+    func info(_ message: Message) {
+        logger.info("\(message.description)")
+    }
+
+    func warning(_ message: Message) {
+        logger.warning("\(message.description)")
+    }
+
+    func error(_ message: Message) {
+        logger.error("\(message.description)")
+    }
+}
+```
+
+## Protocol Hierarchy
+
+<CardGroup cols={2}>
+  <Card title="PrismEntity" icon="database">
+    **Codable + Equatable + Hashable + CustomStringConvertible + PrismLogger**. The base for all data models. Auto-generates JSON description and logging.
+  </Card>
+  <Card title="PrismError" icon="circle-exclamation">
+    **Error + LocalizedError + PrismLogger**. Structured errors with description, failure reason, and recovery suggestion. Auto-logs all three fields.
+  </Card>
+  <Card title="PrismMock" icon="flask">
+    Test data generation with `mock` and `mocks`. Default implementation provides 10-item arrays.
+  </Card>
+  <Card title="PrismLogger / PrismSystemLogger" icon="terminal">
+    Simple `log()` protocol and os.Logger wrapper with typed messages for info, warning, and error levels.
+  </Card>
+</CardGroup>

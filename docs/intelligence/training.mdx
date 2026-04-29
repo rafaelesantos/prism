@@ -1,0 +1,173 @@
+---
+title: "On-Device Training"
+description: "Train text and tabular ML models on-device using CreateML with zero network dependencies."
+icon: "dumbbell"
+---
+
+# On-Device Training
+
+PrismIntelligence wraps Apple's CreateML framework so you can train classification and regression models entirely on-device. No data leaves the user's machine.
+
+## Text Classification
+
+`PrismTextIntelligence` trains text classifiers from labeled samples:
+
+```swift title="Train a Text Classifier"
+import PrismIntelligence
+
+// From dictionary rows
+let classifier = PrismTextIntelligence(data: [
+    ["text": "I love this app!", "label": "positive"],
+    ["text": "Terrible experience", "label": "negative"],
+    ["text": "It works fine", "label": "neutral"],
+    ["text": "Best purchase ever", "label": "positive"],
+    ["text": "Would not recommend", "label": "negative"]
+])
+
+let result = try await classifier.train()
+```
+
+You can also initialize from typed samples:
+
+```swift title="Typed Samples"
+let samples = [
+    PrismTextTrainingSample(text: "Great product", label: "positive"),
+    PrismTextTrainingSample(text: "Awful quality", label: "negative")
+]
+
+let classifier = PrismTextIntelligence(samples: samples)
+let result = try await classifier.train()
+```
+
+<Warning>
+  Rows missing `"text"` or `"label"` keys are silently skipped. The trainer tracks invalid row count internally, and training fails if too few valid samples remain.
+</Warning>
+
+## Tabular Models
+
+`PrismTabularIntelligence` handles structured data for classification and regression:
+
+```swift title="Tabular Classification"
+import PrismIntelligence
+
+let tabular = PrismTabularIntelligence(
+    data: trainingData,
+    targetColumn: "category"
+)
+
+// Classification
+let classifierResult = try await tabular.trainClassifier()
+
+// Regression
+let regressorResult = try await tabular.trainRegressor()
+```
+
+## Codable Training Data
+
+Use `PrismCodableTrainingData` for serializable, type-safe training datasets:
+
+```swift title="Codable Training Data"
+let trainingData = PrismCodableTrainingData(
+    features: ["text", "length"],
+    labels: ["sentiment"],
+    rows: [
+        ["text": "Great app", "length": "9", "sentiment": "positive"],
+        ["text": "Bad UX", "length": "6", "sentiment": "negative"]
+    ]
+)
+
+// Serialize for storage
+let encoded = try JSONEncoder().encode(trainingData)
+```
+
+## Model Manager
+
+`PrismModelManager` is an actor that manages the lifecycle of trained models:
+
+```swift title="Managing Models"
+let manager = PrismModelManager()
+
+// Register a model
+let info = PrismModelInfo(
+    id: "sentiment-v1",
+    name: "Sentiment Classifier",
+    type: .classifier,
+    size: 1_200_000
+)
+await manager.register(info)
+
+// List registered models
+let models = await manager.list()
+
+// Check if loaded
+let sentimentModel = await manager.get(id: "sentiment-v1")
+print(sentimentModel?.isLoaded ?? false)
+
+// Unload when done
+await manager.unload(id: "sentiment-v1")
+```
+
+### Model Types
+
+| Type | Description |
+|------|-------------|
+| `.classifier` | Classification model (text or tabular) |
+| `.regressor` | Regression model for numeric prediction |
+| `.nlp` | Natural language processing model |
+| `.embedding` | Embedding / vector model |
+| `.custom` | User-defined model type |
+
+## Local Trainer
+
+`PrismIntelligenceLocalTrainer` is the low-level engine behind text and tabular training:
+
+```swift title="Direct Trainer Usage"
+let trainer = PrismIntelligenceLocalTrainer()
+
+let result = try await trainer.trainTextClassifier(
+    from: samples
+)
+
+switch result {
+case .success(let model):
+    print("Model trained: \(model)")
+case .failure(let error):
+    print("Training failed: \(error)")
+}
+```
+
+<Tip>
+  For most use cases, prefer `PrismTextIntelligence` or `PrismTabularIntelligence` over using the trainer directly. They handle data validation and provide a simpler API.
+</Tip>
+
+## Complete Example
+
+```swift title="End-to-End Text Classifier"
+import PrismIntelligence
+
+// 1. Prepare training data
+let classifier = PrismTextIntelligence(data: [
+    ["text": "The food was amazing", "label": "positive"],
+    ["text": "Slow service, cold food", "label": "negative"],
+    ["text": "Average meal, nothing special", "label": "neutral"],
+    ["text": "Best restaurant in town!", "label": "positive"],
+    ["text": "Never going back", "label": "negative"],
+    ["text": "Decent portions", "label": "neutral"]
+])
+
+// 2. Train the model
+let result = try await classifier.train()
+
+// 3. Register with the model manager
+let manager = PrismModelManager()
+await manager.register(PrismModelInfo(
+    id: "restaurant-sentiment",
+    name: "Restaurant Review Sentiment",
+    type: .classifier
+))
+
+// 4. Use for predictions
+let prediction = try await classifier.predict("Absolutely delicious!")
+print(prediction.label)      // "positive"
+print(prediction.confidence) // 0.92
+```

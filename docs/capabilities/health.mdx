@@ -1,0 +1,125 @@
+---
+title: "HealthKit"
+description: "Read and write health data — steps, heart rate, sleep, body metrics, and more through a type-safe HealthKit wrapper."
+icon: "heart-pulse"
+---
+
+# HealthKit
+
+`PrismHealthKit` provides a `Sendable`, actor-based wrapper around Apple's HealthKit framework. Query health samples, compute statistics, and write data without managing `HKHealthStore` or `HKSampleQuery` directly.
+
+## Permissions
+
+Request authorization for specific data types:
+
+```swift title="Request Health Permissions"
+import PrismCapabilities
+
+let health = PrismHealthKit()
+
+try await health.requestAuthorization(
+    read: [.stepCount, .heartRate, .sleepAnalysis],
+    write: [.bodyMass]
+)
+```
+
+## Supported Data Types
+
+| Type | Unit | Description |
+|------|------|-------------|
+| `.stepCount` | count | Daily step count |
+| `.heartRate` | BPM | Heart rate measurements |
+| `.activeEnergy` | kcal | Active calories burned |
+| `.sleepAnalysis` | — | Sleep stage analysis |
+| `.bodyMass` | kg | Body weight |
+| `.height` | m | Body height |
+| `.bloodOxygen` | % | Blood oxygen saturation |
+| `.respiratoryRate` | breaths/min | Respiratory rate |
+
+## Querying Samples
+
+Fetch individual health samples within a date range:
+
+```swift title="Query Heart Rate"
+let samples = try await health.querySamples(
+    type: .heartRate,
+    start: Calendar.current.date(byAdding: .hour, value: -24, to: .now)!,
+    end: .now
+)
+
+for sample in samples {
+    print("\(sample.value) \(sample.unit)")  // "72.0 BPM"
+    print("From \(sample.startDate) to \(sample.endDate)")
+}
+```
+
+### PrismHealthSample
+
+```swift
+public struct PrismHealthSample: Sendable {
+    public let type: PrismHealthDataType
+    public let value: Double
+    public let unit: String
+    public let startDate: Date
+    public let endDate: Date
+}
+```
+
+## Statistics
+
+Get aggregated statistics (sum, average, min, max) over a period:
+
+```swift title="Daily Step Statistics"
+let stats = try await health.queryStatistics(
+    type: .stepCount,
+    start: Calendar.current.startOfDay(for: .now),
+    end: .now
+)
+
+print("Steps today: \(stats.sum ?? 0)")
+print("Unit: \(stats.unit)")  // "count"
+```
+
+### PrismHealthStatistics
+
+```swift
+public struct PrismHealthStatistics: Sendable {
+    public let type: PrismHealthDataType
+    public let sum: Double?
+    public let average: Double?
+    public let min: Double?
+    public let max: Double?
+    public let unit: String
+}
+```
+
+## Writing Data
+
+Save health samples to HealthKit:
+
+```swift title="Save Body Mass"
+try await health.saveSample(
+    type: .bodyMass,
+    value: 75.5,
+    unit: "kg",
+    date: .now
+)
+```
+
+<Warning>
+  Writing to HealthKit requires explicit write authorization for each data type. Always request `write` permissions before attempting to save.
+</Warning>
+
+## Observing Changes
+
+Stream real-time updates when new samples are added:
+
+```swift title="Observe Heart Rate"
+for await sample in health.observe(type: .heartRate) {
+    print("New reading: \(sample.value) \(sample.unit)")
+}
+```
+
+<Tip>
+  HealthKit data is privacy-sensitive. Your app must include the `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` keys in `Info.plist`.
+</Tip>

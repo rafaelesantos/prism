@@ -1,0 +1,216 @@
+---
+title: "Network Client"
+description: "Type-safe HTTP networking with PrismNetworkClient, PrismNetworkAdapter, and PrismNetworkRequest."
+icon: "globe"
+---
+
+# Network Client
+
+PrismNetwork provides a protocol-oriented HTTP client layer built on `URLSession`. Define type-safe requests, decode responses automatically, and swap implementations for testing.
+
+## Architecture
+
+<CardGroup cols={3}>
+  <Card title="PrismNetworkClient" icon="plug">
+    Protocol defining `request(on:with:)` and `redirect(from:)`. Program against this for testability.
+  </Card>
+  <Card title="PrismNetworkAdapter" icon="gear">
+    Actor-based `URLSession` implementation with caching, redirect capture, and status code validation.
+  </Card>
+  <Card title="PrismNetworkRequest" icon="code">
+    Ties an endpoint to a response type. Default decoding via `PrismEntity`.
+  </Card>
+</CardGroup>
+
+## Basic Usage
+
+### 1. Define an Endpoint
+
+Endpoints describe a single API call — host, path, method, headers, and body:
+
+```swift title="UserEndpoint.swift"
+import PrismNetwork
+
+enum UserEndpoint: PrismNetworkEndpoint {
+    case list
+    case get(id: String)
+    case create(name: String, email: String)
+
+    var host: String { "api.example.com" }
+
+    var path: String {
+        switch self {
+        case .list:            return "/v1/users"
+        case .get(let id):     return "/v1/users/\(id)"
+        case .create:          return "/v1/users"
+        }
+    }
+
+    var method: PrismNetworkMethod {
+        switch self {
+        case .list, .get: return .get
+        case .create:     return .post
+        }
+    }
+
+    var headers: [String: String] {
+        ["Content-Type": PrismNetworkHeaderType.json.rawValue]
+    }
+
+    var body: (any Encodable)? {
+        switch self {
+        case .create(let name, let email):
+            return ["name": name, "email": email]
+        default:
+            return nil
+        }
+    }
+}
+```
+
+### 2. Define a Request
+
+A request ties an endpoint to a `Decodable` response type:
+
+```swift title="UserRequest.swift"
+import PrismNetwork
+
+struct User: PrismEntity, Sendable {
+    let id: String
+    let name: String
+    let email: String
+}
+
+struct ListUsersRequest: PrismNetworkRequest {
+    typealias Response = [User]
+    let endpoint: UserEndpoint = .list
+}
+
+struct GetUserRequest: PrismNetworkRequest {
+    typealias Response = User
+    let endpoint: UserEndpoint
+
+    init(id: String) {
+        self.endpoint = .get(id: id)
+    }
+}
+```
+
+### 3. Execute the Request
+
+```swift title="Fetching Users"
+let client = PrismNetworkAdapter()
+
+// List all users
+let users = try await client.request(on: ListUsersRequest())
+
+// Get a single user
+let user = try await client.request(on: GetUserRequest(id: "42"))
+print(user.name) // "Alice"
+```
+
+## Custom Date Formatting
+
+Pass a `DateFormatter` when your API returns non-standard date formats:
+
+```swift title="Custom Date Decoding"
+let formatter = DateFormatter()
+formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+let user = try await client.request(
+    on: GetUserRequest(id: "42"),
+    with: formatter
+)
+```
+
+## Redirect Handling
+
+Capture redirect URLs without following them:
+
+```swift title="Capture Redirect"
+let redirectURL = try await client.redirect(
+    from: GetUserRequest(id: "42")
+)
+print(redirectURL) // https://api.example.com/v2/users/42
+```
+
+## PrismNetworkAdapter Configuration
+
+The adapter wraps `URLSession` and supports custom session configurations and caching:
+
+```swift title="Custom Adapter"
+let config = URLSessionConfiguration.default
+config.timeoutIntervalForRequest = 30
+
+let cache = URLCache(
+    memoryCapacity: 10 * 1024 * 1024,  // 10 MB
+    diskCapacity: 50 * 1024 * 1024      // 50 MB
+)
+
+let client = PrismNetworkAdapter(
+    configuration: config,
+    cache: cache
+)
+```
+
+## Error Handling
+
+All errors are typed as `PrismNetworkError`:
+
+```swift title="Handling Errors"
+do {
+    let user = try await client.request(on: GetUserRequest(id: "42"))
+} catch let error as PrismNetworkError {
+    switch error {
+    case .invalidURL:      print("Bad URL")
+    case .noConnectivity:  print("No network")
+    case .unauthorized:    print("Auth required")
+    case .forbidden:       print("Access denied")
+    case .badRequest:      print("Invalid request")
+    case .serverError:     print("Server error")
+    case .invalidResponse: print("Unexpected response")
+    case .noCache:         print("No cached data")
+    }
+}
+```
+
+<Tip>
+  `PrismNetworkError` automatically maps HTTP status codes: 400 → `.badRequest`, 401 → `.unauthorized`, 403 → `.forbidden`, 408/429/5xx → `.serverError`. It also maps `URLError` codes like `.notConnectedToInternet` to `.noConnectivity`.
+</Tip>
+
+## Testing with Mock Clients
+
+Because `PrismNetworkClient` is a protocol, you can create mock implementations:
+
+```swift title="Mock Client"
+actor MockNetworkClient: PrismNetworkClient {
+    var mockResponse: Any?
+
+    func request<Request: PrismNetworkRequest>(
+        on request: Request,
+        with formatter: DateFormatter?
+    ) async throws -> Request.Response {
+        guard let response = mockResponse as? Request.Response else {
+            throw PrismNetworkError.invalidResponse
+        }
+        return response
+    }
+
+    func redirect<Request: PrismNetworkRequest>(
+        from request: Request
+    ) async throws -> URL {
+        throw PrismNetworkError.invalidResponse
+    }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Type-Safe Endpoints" icon="route" href="/network/endpoints">
+    Learn the full endpoint protocol and enum-based patterns.
+  </Card>
+  <Card title="Caching & Retry" icon="arrows-rotate" href="/network/cache-retry">
+    Add response caching and automatic retry policies.
+  </Card>
+</CardGroup>

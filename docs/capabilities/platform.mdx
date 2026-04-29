@@ -1,0 +1,265 @@
+---
+title: "Platform Services"
+description: "StoreKit, CloudKit, WidgetKit, Push Notifications, App Intents, and App Clips — Apple platform services wrapped in Prism-native APIs."
+icon: "apple"
+---
+
+# Platform Services
+
+PrismCapabilities wraps Apple's platform frameworks into type-safe, `Sendable` APIs. Manage in-app purchases, sync data to iCloud, build widgets, schedule notifications, and integrate with Siri Shortcuts.
+
+## StoreKit — In-App Purchases
+
+`PrismStoreKit` wraps StoreKit 2 for managing products, purchases, and subscriptions:
+
+```swift title="Fetch Products"
+import PrismCapabilities
+
+let store = PrismStoreKit()
+
+let products = try await store.fetchProducts(
+    ids: ["com.app.premium", "com.app.credits.100"]
+)
+
+for product in products {
+    print("\(product.displayName) — \(product.price)")
+    print("Type: \(product.type)")  // .nonConsumable, .autoRenewable, etc.
+}
+```
+
+### Purchase Flow
+
+```swift title="Purchase a Product"
+let transaction = try await store.purchase(productID: "com.app.premium")
+
+print("Transaction ID: \(transaction.id)")
+print("Purchased: \(transaction.productID)")
+print("Date: \(transaction.purchaseDate)")
+
+if let expiration = transaction.expirationDate {
+    print("Expires: \(expiration)")
+}
+```
+
+### Product Types
+
+| Type | Description |
+|------|-------------|
+| `.consumable` | Can be purchased multiple times (credits, coins) |
+| `.nonConsumable` | One-time purchase (remove ads, unlock feature) |
+| `.autoRenewable` | Subscription that renews automatically |
+| `.nonRenewable` | Subscription that does not auto-renew |
+
+### Transaction Monitoring
+
+```swift title="Listen for Transactions"
+for await transaction in store.transactionUpdates {
+    if transaction.revocationDate != nil {
+        print("Purchase revoked: \(transaction.productID)")
+    }
+}
+```
+
+---
+
+## CloudKit
+
+`PrismCloudKit` provides CRUD operations on CloudKit records:
+
+```swift title="CloudKit CRUD"
+let cloud = PrismCloudKit()
+
+// Check account status
+let status = try await cloud.accountStatus()
+// .available, .noAccount, .restricted, .couldNotDetermine, .temporarilyUnavailable
+
+// Save a record
+let record = PrismCloudRecord(
+    id: UUID().uuidString,
+    recordType: "Note",
+    fields: [
+        "title": .string("Meeting Notes"),
+        "content": .string("Discuss Q3 roadmap"),
+        "priority": .int(1),
+        "createdAt": .date(.now)
+    ]
+)
+
+try await cloud.save(record, database: .privateDB)
+```
+
+### Cloud Value Types
+
+| Type | Swift Mapping |
+|------|---------------|
+| `.string(String)` | Text fields |
+| `.int(Int)` | Integer fields |
+| `.double(Double)` | Decimal fields |
+| `.data(Data)` | Binary data |
+| `.date(Date)` | Timestamps |
+| `.reference(String)` | Record references |
+| `.stringArray([String])` | List of strings |
+
+### Query Records
+
+```swift title="Query CloudKit"
+let notes = try await cloud.query(
+    recordType: "Note",
+    predicate: "priority > 0",
+    database: .privateDB
+)
+
+for note in notes {
+    if case .string(let title) = note.fields["title"] {
+        print(title)
+    }
+}
+```
+
+### Databases
+
+| Database | Description |
+|----------|-------------|
+| `.publicDB` | Shared across all users |
+| `.privateDB` | Private to the signed-in iCloud user |
+| `.sharedDB` | Shared via CloudKit Sharing |
+
+---
+
+## WidgetKit
+
+`PrismWidgetKit` manages widget timeline reloads and configuration:
+
+```swift title="Reload Widgets"
+let widgets = PrismWidgetKit()
+
+// Reload all timelines
+await widgets.reloadAllTimelines()
+
+// Reload a specific widget kind
+await widgets.reloadTimelines(ofKind: "StatsWidget")
+```
+
+### Widget Families
+
+| Family | Description |
+|--------|-------------|
+| `.systemSmall` | Small home screen widget |
+| `.systemMedium` | Medium home screen widget |
+| `.systemLarge` | Large home screen widget |
+| `.systemExtraLarge` | Extra large (iPad) |
+| `.accessoryCircular` | Lock screen circular |
+| `.accessoryRectangular` | Lock screen rectangular |
+| `.accessoryInline` | Lock screen inline text |
+
+### Timeline Entries
+
+```swift title="Widget Timeline Entry"
+let entry = PrismWidgetEntry(
+    date: .now,
+    relevance: 0.8,
+    displayName: "Daily Summary"
+)
+```
+
+### Reload Policies
+
+| Policy | Behavior |
+|--------|----------|
+| `.atEnd` | Reload after the last entry |
+| `.afterMinutes(Int)` | Reload after N minutes |
+| `.never` | Manual reload only |
+
+---
+
+## Push Notifications
+
+`PrismPushNotifications` manages notification permissions, scheduling, and content:
+
+```swift title="Request Notification Permission"
+let notifications = PrismPushNotifications()
+
+let granted = try await notifications.requestAuthorization(
+    options: [.alert, .badge, .sound]
+)
+```
+
+### Schedule a Local Notification
+
+```swift title="Schedule Notification"
+let content = PrismNotificationContent(
+    title: "Reminder",
+    body: "Don't forget to check your tasks!",
+    subtitle: "Task Manager",
+    badge: 1,
+    sound: .default_,
+    categoryIdentifier: "REMINDER",
+    userInfo: ["screen": "tasks"]
+)
+
+try await notifications.schedule(
+    content: content,
+    trigger: .timeInterval(seconds: 3600, repeats: false)
+)
+```
+
+### Permission Status
+
+| Status | Description |
+|--------|-------------|
+| `.notDetermined` | User hasn't been asked yet |
+| `.denied` | User denied notifications |
+| `.authorized` | Full notification access |
+| `.provisional` | Quiet notifications (no prompt) |
+| `.ephemeral` | App Clip temporary access |
+
+### Sounds
+
+| Sound | Usage |
+|-------|-------|
+| `.default_` | System default notification sound |
+| `.named(String)` | Custom sound file from bundle |
+| `.critical` | Critical alert (bypasses Do Not Disturb) |
+
+---
+
+## App Intents
+
+`PrismAppIntentClient` integrates with App Intents for Siri Shortcuts and the Shortcuts app:
+
+```swift title="App Intent"
+let intents = PrismAppIntentClient()
+
+// Register a custom intent
+intents.register(
+    title: "Check Balance",
+    description: "Shows your current account balance"
+) { parameters in
+    let balance = await fetchBalance()
+    return "Your balance is $\(balance)"
+}
+```
+
+---
+
+## App Clips
+
+`PrismAppClip` handles App Clip lifecycle and invocation:
+
+```swift title="App Clip"
+let clip = PrismAppClip()
+
+// Get the invocation URL
+if let url = clip.invocationURL {
+    print("Launched from: \(url)")
+}
+
+// Check if running as App Clip
+if clip.isAppClip {
+    // Show streamlined experience
+}
+```
+
+<Tip>
+  App Clips must be under 15 MB. Use `PrismAppClip` to detect the App Clip context and show a focused UI.
+</Tip>

@@ -1,0 +1,131 @@
+---
+title: "Theming"
+description: "PrismUI's theming system uses semantic color tokens and protocol-based themes for consistent, adaptive styling across all platforms."
+icon: "palette"
+---
+
+# Theming
+
+PrismUI ships with a protocol-based theming system. Every component reads colors from the current `PrismTheme` via the SwiftUI environment, so switching themes updates your entire UI in one line.
+
+## PrismTheme Protocol
+
+All themes conform to `PrismTheme`, which resolves semantic `ColorToken` values to concrete SwiftUI `Color` instances:
+
+```swift title="PrismTheme Protocol"
+@MainActor
+public protocol PrismTheme: Sendable {
+    func color(_ token: ColorToken) -> Color
+}
+```
+
+## Built-in Themes
+
+PrismUI includes four themes out of the box:
+
+| Theme | Description |
+|-------|-------------|
+| `DefaultTheme` | Apple HIG system colors — adapts to light/dark automatically |
+| `DarkTheme` | A dark-first palette with deeper backgrounds and lighter foregrounds |
+| `HighContrastTheme` | WCAG AAA–compliant high-contrast colors for maximum readability |
+| `BrandTheme` | A customizable brand-color theme that wraps your primary color |
+
+```swift title="Using a Built-in Theme"
+import PrismUI
+
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .prismTheme(DarkTheme())
+        }
+    }
+}
+```
+
+## Custom Themes
+
+Create your own theme by conforming to `PrismTheme`:
+
+```swift title="Custom Theme"
+struct OceanTheme: PrismTheme {
+    func color(_ token: ColorToken) -> Color {
+        switch token {
+        case .brand: Color(red: 0.0, green: 0.47, blue: 0.75)
+        case .background: Color(red: 0.05, green: 0.1, blue: 0.15)
+        case .surface: Color(red: 0.08, green: 0.14, blue: 0.2)
+        case .onBackground: .white
+        case .interactive: Color(red: 0.0, green: 0.6, blue: 0.9)
+        case .success: .green
+        case .error: .red
+        case .warning: .orange
+        default: DefaultTheme().color(token)
+        }
+    }
+}
+```
+
+<Tip>
+  Fall back to `DefaultTheme().color(token)` in your `default` case so you only need to override the tokens you care about.
+</Tip>
+
+## PrismAutoTheme
+
+`PrismAutoTheme` automatically switches between a light and dark theme based on the system appearance:
+
+```swift title="Auto Theme Switching"
+let autoTheme = PrismAutoTheme(
+    light: DefaultTheme(),
+    dark: DarkTheme()
+)
+
+ContentView()
+    .prismTheme(autoTheme)
+```
+
+## PrismThemeStore
+
+`PrismThemeStore` is an `@Observable` class that manages theme state. Use it to let users switch themes at runtime:
+
+```swift title="Runtime Theme Switching"
+@State private var themeStore = PrismThemeStore(
+    themes: [DefaultTheme(), DarkTheme(), HighContrastTheme()],
+    current: DefaultTheme()
+)
+
+var body: some View {
+    NavigationStack {
+        ContentView()
+            .prismTheme(themeStore.current)
+            .toolbar {
+                Button("Next Theme") {
+                    themeStore.cycleNext()
+                }
+            }
+    }
+}
+```
+
+## Reading Theme in Components
+
+Access the current theme from the environment in any view:
+
+```swift title="Reading the Theme"
+struct ThemedCard: View {
+    @Environment(\.prismTheme) private var theme
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: RadiusToken.md.rawValue)
+            .fill(theme.color(.surface))
+            .overlay(
+                Text("Hello")
+                    .foregroundStyle(theme.color(.onSurface))
+            )
+    }
+}
+```
+
+<Note>
+  All PrismUI components read from `@Environment(\.prismTheme)` automatically. You only need to access the environment directly when building custom components.
+</Note>

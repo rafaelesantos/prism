@@ -25,7 +25,16 @@
     "name": "Get Started",
     "url": "/introduction"
   },
-  "tabs": [],
+  "tabs": [
+    {
+      "name": "Server",
+      "url": "core"
+    },
+    {
+      "name": "Client",
+      "url": "architecture"
+    }
+  ],
   "anchors": [
     {
       "name": "GitHub",
@@ -157,6 +166,73 @@
         "testing/test-client",
         "testing/request-builder",
         "testing/assertions"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "architecture/store",
+        "architecture/reducer",
+        "architecture/middleware",
+        "architecture/router",
+        "architecture/advanced"
+      ]
+    },
+    {
+      "group": "UI Components",
+      "pages": [
+        "ui/theme",
+        "ui/tokens",
+        "ui/components",
+        "ui/layout-navigation",
+        "ui/forms",
+        "ui/composites",
+        "ui/advanced-ui"
+      ]
+    },
+    {
+      "group": "Network Client",
+      "pages": [
+        "network/client",
+        "network/endpoints",
+        "network/cache-retry",
+        "network/advanced-network",
+        "network/websocket-client"
+      ]
+    },
+    {
+      "group": "Foundation",
+      "pages": [
+        "foundation/protocols",
+        "foundation/utilities",
+        "foundation/observability",
+        "foundation/resources"
+      ]
+    },
+    {
+      "group": "Intelligence",
+      "pages": [
+        "intelligence/overview",
+        "intelligence/training",
+        "intelligence/apple-intelligence",
+        "intelligence/nlp-rag"
+      ]
+    },
+    {
+      "group": "Capabilities",
+      "pages": [
+        "capabilities/auth",
+        "capabilities/location",
+        "capabilities/media",
+        "capabilities/health",
+        "capabilities/platform",
+        "capabilities/connectivity"
+      ]
+    },
+    {
+      "group": "Video",
+      "pages": [
+        "video/overview"
       ]
     }
   ],

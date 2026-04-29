@@ -1,16 +1,29 @@
 ---
 title: "Introduction"
-description: "Prism is a fully native Swift 6.3 server framework with zero third-party dependencies. Build production-ready APIs, real-time apps, and microservices using only Apple frameworks."
+description: "Prism is a full-stack Swift ecosystem with zero third-party dependencies. Build servers, iOS/macOS apps, ML pipelines, and more — using only Apple frameworks."
 icon: "book-open"
 ---
 
 # What is Prism?
 
-Prism is a server-side Swift framework that does something no other framework does: **it ships with zero third-party dependencies**. Every feature — from HTTP routing to WebSocket support, from SQLite databases to GraphQL engines — is built entirely on Apple's own frameworks: Network.framework, Foundation, SQLite3, CryptoKit, and Compression.
+Prism is a **full-stack Swift ecosystem** built entirely on Apple frameworks — zero third-party dependencies. It spans **10 modules** covering everything from server-side HTTP to client-side UI components, state management, networking, ML/AI, and native platform capabilities.
 
-This isn't a toy. Prism includes **36+ production-ready modules** covering everything you need to build modern server applications.
+<CardGroup cols={2}>
+  <Card title="Server" icon="server">
+    **PrismServer** — HTTP server, routing, database, GraphQL, MCP, WebSocket rooms, middleware, cron, and more.
+  </Card>
+  <Card title="Client" icon="mobile">
+    **PrismUI** — 100+ SwiftUI components, design tokens, theming, charts, forms, accessibility, and dev tools.
+  </Card>
+  <Card title="Architecture" icon="sitemap">
+    **PrismArchitecture** — composable state management with stores, reducers, effects, middleware, and navigation.
+  </Card>
+  <Card title="Intelligence" icon="brain">
+    **PrismIntelligence** — on-device ML, Apple Intelligence, NLP, RAG pipelines, and structured output parsing.
+  </Card>
+</CardGroup>
 
-```swift title="Hello World in Prism"
+```swift title="Hello World — Server"
 import PrismServer
 
 let server = PrismHTTPServer(port: 8080)
@@ -27,19 +40,51 @@ await server.get("/users/:id") { request in
 try await server.start()
 ```
 
-That's a running HTTP server. No configuration files, no boilerplate, no dependency resolution. Just Swift.
+```swift title="Hello World — SwiftUI App"
+import Prism
+
+struct CounterFeature: PrismReducer {
+    struct State: Sendable, Equatable { var count = 0 }
+    enum Action: Sendable { case increment, decrement }
+
+    func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
+        switch action {
+        case .increment: state.count += 1
+        case .decrement: state.count -= 1
+        }
+        return .none
+    }
+}
+
+struct CounterView: View {
+    let store: PrismStore<CounterFeature.State, CounterFeature.Action>
+
+    var body: some View {
+        VStack {
+            Text("\(store.state.count)")
+                .prismTypography(.headlineLarge)
+            HStack {
+                PrismButton("−", variant: .outlined) { store.send(.decrement) }
+                PrismButton("+", variant: .filled) { store.send(.increment) }
+            }
+        }
+    }
+}
+```
+
+No configuration files, no boilerplate, no dependency resolution. Just Swift.
 
 ## Why Prism?
 
 <CardGroup cols={3}>
   <Card title="Zero Dependencies" icon="cube">
-    No SwiftNIO, no AsyncHTTPClient, no third-party anything. Your `Package.resolved` stays clean. Your builds stay fast. Your attack surface stays small.
+    No SwiftNIO, no Alamofire, no third-party anything. Your `Package.resolved` stays clean. Your builds stay fast. Your attack surface stays small.
   </Card>
   <Card title="Swift 6.3 Native" icon="bolt">
     Built from the ground up with strict concurrency. Actors, `Sendable`, structured concurrency — not retrofitted, but designed for it.
   </Card>
-  <Card title="Batteries Included" icon="battery-full">
-    36+ modules out of the box. Database, sessions, GraphQL, MCP, WebSocket rooms, cron jobs, file uploads — all native.
+  <Card title="Full-Stack Ecosystem" icon="battery-full">
+    10 modules spanning server, client, architecture, networking, ML, and platform APIs. One framework, one import.
   </Card>
 </CardGroup>
 
@@ -52,47 +97,55 @@ That's a running HTTP server. No configuration files, no boilerplate, no depende
 | Database | Built-in SQLite | Fluent (separate) | Custom |
 | GraphQL | Built-in | Third-party | Third-party |
 | MCP Server | Built-in | None | None |
-| WebSocket Rooms | Built-in | Third-party | Manual |
+| UI Components | Built-in (100+) | None | None |
+| State Management | Built-in | None | None |
+| ML/AI | Built-in | None | None |
 | Swift 6 concurrency | Native actors | Partial | Partial |
 
 <Tip>
-  Prism doesn't compete with Vapor on ecosystem size. It competes on **simplicity, control, and zero-dependency builds**. If you want a framework where you understand every line of code running in production, Prism is built for you.
+  Prism doesn't compete with Vapor on ecosystem size. It competes on **simplicity, control, and zero-dependency builds** — for both server and client. If you want a framework where you understand every line of code running in production, Prism is built for you.
 </Tip>
 
-## Key Features
+## The Prism Ecosystem
 
-Prism organizes its features into focused modules that work together seamlessly:
+Prism is organized into **10 focused modules** that work together or independently:
 
 <AccordionGroup>
-  <Accordion title="HTTP & Routing">
-    Full HTTP/1.1 server on Network.framework. Pattern-based routing with `:params` and `*` wildcards. Route groups with shared prefixes and middleware. Support for all HTTP methods.
+  <Accordion title="PrismServer — Server-Side Framework">
+    Full HTTP/1.1 server, routing, middleware (CORS, auth, rate limiting, compression), SQLite database with ORM, WebSocket rooms, GraphQL engine, MCP server, SSE, cron jobs, background tasks, cluster mode, and more. 36+ server modules.
   </Accordion>
-  <Accordion title="Middleware Pipeline">
-    CORS, logging, authentication, rate limiting, compression, request tracing, API versioning, lifecycle hooks — all built-in. Stack them declaratively.
+  <Accordion title="PrismArchitecture — State Management">
+    Composable architecture inspired by TCA. PrismStore for observable state, PrismReducer for pure business logic, PrismEffect for async side effects, PrismMiddleware for cross-cutting concerns, PrismRouter for type-safe navigation. Plus: state persistence, time-travel debugging, undo/redo, derived stores, and testing utilities.
   </Accordion>
-  <Accordion title="Database & ORM">
-    SQLite via the C API. Query builder, model protocol with CRUD, migrations, connection pooling, and relationship queries (hasMany, belongsTo, hasOne).
+  <Accordion title="PrismUI — Design System & Components">
+    100+ SwiftUI components with semantic design tokens. Theming (dark, high-contrast, brand), primitives (buttons, cards, chips), forms with validation, charts (bar, line, radar, heatmap), dashboard widgets, chat components, rich text editors, accessibility tools, animations, and developer tools like Storybook and snapshot testing.
   </Accordion>
-  <Accordion title="Real-Time">
-    WebSocket with RFC 6455 compliance. Named rooms with join/leave/broadcast. Server-Sent Events. Actor-based event bus with typed pub/sub.
+  <Accordion title="PrismNetwork — HTTP Client">
+    Type-safe HTTP client with endpoint protocols, response caching (LRU with TTL), retry policies (exponential backoff, linear), request deduplication, offline queue with auto-flush, multipart uploads, GraphQL client, and WebSocket client.
   </Accordion>
-  <Accordion title="GraphQL Engine">
-    Schema DSL, recursive descent parser, field-level resolvers, introspection, and an embedded GraphiQL playground. No third-party GraphQL libraries.
+  <Accordion title="PrismFoundation — Core Utilities">
+    Base protocols (PrismEntity, PrismError, PrismMock), structured logging, performance tracing, crash reporting, analytics funnels, UserDefaults wrapper, file management, date formatting, locale handling, and Swift extensions.
   </Accordion>
-  <Accordion title="MCP Server">
-    Model Context Protocol implementation with JSON-RPC 2.0. Register tools, resources, and prompts. Stdio and HTTP/SSE transports.
+  <Accordion title="PrismIntelligence — ML & AI">
+    Unified ML client for on-device (CoreML/CreateML), Apple Intelligence (FoundationModels), and remote LLMs. Text and tabular classifiers, NLP (sentiment analysis, entity extraction), RAG pipeline with embedding store, model lifecycle management, and structured output parsing.
   </Accordion>
-  <Accordion title="Infrastructure">
-    Environment config with `.env` files. Health checks and metrics endpoints. Cron scheduler. Background task manager. Graceful shutdown. Multi-process cluster mode.
+  <Accordion title="PrismCapabilities — Platform APIs">
+    Native wrappers for Apple platform capabilities: biometric auth (Face ID, Touch ID, Optic ID), Sign in with Apple, location tracking, geofencing, camera capture, HealthKit, StoreKit (in-app purchases), CloudKit, WidgetKit, push notifications, App Intents, Bluetooth, NFC, MultipeerConnectivity, and more.
   </Accordion>
-  <Accordion title="Security">
-    TLS via Network.framework. HMAC-SHA256 signed sessions. Input validation with 14 built-in rules. HSTS and security headers. Bearer token authentication.
+  <Accordion title="PrismVideo — Video Processing">
+    Video metadata entity, actor-based video downloader with progress streaming via AsyncStream, resolution detection (4K/1080p/720p/SD), and AVFoundation export session management.
+  </Accordion>
+  <Accordion title="Prism — Umbrella Module">
+    Single import that re-exports all client-side modules: PrismArchitecture, PrismCapabilities, PrismFoundation, PrismIntelligence, PrismNetwork, PrismUI, and PrismVideo. Use `import Prism` for full access.
+  </Accordion>
+  <Accordion title="PrismPreview — Preview App">
+    A SwiftUI preview app target for developing and testing Prism components during development.
   </Accordion>
 </AccordionGroup>
 
 ## A Real Example
 
-Here's a more realistic API — a task manager with database, authentication, and validation:
+Here's a realistic API — a task manager with database, authentication, and validation:
 
 ```swift title="Task Manager API"
 import PrismServer
@@ -167,11 +220,11 @@ try await server.start()
   <Card title="AI Tool Servers (MCP)" icon="robot">
     Build MCP-compatible servers that expose tools, resources, and prompts to AI assistants like Claude.
   </Card>
-  <Card title="Microservices" icon="cubes">
-    Lightweight services with health checks, metrics, tracing, and cluster mode for horizontal scaling.
+  <Card title="Native iOS/macOS Apps" icon="mobile">
+    Full-featured apps with PrismUI components, PrismArchitecture state management, and PrismNetwork for API calls.
   </Card>
-  <Card title="Full-Stack Swift" icon="layer-group">
-    Server-rendered HTML with the template engine, static file serving, and session management.
+  <Card title="ML-Powered Features" icon="brain">
+    On-device text classification, sentiment analysis, RAG pipelines, and Apple Intelligence integration.
   </Card>
 </CardGroup>
 
@@ -184,7 +237,10 @@ try await server.start()
   <Step title="Build Your First API">
     Follow the quickstart tutorial to build a REST API from scratch. [Quickstart →](/quickstart)
   </Step>
-  <Step title="Explore Features">
-    Dive into specific features like [GraphQL](/graphql/schema), [WebSockets](/realtime/websocket), or [Database](/database/overview).
+  <Step title="Explore Server Features">
+    Dive into [GraphQL](/graphql/schema), [WebSockets](/realtime/websocket), or [Database](/database/overview).
+  </Step>
+  <Step title="Explore Client Features">
+    Build UIs with [PrismUI](/ui/theme), manage state with [PrismArchitecture](/architecture/store), or add ML with [PrismIntelligence](/intelligence/overview).
   </Step>
 </Steps>

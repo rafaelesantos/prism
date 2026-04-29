@@ -1,0 +1,197 @@
+---
+title: "Router"
+description: "Type-safe navigation with push, sheet, and full-screen presentations via PrismRouter."
+icon: "compass"
+---
+
+# PrismRouter
+
+`PrismRouter` is an observable navigation manager that provides type-safe routing with push, sheet, and full-screen cover presentations. It bridges PrismArchitecture with SwiftUI's navigation system.
+
+## Defining Routes
+
+Routes must conform to `PrismRoutable` (which requires `Hashable` and `Identifiable`):
+
+```swift title="Route Definition"
+enum AppRoute: PrismRoutable {
+    case home
+    case detail(id: String)
+    case settings
+    case profile(userId: String)
+
+    var id: Self { self }
+}
+```
+
+## Creating a Router
+
+```swift title="Creating a Router"
+let router = PrismRouter<AppRoute>()
+
+// Or with initial state
+let router = PrismRouter<AppRoute>(
+    path: [.home],
+    presentedRoute: nil,
+    fullScreenRoute: nil
+)
+```
+
+## Navigation Operations
+
+### Push (Navigation Stack)
+
+```swift title="Push Navigation"
+// Push a route onto the stack
+router.push(.detail(id: "42"))
+
+// Push multiple routes
+router.push(.home)
+router.push(.detail(id: "1"))
+router.push(.detail(id: "2"))
+```
+
+### Sheet Presentation
+
+```swift title="Sheet"
+router.present(.settings)
+```
+
+### Full-Screen Cover
+
+```swift title="Full Screen"
+router.fullScreen(.profile(userId: "abc"))
+```
+
+### Dismissing
+
+```swift title="Dismiss"
+// Dismiss the current sheet or full-screen cover
+router.dismiss()
+
+// Pop the last pushed route
+router.pop()
+
+// Pop to the root of the navigation stack
+router.popToRoot()
+```
+
+### Inspecting State
+
+```swift title="Router State"
+// Is a sheet or full-screen cover showing?
+router.isPresenting // Bool
+
+// The topmost visible route
+router.topRoute // AppRoute?
+
+// The full navigation stack
+router.path // [AppRoute]
+```
+
+## SwiftUI Integration
+
+Use `PrismNavigationView` from PrismUI to connect the router to SwiftUI's navigation:
+
+```swift title="PrismNavigationView"
+import PrismArchitecture
+import PrismUI
+
+struct ContentView: View {
+    @State private var router = PrismRouter<AppRoute>()
+
+    var body: some View {
+        PrismNavigationView(router: router) {
+            HomeView(router: router)
+        } destination: { route in
+            switch route {
+            case .home:
+                HomeView(router: router)
+            case .detail(let id):
+                DetailView(id: id, router: router)
+            case .settings:
+                SettingsView()
+            case .profile(let userId):
+                ProfileView(userId: userId)
+            }
+        }
+    }
+}
+```
+
+`PrismNavigationView` binds the router's `path` to a `NavigationStack`, and presents sheets and full-screen covers automatically.
+
+## Using with PrismStore
+
+Integrate routing into your architecture by including the router as state or passing it alongside the store:
+
+```swift title="Router in Architecture"
+struct AppState: Sendable, Equatable {
+    var items: [Item] = []
+    var isLoading = false
+}
+
+enum AppAction: Sendable {
+    case selectItem(Item)
+    case loadItems
+    case itemsLoaded([Item])
+}
+
+struct AppView: View {
+    let store: PrismStore<AppState, AppAction>
+    @State private var router = PrismRouter<AppRoute>()
+
+    var body: some View {
+        PrismNavigationView(router: router) {
+            List(store.state.items) { item in
+                Button(item.title) {
+                    router.push(.detail(id: item.id))
+                }
+            }
+            .onAppear { store.send(.loadItems) }
+        } destination: { route in
+            switch route {
+            case .detail(let id):
+                DetailView(id: id)
+            default:
+                EmptyView()
+            }
+        }
+    }
+}
+```
+
+<Tip>
+  `PrismRouter` is `@Observable` and `Equatable`. SwiftUI views that reference it re-render only when the navigation state actually changes.
+</Tip>
+
+## Deep Linking
+
+Build a navigation path from a URL for deep linking:
+
+```swift title="Deep Linking"
+func handleDeepLink(_ url: URL) {
+    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+
+    router.popToRoot()
+
+    switch components.path {
+    case let path where path.hasPrefix("/item/"):
+        let id = String(path.dropFirst("/item/".count))
+        router.push(.detail(id: id))
+    case "/settings":
+        router.present(.settings)
+    default:
+        break
+    }
+}
+```
+
+## Navigation Styles
+
+`PrismNavigationStyle` defines the presentation style for a route:
+
+| Style | Method | SwiftUI Equivalent |
+|-------|--------|--------------------|
+| Push | `router.push(route)` | `NavigationStack` push |
+| Sheet | `router.present(route)` | `.sheet` modifier |
+| Full Screen | `router.fullScreen(route)` | `.fullScreenCover` modifier |

@@ -1,0 +1,234 @@
+---
+title: "Core Components"
+description: "PrismUI's primitive components — buttons, cards, text fields, avatars, progress bars, and more — all themed and accessible."
+icon: "puzzle-piece"
+---
+
+# Core Components
+
+PrismUI provides 18+ primitive components that form the building blocks of your UI. Every component reads from the current `PrismTheme`, supports accessibility, and adapts to all Apple platforms.
+
+## PrismButton
+
+A themed button with variant styles, async actions, loading state, haptic feedback, and built-in accessibility.
+
+```swift title="Button Variants"
+// Filled (default)
+PrismButton("Submit", variant: .filled) {
+    await saveForm()
+}
+
+// Outlined
+PrismButton("Cancel", variant: .outlined, role: .cancel) {
+    await dismiss()
+}
+
+// Ghost (no background)
+PrismButton("Learn More", variant: .ghost) {
+    await navigate()
+}
+
+// Text-only
+PrismButton("Skip", variant: .text) {
+    await skip()
+}
+```
+
+PrismButton handles loading state automatically — the closure is `async`, so the button shows a spinner while the work runs:
+
+```swift title="Async Loading State"
+PrismButton("Place Order", haptic: .medium) {
+    try await api.placeOrder(cart)  // Button shows spinner
+}
+```
+
+<Tip>
+  Pass a `role: .destructive` for delete actions. The button automatically uses the `.error` color token and appropriate haptic feedback.
+</Tip>
+
+You can also use custom labels:
+
+```swift title="Custom Label"
+PrismButton(variant: .filled, action: { await save() }) {
+    Label("Save", systemImage: "checkmark")
+}
+```
+
+## PrismCard
+
+A themed container with surface color, border, radius, and optional elevation:
+
+```swift title="Card"
+PrismCard {
+    VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
+        Text("Project Alpha")
+            .prismTypography(.headline)
+        Text("Last updated 2 hours ago")
+            .prismTypography(.caption)
+            .foregroundStyle(theme.color(.onSurfaceSecondary))
+    }
+}
+.prismElevation(.low)
+```
+
+## PrismExpandableCard
+
+A card that expands to reveal additional content with a smooth animation:
+
+```swift title="Expandable Card"
+PrismExpandableCard(
+    header: { Text("Order Summary") },
+    content: {
+        VStack {
+            Text("3 items — $42.99")
+            Text("Shipping: Free")
+        }
+    }
+)
+```
+
+## PrismAvatar
+
+Circular avatar with image, initials fallback, and online indicator:
+
+```swift title="Avatar"
+PrismAvatar(
+    image: URL(string: "https://example.com/photo.jpg"),
+    initials: "RE",
+    size: 48,
+    isOnline: true
+)
+```
+
+## PrismChip & PrismTag
+
+Chips are interactive (tappable, dismissible), while tags are display-only labels:
+
+```swift title="Chips and Tags"
+// Interactive chip
+PrismChip("Swift", isSelected: $isSwiftSelected)
+
+// Display-only tag
+PrismTag("Beta", color: .warning)
+```
+
+## PrismBadge
+
+Notification badge for counts or status dots:
+
+```swift title="Badge"
+PrismBadge(count: 5)
+PrismBadge(dot: true, color: .error)
+```
+
+## PrismTextField
+
+Themed text input with validation support, error state, and icon slots:
+
+```swift title="Text Field"
+PrismTextField(
+    "Email",
+    text: $email,
+    icon: "envelope",
+    validation: [.required, .email]
+)
+```
+
+## PrismProgressBar
+
+Determinate or indeterminate progress indicator:
+
+```swift title="Progress Bar"
+PrismProgressBar(value: 0.65, color: .interactive)
+PrismProgressBar(isIndeterminate: true)
+```
+
+## PrismSkeletonView
+
+Animated loading placeholder that matches your layout:
+
+```swift title="Skeleton"
+if isLoading {
+    VStack {
+        PrismSkeletonView(width: 200, height: 20)
+        PrismSkeletonView(width: 150, height: 14)
+    }
+} else {
+    actualContent
+}
+```
+
+## PrismGauge
+
+Circular or linear gauge for values and progress:
+
+```swift title="Gauge"
+PrismGauge(
+    value: 0.73,
+    label: "CPU",
+    style: .circular,
+    color: .interactive
+)
+```
+
+## PrismTable
+
+Themed table with sortable columns for macOS and iPad:
+
+```swift title="Table"
+PrismTable(data: users) {
+    PrismTableColumn("Name", keyPath: \.name)
+    PrismTableColumn("Email", keyPath: \.email)
+    PrismTableColumn("Role", keyPath: \.role)
+}
+```
+
+## PrismIcon & PrismIconButton
+
+SF Symbol wrappers with token-based sizing and coloring:
+
+```swift title="Icons"
+PrismIcon("star.fill", color: .warning, size: .md)
+
+PrismIconButton("trash", color: .error) {
+    await deleteItem()
+}
+```
+
+## PrismGradient & PrismMeshGradient
+
+Token-aware gradient backgrounds:
+
+```swift title="Gradients"
+PrismGradient(
+    colors: [.brand, .brandVariant],
+    direction: .topLeading
+)
+
+PrismMeshGradient(
+    colors: [.brand, .interactive, .success],
+    width: 3, height: 3
+)
+```
+
+## Other Primitives
+
+| Component | Description |
+|-----------|-------------|
+| `PrismDivider` | Themed horizontal/vertical divider using `.separator` token |
+| `PrismGroupBox` | Grouped container with label |
+| `PrismLoadingState` | Unified loading/error/empty state view |
+| `PrismPasteButton` | System paste button with Prism styling |
+| `PrismImageResource` | Type-safe image resource loader |
+| `PrismAsyncImage` | Async image with placeholder and error states |
+| `PrismTimelineView` | Time-based updating view |
+| `PrismButtonGroup` | Grouped button row with consistent spacing |
+
+<CardGroup cols={2}>
+  <Card title="Themed by Default" icon="palette">
+    Every component reads from the current PrismTheme. Switch themes and all components update instantly.
+  </Card>
+  <Card title="Accessible" icon="universal-access">
+    Built-in `aria-label` equivalents, focus management, and keyboard navigation. VoiceOver-ready out of the box.
+  </Card>
+</CardGroup>

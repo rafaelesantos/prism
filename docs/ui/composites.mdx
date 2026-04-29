@@ -1,0 +1,243 @@
+---
+title: "Composite Components"
+description: "Higher-level components — sheets, carousels, charts, dashboards, and communication views built from PrismUI primitives."
+icon: "layer-group"
+---
+
+# Composite Components
+
+Composites combine PrismUI primitives into complete UI patterns. They cover overlays, data visualization, dashboard widgets, and messaging interfaces.
+
+## Overlays & Surfaces
+
+### PrismBottomSheet
+
+A draggable bottom sheet with detent support:
+
+```swift title="Bottom Sheet"
+PrismBottomSheet(isPresented: $showSheet, detents: [.medium, .large]) {
+    FilterOptionsView()
+}
+```
+
+### PrismToast & PrismNotificationBanner
+
+Temporary feedback messages:
+
+```swift title="Toast"
+PrismToast("Item saved", icon: "checkmark.circle", style: .success)
+    .prismToast(isPresented: $showToast)
+```
+
+```swift title="Notification Banner"
+PrismNotificationBanner(
+    title: "New Message",
+    subtitle: "From Alice",
+    icon: "message.fill",
+    action: { openChat() }
+)
+```
+
+### PrismAlert & PrismBanner
+
+```swift title="Alert"
+PrismAlert(
+    title: "Delete Item?",
+    message: "This action cannot be undone.",
+    primaryAction: .destructive("Delete") { await delete() },
+    secondaryAction: .cancel()
+)
+```
+
+```swift title="Banner"
+PrismBanner(
+    "Your trial expires in 3 days",
+    style: .warning,
+    action: ("Upgrade") { showUpgrade() }
+)
+```
+
+### More Overlays
+
+| Component | Description |
+|-----------|-------------|
+| `PrismMenu` | Context menu with themed items |
+| `PrismTooltip` | Hover/tap tooltip |
+| `PrismTip` | Inline tip callout |
+| `PrismToolbar` | Themed toolbar with title and actions |
+| `PrismFlexibleHeader` | Collapsible header that reacts to scroll |
+
+## Content Components
+
+### PrismSearchBar & PrismSearchSuggestions
+
+```swift title="Search"
+PrismSearchBar(text: $query, placeholder: "Search products...")
+
+PrismSearchSuggestions(query: query, suggestions: recentSearches) { suggestion in
+    router.push(.search(suggestion))
+}
+```
+
+### PrismCarousel
+
+Horizontal scrolling carousel with pagination:
+
+```swift title="Carousel"
+PrismCarousel(items, itemWidth: 300, spacing: .md) { item in
+    PrismCard {
+        AsyncImage(url: item.imageURL)
+        Text(item.title)
+    }
+}
+```
+
+### PrismOnboarding & PrismEmptyState
+
+```swift title="Onboarding"
+PrismOnboarding(pages: [
+    .init(title: "Welcome", image: "star", description: "Get started with Prism"),
+    .init(title: "Build", image: "hammer", description: "Create beautiful apps"),
+    .init(title: "Ship", image: "paperplane", description: "Deploy with confidence"),
+])
+```
+
+```swift title="Empty State"
+PrismEmptyState(
+    icon: "tray",
+    title: "No Items Yet",
+    message: "Add your first item to get started.",
+    action: ("Add Item") { showAddForm() }
+)
+```
+
+### PrismCountdownTimer
+
+```swift title="Countdown"
+PrismCountdownTimer(targetDate: launchDate, style: .compact)
+```
+
+---
+
+## Charts
+
+PrismUI wraps Swift Charts with token-based styling. Available on iOS 16+, macOS 13+.
+
+<CardGroup cols={2}>
+  <Card title="PrismBarChart" icon="chart-bar">
+    Vertical/horizontal bar chart with token colors
+  </Card>
+  <Card title="PrismLineChart" icon="chart-line">
+    Line/area chart with gradient fill
+  </Card>
+  <Card title="PrismRadarChart" icon="chart-radar">
+    Multi-axis radar/spider chart
+  </Card>
+  <Card title="PrismHeatmap" icon="grid">
+    Color-coded matrix for density data
+  </Card>
+  <Card title="PrismSparkline" icon="chart-line-up">
+    Inline mini chart for tables and rows
+  </Card>
+  <Card title="PrismTreemap" icon="square-dashed">
+    Nested rectangles for hierarchical data
+  </Card>
+  <Card title="PrismFunnelChart" icon="filter">
+    Conversion funnel visualization
+  </Card>
+  <Card title="PrismCandlestickChart" icon="chart-candlestick">
+    OHLC candlestick chart for financial data
+  </Card>
+</CardGroup>
+
+```swift title="Bar Chart Example"
+struct SalesChart: View {
+    let data: [SalesData]
+
+    var body: some View {
+        PrismBarChart(
+            data,
+            x: \.month,
+            y: \.revenue,
+            barColor: .interactive
+        )
+        .frame(height: 200)
+    }
+}
+```
+
+```swift title="Line Chart Example"
+PrismLineChart(
+    data,
+    x: \.date,
+    y: \.value,
+    lineColor: .brand,
+    showArea: true
+)
+```
+
+---
+
+## Dashboard Components
+
+Pre-built widgets for analytics dashboards:
+
+```swift title="KPI Cards"
+HStack(spacing: SpacingToken.lg.rawValue) {
+    PrismKPICard(
+        title: "Revenue",
+        value: "$12,450",
+        change: +8.3,
+        sparklineData: revenueHistory
+    )
+
+    PrismKPICard(
+        title: "Users",
+        value: "2,341",
+        change: -2.1,
+        sparklineData: userHistory
+    )
+}
+```
+
+```swift title="Stat Grid"
+PrismStatGrid(columns: 3) {
+    PrismStatGridItem(label: "Active", value: "1,234", color: .success)
+    PrismStatGridItem(label: "Pending", value: "56", color: .warning)
+    PrismStatGridItem(label: "Failed", value: "3", color: .error)
+}
+```
+
+| Component | Description |
+|-----------|-------------|
+| `PrismTimeline` | Vertical timeline with events |
+| `PrismActivityFeed` | Chronological activity stream |
+| `PrismComparisonTable` | Side-by-side feature comparison |
+| `PrismSparklineRow` | Table row with inline sparkline |
+
+---
+
+## Communication Components
+
+Ready-made views for chat and messaging interfaces:
+
+```swift title="Chat Interface"
+PrismMessageList(messages) { message in
+    PrismChatBubble(
+        text: message.text,
+        isFromCurrentUser: message.isMine,
+        timestamp: message.sentAt
+    )
+}
+
+PrismTypingIndicator(isTyping: $partnerIsTyping)
+```
+
+| Component | Description |
+|-----------|-------------|
+| `PrismChatBubble` | Themed chat bubble with tail |
+| `PrismMessageList` | Scrollable message container |
+| `PrismTypingIndicator` | Animated "..." typing indicator |
+| `PrismReactionPicker` | Emoji reaction selector |
+| `PrismReadReceipts` | Sent/delivered/read status indicators |
+| `PrismThreadView` | Threaded message view |

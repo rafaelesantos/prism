@@ -1,0 +1,173 @@
+---
+title: "Forms & Validation"
+description: "Form components with built-in validation rules, error display, and accessible input handling."
+icon: "input-text"
+---
+
+# Forms & Validation
+
+PrismUI provides 12 form components and a declarative validation system. All inputs are themed, accessible, and work across platforms.
+
+## Form Components
+
+| Component | Description |
+|-----------|-------------|
+| `PrismTextField` | Single-line text input with icon, validation, and error state |
+| `PrismTextArea` | Multi-line text editor |
+| `PrismSecureField` | Password field with show/hide toggle |
+| `PrismToggle` | Themed toggle switch |
+| `PrismSlider` | Range slider with value labels |
+| `PrismStepper` | Increment/decrement control |
+| `PrismPicker` | Dropdown or wheel picker |
+| `PrismDatePicker` | Date and time selector |
+| `PrismSegmentedControl` | Segmented picker for mutually exclusive options |
+| `PrismColorWell` | Color picker well |
+| `PrismPinField` | Multi-digit PIN/OTP input |
+| `PrismRating` | Star rating input |
+
+## Building a Form
+
+```swift title="Registration Form"
+struct RegistrationForm: View {
+    @State private var name = ""
+    @State private var email = ""
+    @State private var password = ""
+    @State private var agreeToTerms = false
+    @State private var plan = Plan.free
+
+    var body: some View {
+        Form {
+            PrismSection("Personal Info") {
+                PrismTextField(
+                    "Full Name",
+                    text: $name,
+                    icon: "person",
+                    validation: [.required, .minLength(2)]
+                )
+
+                PrismTextField(
+                    "Email",
+                    text: $email,
+                    icon: "envelope",
+                    validation: [.required, .email]
+                )
+
+                PrismSecureField(
+                    "Password",
+                    text: $password,
+                    validation: [.required, .minLength(8)]
+                )
+            }
+
+            PrismSection("Plan") {
+                PrismSegmentedControl(
+                    selection: $plan,
+                    options: Plan.allCases
+                )
+
+                PrismToggle("I agree to the Terms", isOn: $agreeToTerms)
+            }
+
+            PrismButton("Create Account", variant: .filled) {
+                await createAccount()
+            }
+        }
+    }
+}
+```
+
+## Validation Rules
+
+`PrismValidationRule` provides a declarative API for field validation. Each rule has a validation closure and an error message.
+
+### Built-in Rules
+
+```swift title="Available Rules"
+// Required — non-empty after trimming
+.required
+
+// Length constraints
+.minLength(3)
+.maxLength(100)
+
+// Email format
+.email
+
+// Custom regex
+.regex(#"^\d{5}$"#, message: "Enter a valid ZIP code")
+
+// Numeric range
+.range(1...100)
+```
+
+### Applying Validation
+
+Pass rules directly to input components:
+
+```swift title="Field Validation"
+PrismTextField(
+    "Username",
+    text: $username,
+    validation: [.required, .minLength(3), .maxLength(20)]
+)
+```
+
+### Custom Rules
+
+Create your own validation rules with a closure:
+
+```swift title="Custom Validation Rule"
+let noSpaces = PrismValidationRule(
+    validate: { !$0.contains(" ") },
+    message: "Username cannot contain spaces"
+)
+
+PrismTextField(
+    "Username",
+    text: $username,
+    validation: [.required, noSpaces]
+)
+```
+
+## PrismPinField
+
+Multi-digit input for PIN codes and OTPs:
+
+```swift title="PIN Field"
+PrismPinField(
+    length: 6,
+    text: $otpCode,
+    keyboardType: .numberPad
+)
+```
+
+## PrismRating
+
+Star rating input with half-star support:
+
+```swift title="Rating"
+PrismRating(
+    value: $rating,
+    maxValue: 5,
+    allowHalf: true,
+    icon: "star"
+)
+```
+
+## PrismSlider
+
+Range slider with min/max labels and step:
+
+```swift title="Slider"
+PrismSlider(
+    value: $brightness,
+    range: 0...100,
+    step: 5,
+    label: "Brightness",
+    showValue: true
+)
+```
+
+<Tip>
+  All form components display validation errors inline when the user interacts with the field and the value doesn't pass the rules. Error messages use the `.error` color token automatically.
+</Tip>

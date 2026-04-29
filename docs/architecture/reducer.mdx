@@ -1,0 +1,228 @@
+---
+title: "Reducers & Effects"
+description: "Define business logic with PrismReducer and model side effects with PrismEffect."
+icon: "gear"
+---
+
+# Reducers & Effects
+
+Reducers are pure functions that take the current state and an action, mutate the state, and return an effect describing any asynchronous work to perform. Effects are the bridge between synchronous state mutations and the async world.
+
+## PrismReducer Protocol
+
+Conform to `PrismReducer` to define your feature's business logic:
+
+```swift title="PrismReducer Protocol"
+@MainActor
+public protocol PrismReducer: Sendable {
+    associatedtype State: Sendable
+    associatedtype Action: Sendable
+
+    func reduce(
+        into state: inout State,
+        action: Action
+    ) -> PrismEffect<Action>
+}
+```
+
+### Implementation
+
+```swift title="Feature Reducer"
+struct ProfileReducer: PrismReducer {
+    typealias State = ProfileState
+    typealias Action = ProfileAction
+
+    func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
+        switch action {
+        case .loadProfile:
+            state.isLoading = true
+            return .run { send in
+                let profile = try await API.fetchProfile()
+                send(.profileLoaded(profile))
+            }
+        case .profileLoaded(let profile):
+            state.isLoading = false
+            state.profile = profile
+            return .none
+        case .updateName(let name):
+            state.profile?.name = name
+            return .none
+        }
+    }
+}
+```
+
+## PrismReduce
+
+`PrismReduce` is a closure-based concrete type that conforms to `PrismReducer`. Use it for inline reducers or when you don't need a dedicated type:
+
+```swift title="Closure-based Reducer"
+let reducer = PrismReduce<CounterState, CounterAction> { state, action in
+    switch action {
+    case .increment: state.count += 1
+    case .decrement: state.count -= 1
+    }
+    return .none
+}
+```
+
+### Type Erasure
+
+Convert any typed reducer to `PrismReduce` with `eraseToReduce()`:
+
+```swift
+let erased: PrismReduce<State, Action> = ProfileReducer().eraseToReduce()
+```
+
+### Composing with Middleware
+
+Attach middleware to a reducer with `handling(with:)`. The resulting reducer runs both the original reducer and the middleware, merging their effects:
+
+```swift title="Reducer + Middleware"
+let combined = ProfileReducer().handling(with: AnalyticsMiddleware())
+
+let store = PrismStore(
+    initialState: ProfileState(),
+    reducer: combined
+)
+```
+
+## PrismEffect
+
+`PrismEffect<Action>` describes asynchronous side effects that produce zero or more actions over time. The store executes effects and feeds emitted actions back through the reducer.
+
+### `.none`
+
+No side effect. Use when the action only mutates state:
+
+```swift
+case .increment:
+    state.count += 1
+    return .none
+```
+
+### `.send`
+
+Emit a single action immediately:
+
+```swift
+case .validate:
+    let isValid = state.email.contains("@")
+    return .send(isValid ? .validationPassed : .validationFailed)
+```
+
+### `.run`
+
+Execute asynchronous work. The `send` closure dispatches actions back to the store:
+
+```swift title="Async Effect"
+case .fetchUsers:
+    state.isLoading = true
+    return .run { send in
+        do {
+            let users = try await api.getUsers()
+            send(.usersLoaded(users))
+        } catch {
+            send(.fetchFailed(error.localizedDescription))
+        }
+    }
+```
+
+### `.sequence`
+
+Emit multiple actions in order:
+
+```swift
+return .sequence([.startLoading, .clearError, .fetchData])
+```
+
+### `.merge`
+
+Run multiple effects concurrently and merge their output:
+
+```swift title="Merged Effects"
+return .merge(
+    .run { send in
+        let users = try await api.getUsers()
+        send(.usersLoaded(users))
+    },
+    .run { send in
+        let settings = try await api.getSettings()
+        send(.settingsLoaded(settings))
+    }
+)
+```
+
+### `.concatenate`
+
+Run effects sequentially — each waits for the previous to complete:
+
+```swift title="Sequential Effects"
+return .concatenate(
+    .send(.showLoading),
+    .run { send in
+        let result = try await api.save(state.draft)
+        send(.saved(result))
+    },
+    .send(.hideLoading)
+)
+```
+
+<Tip>
+  Use `.merge` when effects are independent and can run in parallel. Use `.concatenate` when order matters.
+</Tip>
+
+## Full Example: Search Feature
+
+```swift title="Search with Debounce"
+struct SearchState: Sendable, Equatable {
+    var query = ""
+    var results: [String] = []
+    var isSearching = false
+}
+
+enum SearchAction: Sendable {
+    case queryChanged(String)
+    case search
+    case resultsLoaded([String])
+    case searchFailed
+}
+
+struct SearchReducer: PrismReducer {
+    func reduce(into state: inout SearchState, action: SearchAction) -> PrismEffect<SearchAction> {
+        switch action {
+        case .queryChanged(let query):
+            state.query = query
+            guard !query.isEmpty else {
+                state.results = []
+                return .none
+            }
+            return .run { send in
+                try await Task.sleep(for: .milliseconds(300))
+                send(.search)
+            }
+
+        case .search:
+            state.isSearching = true
+            let query = state.query
+            return .run { send in
+                do {
+                    let results = try await SearchAPI.search(query)
+                    send(.resultsLoaded(results))
+                } catch {
+                    send(.searchFailed)
+                }
+            }
+
+        case .resultsLoaded(let results):
+            state.isSearching = false
+            state.results = results
+            return .none
+
+        case .searchFailed:
+            state.isSearching = false
+            return .none
+        }
+    }
+}
+```

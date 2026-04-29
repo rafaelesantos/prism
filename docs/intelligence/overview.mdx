@@ -1,0 +1,112 @@
+---
+title: "Intelligence Overview"
+description: "Unified ML/AI client supporting on-device CoreML, Apple Intelligence, and remote LLM backends."
+icon: "brain"
+---
+
+# PrismIntelligence
+
+PrismIntelligence provides a single API surface for running machine learning and AI workloads across three backends — all without third-party dependencies.
+
+<CardGroup cols={3}>
+  <Card title="Local CoreML" icon="microchip">
+    Train and run classification/regression models on-device using CreateML. Zero network required.
+  </Card>
+  <Card title="Apple Intelligence" icon="apple">
+    Access Apple's FoundationModels framework for language generation, content tagging, and model adapters.
+  </Card>
+  <Card title="Remote LLM" icon="cloud">
+    Connect to remote language models via a provider protocol. Supports streaming and custom instructions.
+  </Card>
+</CardGroup>
+
+## Backend Kinds
+
+Every operation routes through a `PrismIntelligenceBackendKind`:
+
+```swift title="Backend Selection"
+public enum PrismIntelligenceBackendKind: String, Codable, Sendable, CaseIterable {
+    case local   // On-device CoreML / CreateML
+    case apple   // Apple Intelligence (FoundationModels)
+    case remote  // Remote LLM over the network
+}
+```
+
+## Capabilities
+
+Each backend declares which capabilities it supports:
+
+```swift title="Capabilities"
+public enum PrismIntelligenceCapability: String, Codable, Sendable, CaseIterable {
+    case textClassification       // Classify text into labels
+    case tabularClassification    // Classify rows of tabular data
+    case tabularRegression        // Predict numeric values from tabular data
+    case languageGeneration       // Generate natural-language text
+}
+```
+
+## Checking Backend Status
+
+Use `PrismIntelligenceStatus` to query what's available at runtime:
+
+```swift title="Status Check"
+let status = PrismIntelligenceStatus(
+    backend: .apple,
+    isAvailable: true,
+    capabilities: [.languageGeneration],
+    modelName: "Apple Language Model",
+    supportsStreaming: true,
+    supportsCustomInstructions: true,
+    supportsModelAdapters: true
+)
+
+if status.isAvailable {
+    print("Backend ready: \(status.capabilities)")
+}
+```
+
+`PrismIntelligenceStatus` includes:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `backend` | `PrismIntelligenceBackendKind` | Which backend this status describes |
+| `isAvailable` | `Bool` | Whether the backend can accept requests |
+| `reason` | `String?` | Explanation when unavailable |
+| `capabilities` | `[PrismIntelligenceCapability]` | Supported operations |
+| `modelID` | `String?` | Model identifier |
+| `modelName` | `String?` | Human-readable model name |
+| `supportsStreaming` | `Bool` | Whether streaming responses work |
+| `supportsCustomInstructions` | `Bool` | Whether system instructions are supported |
+| `supportsModelAdapters` | `Bool` | Whether model adapters can be loaded |
+
+## Architecture
+
+```
+┌─────────────────────────────────────────┐
+│         PrismIntelligenceClient         │
+├─────────┬───────────────┬───────────────┤
+│  Local  │     Apple     │    Remote     │
+│ CoreML  │FoundationModels│   LLM API   │
+│ CreateML│               │              │
+└─────────┴───────────────┴───────────────┘
+```
+
+The client selects the appropriate backend based on the requested capability and configuration. Local models handle classification and regression. Apple Intelligence handles language generation on supported devices. Remote providers handle everything else.
+
+<Tip>
+  PrismIntelligence requires no third-party ML libraries. Local training uses CreateML, NLP uses the NaturalLanguage framework, and Apple Intelligence uses FoundationModels — all Apple-native.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="On-Device Training" icon="dumbbell" href="/intelligence/training">
+    Train text and tabular classifiers directly on the device using CreateML.
+  </Card>
+  <Card title="Apple Intelligence" icon="apple" href="/intelligence/apple-intelligence">
+    Generate text with Apple's FoundationModels framework and model adapters.
+  </Card>
+  <Card title="NLP & RAG" icon="magnifying-glass" href="/intelligence/nlp-rag">
+    Sentiment analysis, entity extraction, embeddings, and retrieval-augmented generation.
+  </Card>
+</CardGroup>
