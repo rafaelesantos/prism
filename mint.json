@@ -2,10 +2,10 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Prism",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/docs/logo/dark.svg",
+    "light": "/docs/logo/light.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/docs/favicon.svg",
   "colors": {
     "primary": "#6366F1",
     "light": "#818CF8",
@@ -18,149 +18,149 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/byescaleira/prism"
+      "url": "https://github.com/rafaelesantos/prism"
     }
   ],
   "topbarCtaButton": {
     "name": "Get Started",
-    "url": "/introduction"
+    "url": "/docs/introduction"
   },
   "tabs": [],
   "anchors": [
     {
       "name": "GitHub",
       "icon": "github",
-      "url": "https://github.com/byescaleira/prism"
+      "url": "https://github.com/rafaelesantos/prism"
     },
     {
       "name": "Swift Package",
       "icon": "swift",
-      "url": "https://github.com/byescaleira/prism"
+      "url": "https://github.com/rafaelesantos/prism"
     }
   ],
   "navigation": [
     {
       "group": "Getting Started",
       "pages": [
-        "introduction",
-        "quickstart",
-        "installation"
+        "docs/introduction",
+        "docs/quickstart",
+        "docs/installation"
       ]
     },
     {
       "group": "Core",
       "pages": [
-        "core/server",
-        "core/routing",
-        "core/request",
-        "core/response",
-        "core/middleware",
-        "core/error-handling"
+        "docs/core/server",
+        "docs/core/routing",
+        "docs/core/request",
+        "docs/core/response",
+        "docs/core/middleware",
+        "docs/core/error-handling"
       ]
     },
     {
       "group": "Middleware",
       "pages": [
-        "middleware/cors",
-        "middleware/logging",
-        "middleware/auth",
-        "middleware/rate-limiting",
-        "middleware/compression",
-        "middleware/rate-limiting-v2",
-        "middleware/hooks"
+        "docs/middleware/cors",
+        "docs/middleware/logging",
+        "docs/middleware/auth",
+        "docs/middleware/rate-limiting",
+        "docs/middleware/compression",
+        "docs/middleware/rate-limiting-v2",
+        "docs/middleware/hooks"
       ]
     },
     {
       "group": "Database",
       "pages": [
-        "database/overview",
-        "database/queries",
-        "database/models",
-        "database/migrations",
-        "database/connection-pool",
-        "database/relationships"
+        "docs/database/overview",
+        "docs/database/queries",
+        "docs/database/models",
+        "docs/database/migrations",
+        "docs/database/connection-pool",
+        "docs/database/relationships"
       ]
     },
     {
       "group": "Real-Time",
       "pages": [
-        "realtime/websocket",
-        "realtime/websocket-rooms",
-        "realtime/sse",
-        "realtime/events"
+        "docs/realtime/websocket",
+        "docs/realtime/websocket-rooms",
+        "docs/realtime/sse",
+        "docs/realtime/events"
       ]
     },
     {
       "group": "Content",
       "pages": [
-        "content/json",
-        "content/multipart",
-        "content/file-upload",
-        "content/body-parser",
-        "content/content-negotiation",
-        "content/streaming",
-        "content/templates"
+        "docs/content/json",
+        "docs/content/multipart",
+        "docs/content/file-upload",
+        "docs/content/body-parser",
+        "docs/content/content-negotiation",
+        "docs/content/streaming",
+        "docs/content/templates"
       ]
     },
     {
       "group": "Security",
       "pages": [
-        "security/tls",
-        "security/sessions",
-        "security/validation"
+        "docs/security/tls",
+        "docs/security/sessions",
+        "docs/security/validation"
       ]
     },
     {
       "group": "GraphQL",
       "pages": [
-        "graphql/schema",
-        "graphql/queries",
-        "graphql/mutations",
-        "graphql/playground"
+        "docs/graphql/schema",
+        "docs/graphql/queries",
+        "docs/graphql/mutations",
+        "docs/graphql/playground"
       ]
     },
     {
       "group": "MCP",
       "pages": [
-        "mcp/overview",
-        "mcp/tools",
-        "mcp/resources",
-        "mcp/transports"
+        "docs/mcp/overview",
+        "docs/mcp/tools",
+        "docs/mcp/resources",
+        "docs/mcp/transports"
       ]
     },
     {
       "group": "Infrastructure",
       "pages": [
-        "infrastructure/config",
-        "infrastructure/health",
-        "infrastructure/metrics",
-        "infrastructure/cron",
-        "infrastructure/background-tasks",
-        "infrastructure/graceful-shutdown",
-        "infrastructure/cluster"
+        "docs/infrastructure/config",
+        "docs/infrastructure/health",
+        "docs/infrastructure/metrics",
+        "docs/infrastructure/cron",
+        "docs/infrastructure/background-tasks",
+        "docs/infrastructure/graceful-shutdown",
+        "docs/infrastructure/cluster"
       ]
     },
     {
       "group": "Advanced",
       "pages": [
-        "advanced/dependency-injection",
-        "advanced/tracing",
-        "advanced/versioning",
-        "advanced/http-client",
-        "advanced/openapi",
-        "advanced/cache"
+        "docs/advanced/dependency-injection",
+        "docs/advanced/tracing",
+        "docs/advanced/versioning",
+        "docs/advanced/http-client",
+        "docs/advanced/openapi",
+        "docs/advanced/cache"
       ]
     },
     {
       "group": "Testing",
       "pages": [
-        "testing/test-client",
-        "testing/request-builder",
-        "testing/assertions"
+        "docs/testing/test-client",
+        "docs/testing/request-builder",
+        "docs/testing/assertions"
       ]
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/byescaleira/prism"
+    "github": "https://github.com/rafaelesantos/prism"
   }
 }
