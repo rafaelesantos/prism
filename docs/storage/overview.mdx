@@ -63,3 +63,24 @@ let value = try composite.load(Config.self, forKey: "settings")
 ## Concurrency
 
 All stores are `Sendable`. Actor-based stores (`PrismDiskStore`, `PrismMemoryStore`, `PrismModelStore`) provide safe concurrent access. Sync stores use `NSLock` internally.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Defaults & Disk" icon="hard-drive" href="/storage/defaults-disk">
+    UserDefaults and file-based persistence.
+  </Card>
+  <Card title="SwiftData" icon="database" href="/storage/swiftdata">
+    Type-safe persistence with `@Model` and `PrismModelStore`.
+  </Card>
+  <Card title="Encryption & Compression" icon="lock" href="/storage/encryption-compression">
+    AES-GCM encryption and LZFSE/LZMA compression wrappers.
+  </Card>
+  <Card title="Advanced" icon="gear" href="/storage/advanced-storage">
+    Composite stores, batch operations, migrations, observation.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Need to store secrets securely? See [Encryption & Keychain](/security/encryption-keychain) in PrismSecurity for keychain-backed secret storage with biometric protection.
+</Tip>

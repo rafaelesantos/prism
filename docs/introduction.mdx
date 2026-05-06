@@ -6,71 +6,78 @@ icon: "book-open"
 
 # What is Prism?
 
-Prism is a **full-stack Swift ecosystem** built entirely on Apple frameworks — zero third-party dependencies. It spans **10 modules** covering everything from server-side HTTP to client-side UI components, state management, networking, ML/AI, and native platform capabilities.
+Prism is a **full-stack Swift ecosystem** built entirely on Apple frameworks — zero third-party dependencies. 10 modules covering server-side HTTP, client UI, state management, networking, ML/AI, security, storage, and native platform capabilities.
 
 <CardGroup cols={2}>
-  <Card title="Server" icon="server">
-    **PrismServer** — HTTP server, routing, database, GraphQL, MCP, WebSocket rooms, middleware, cron, and more.
+  <Card title="Server" icon="server" href="/server/core/server">
+    HTTP server, routing, database, GraphQL, MCP, WebSocket rooms, middleware, cron, and more.
   </Card>
-  <Card title="Client" icon="mobile">
-    **PrismUI** — 100+ SwiftUI components, design tokens, theming, charts, forms, accessibility, and dev tools.
+  <Card title="Client" icon="mobile" href="/ui/theme">
+    100+ SwiftUI components, design tokens, theming, charts, forms, accessibility, and dev tools.
   </Card>
-  <Card title="Architecture" icon="sitemap">
-    **PrismArchitecture** — composable state management with stores, reducers, effects, middleware, and navigation.
+  <Card title="Architecture" icon="sitemap" href="/architecture/store">
+    Composable state management with stores, reducers, effects, middleware, and navigation.
   </Card>
-  <Card title="Intelligence" icon="brain">
-    **PrismIntelligence** — on-device ML, Apple Intelligence, NLP, RAG pipelines, and structured output parsing.
+  <Card title="Intelligence" icon="brain" href="/intelligence/overview">
+    On-device ML, Apple Intelligence, NLP, RAG pipelines, and structured output parsing.
   </Card>
 </CardGroup>
 
-```swift title="Hello World — Server"
-import PrismServer
+## Hello World
 
-let server = PrismHTTPServer(port: 8080)
+<Tabs>
+  <Tab title="Server">
+    ```swift
+    import PrismServer
 
-await server.get("/") { request in
-    .json(["message": "Hello, Prism!"])
-}
+    let server = PrismHTTPServer(port: 8080)
 
-await server.get("/users/:id") { request in
-    let id = request.parameters["id"]!
-    .json(["id": id, "name": "Alice"])
-}
-
-try await server.start()
-```
-
-```swift title="Hello World — SwiftUI App"
-import Prism
-
-struct CounterFeature: PrismReducer {
-    struct State: Sendable, Equatable { var count = 0 }
-    enum Action: Sendable { case increment, decrement }
-
-    func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
-        switch action {
-        case .increment: state.count += 1
-        case .decrement: state.count -= 1
-        }
-        return .none
+    await server.get("/") { request in
+        .json(["message": "Hello, Prism!"])
     }
-}
 
-struct CounterView: View {
-    let store: PrismStore<CounterFeature.State, CounterFeature.Action>
+    await server.get("/users/:id") { request in
+        let id = request.parameters["id"]!
+        .json(["id": id, "name": "Alice"])
+    }
 
-    var body: some View {
-        VStack {
-            Text("\(store.state.count)")
-                .prismTypography(.headlineLarge)
-            HStack {
-                PrismButton("−", variant: .outlined) { store.send(.decrement) }
-                PrismButton("+", variant: .filled) { store.send(.increment) }
+    try await server.start()
+    ```
+  </Tab>
+  <Tab title="SwiftUI App">
+    ```swift
+    import Prism
+
+    struct CounterFeature: PrismReducer {
+        struct State: Sendable, Equatable { var count = 0 }
+        enum Action: Sendable { case increment, decrement }
+
+        func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
+            switch action {
+            case .increment: state.count += 1
+            case .decrement: state.count -= 1
+            }
+            return .none
+        }
+    }
+
+    struct CounterView: View {
+        let store: PrismStore<CounterFeature.State, CounterFeature.Action>
+
+        var body: some View {
+            VStack {
+                Text("\(store.state.count)")
+                    .prismTypography(.headlineLarge)
+                HStack {
+                    PrismButton("-", variant: .outlined) { store.send(.decrement) }
+                    PrismButton("+", variant: .filled) { store.send(.increment) }
+                }
             }
         }
     }
-}
-```
+    ```
+  </Tab>
+</Tabs>
 
 No configuration files, no boilerplate, no dependency resolution. Just Swift.
 
@@ -78,82 +85,55 @@ No configuration files, no boilerplate, no dependency resolution. Just Swift.
 
 <CardGroup cols={3}>
   <Card title="Zero Dependencies" icon="cube">
-    No SwiftNIO, no Alamofire, no third-party anything. Your `Package.resolved` stays clean. Your builds stay fast. Your attack surface stays small.
+    No SwiftNIO, no Alamofire, no third-party anything. Your `Package.resolved` stays clean. Your builds stay fast.
   </Card>
   <Card title="Swift 6.3 Native" icon="bolt">
-    Built from the ground up with strict concurrency. Actors, `Sendable`, structured concurrency — not retrofitted, but designed for it.
+    Built from the ground up with strict concurrency. Actors, `Sendable`, structured concurrency — designed for it.
   </Card>
   <Card title="Full-Stack Ecosystem" icon="battery-full">
     10 modules spanning server, client, architecture, networking, ML, and platform APIs. One framework, one import.
   </Card>
 </CardGroup>
 
-### How does Prism compare?
+### Prism vs. alternatives
 
 | Feature | Prism | Vapor | Hummingbird |
 |---------|-------|-------|-------------|
 | Third-party deps | **0** | 20+ | 10+ |
 | HTTP layer | Network.framework | SwiftNIO | SwiftNIO |
-| Database | Built-in SQLite | Fluent (separate) | Custom |
-| GraphQL | Built-in | Third-party | Third-party |
-| MCP Server | Built-in | None | None |
-| UI Components | Built-in (100+) | None | None |
-| State Management | Built-in | None | None |
-| ML/AI | Built-in | None | None |
+| Database | [Built-in SQLite](/server/database/overview) | Fluent | Custom |
+| GraphQL | [Built-in](/server/graphql/schema) | Third-party | Third-party |
+| MCP Server | [Built-in](/server/mcp/overview) | None | None |
+| UI Components | [100+](/ui/components) | None | None |
+| State Management | [Built-in](/architecture/store) | None | None |
+| ML/AI | [Built-in](/intelligence/overview) | None | None |
 | Swift 6 concurrency | Native actors | Partial | Partial |
 
-<Tip>
-  Prism doesn't compete with Vapor on ecosystem size. It competes on **simplicity, control, and zero-dependency builds** — for both server and client. If you want a framework where you understand every line of code running in production, Prism is built for you.
-</Tip>
+## The Ecosystem
 
-## The Prism Ecosystem
-
-Prism is organized into **10 focused modules** that work together or independently:
-
-<AccordionGroup>
-  <Accordion title="PrismServer — Server-Side Framework">
-    Full HTTP/1.1 server, routing, middleware (CORS, auth, rate limiting, compression), SQLite database with ORM, WebSocket rooms, GraphQL engine, MCP server, SSE, cron jobs, background tasks, cluster mode, and more. 36+ server modules.
-  </Accordion>
-  <Accordion title="PrismArchitecture — State Management">
-    Composable architecture inspired by TCA. PrismStore for observable state, PrismReducer for pure business logic, PrismEffect for async side effects, PrismMiddleware for cross-cutting concerns, PrismRouter for type-safe navigation. Plus: state persistence, time-travel debugging, undo/redo, derived stores, and testing utilities.
-  </Accordion>
-  <Accordion title="PrismUI — Design System & Components">
-    100+ SwiftUI components with semantic design tokens. Theming (dark, high-contrast, brand), primitives (buttons, cards, chips), forms with validation, charts (bar, line, radar, heatmap), dashboard widgets, chat components, rich text editors, accessibility tools, animations, and developer tools like Storybook and snapshot testing.
-  </Accordion>
-  <Accordion title="PrismNetwork — HTTP Client">
-    Type-safe HTTP client with endpoint protocols, response caching (LRU with TTL), retry policies (exponential backoff, linear), request deduplication, offline queue with auto-flush, multipart uploads, GraphQL client, and WebSocket client.
-  </Accordion>
-  <Accordion title="PrismFoundation — Core Utilities">
-    Base protocols (PrismEntity, PrismError, PrismMock), structured logging, performance tracing, crash reporting, analytics funnels, UserDefaults wrapper, file management, date formatting, locale handling, and Swift extensions.
-  </Accordion>
-  <Accordion title="PrismIntelligence — ML & AI">
-    Unified ML client for on-device (CoreML/CreateML), Apple Intelligence (FoundationModels), and remote LLMs. Text and tabular classifiers, NLP (sentiment analysis, entity extraction), RAG pipeline with embedding store, model lifecycle management, and structured output parsing.
-  </Accordion>
-  <Accordion title="PrismCapabilities — Platform APIs">
-    Native wrappers for Apple platform capabilities: biometric auth (Face ID, Touch ID, Optic ID), Sign in with Apple, location tracking, geofencing, camera capture, HealthKit, StoreKit (in-app purchases), CloudKit, WidgetKit, push notifications, App Intents, Bluetooth, NFC, MultipeerConnectivity, and more.
-  </Accordion>
-  <Accordion title="PrismVideo — Video Processing">
-    Video metadata entity, actor-based video downloader with progress streaming via AsyncStream, resolution detection (4K/1080p/720p/SD), and AVFoundation export session management.
-  </Accordion>
-  <Accordion title="Prism — Umbrella Module">
-    Single import that re-exports all client-side modules: PrismArchitecture, PrismCapabilities, PrismFoundation, PrismIntelligence, PrismNetwork, PrismUI, and PrismVideo. Use `import Prism` for full access.
-  </Accordion>
-  <Accordion title="PrismPreview — Preview App">
-    A SwiftUI preview app target for developing and testing Prism components during development.
-  </Accordion>
-</AccordionGroup>
+| Module | Role | Docs |
+|--------|------|------|
+| PrismFoundation | Entities, logging, analytics, locale, resources | [Foundation](/foundation/protocols) |
+| PrismNetwork | HTTP client, WebSocket, endpoints, cache, retry | [Network](/network/client) |
+| PrismArchitecture | Store, reducer, middleware, router (UDF) | [Architecture](/architecture/store) |
+| PrismUI | 100+ components, 4 themes, design tokens | [UI](/ui/theme) |
+| PrismServer | HTTP server, WebSocket, SSE, GraphQL, MCP | [Server](/server/core/server) |
+| PrismIntelligence | CoreML, Apple Intelligence, LLM, RAG, NLP | [Intelligence](/intelligence/overview) |
+| PrismSecurity | Biometrics, keychain, encryption, cert pinning, JWT | [Security](/security/overview) |
+| PrismStorage | UserDefaults, Disk, Memory, SwiftData, Keychain | [Storage](/storage/overview) |
+| PrismGamification | Challenges, streaks, badges, leaderboards | [Gamification](/gamification/overview) |
+| PrismCapabilities | StoreKit, HealthKit, CloudKit, Camera, NFC | [Capabilities](/capabilities/auth) |
 
 ## A Real Example
 
-Here's a realistic API — a task manager with database, authentication, and validation:
+A task manager API with database, middleware, and validation:
 
-```swift title="Task Manager API"
+```swift
 import PrismServer
 
 let server = PrismHTTPServer(port: 8080)
 let db = try PrismDatabase(path: "tasks.db")
 
-// Run migrations
 let migrator = PrismMigrator(database: db)
 try await migrator.migrate([
     PrismMigration(
@@ -163,21 +143,15 @@ try await migrator.migrate([
     )
 ])
 
-// Global middleware
 await server.use(PrismCORSMiddleware())
 await server.use(PrismLoggingMiddleware())
 await server.use(PrismErrorMiddleware(includeStackTrace: true))
 
-// List tasks
 await server.get("/tasks") { request in
     let rows = try await db.query("SELECT * FROM tasks")
-    let tasks = rows.map { row in
-        ["id": row["id"], "title": row["title"], "done": row["done"]]
-    }
-    return .json(tasks)
+    return .json(rows.map { ["id": $0["id"], "title": $0["title"], "done": $0["done"]] })
 }
 
-// Create task with validation
 await server.post("/tasks") { request in
     let result = request.validateJSON { v in
         v.field("title", .required, .minLength(1), .maxLength(200))
@@ -185,46 +159,35 @@ await server.post("/tasks") { request in
     if let error = result.errorResponse() { return error }
 
     let title = request.formData["title"] ?? ""
-    let changes = try await db.execute(
-        "INSERT INTO tasks (title) VALUES (?)",
-        parameters: [.text(title)]
-    )
+    try await db.execute("INSERT INTO tasks (title) VALUES (?)", parameters: [.text(title)])
     return .json(["created": true], status: .created)
-}
-
-// Toggle task completion
-await server.patch("/tasks/:id") { request in
-    let id = request.parameters["id"]!
-    try await db.execute(
-        "UPDATE tasks SET done = NOT done WHERE id = ?",
-        parameters: [.text(id)]
-    )
-    return .json(["updated": true])
 }
 
 try await server.start()
 ```
 
+For the full walkthrough, see the [Quickstart](/quickstart).
+
 ## What Can You Build?
 
 <CardGroup cols={2}>
-  <Card title="REST APIs" icon="server">
-    JSON APIs with routing, validation, authentication, rate limiting, and database persistence. Full CRUD in minutes.
+  <Card title="REST APIs" icon="server" href="/quickstart">
+    JSON APIs with routing, validation, authentication, rate limiting, and database persistence.
   </Card>
-  <Card title="Real-Time Apps" icon="signal-stream">
-    Chat applications, live dashboards, collaborative tools — using WebSocket rooms, SSE, and the event bus.
+  <Card title="Real-Time Apps" icon="signal-stream" href="/server/realtime/websocket">
+    Chat, live dashboards, collaborative tools — using WebSocket rooms, SSE, and the event bus.
   </Card>
-  <Card title="GraphQL Servers" icon="diagram-project">
-    Define schemas, write resolvers, and serve a GraphQL playground — all without leaving Swift.
+  <Card title="GraphQL Servers" icon="diagram-project" href="/server/graphql/schema">
+    Define schemas, write resolvers, and serve a GraphQL playground — all in Swift.
   </Card>
-  <Card title="AI Tool Servers (MCP)" icon="robot">
-    Build MCP-compatible servers that expose tools, resources, and prompts to AI assistants like Claude.
+  <Card title="AI Tool Servers (MCP)" icon="robot" href="/server/mcp/overview">
+    Build MCP-compatible servers that expose tools, resources, and prompts to AI assistants.
   </Card>
-  <Card title="Native iOS/macOS Apps" icon="mobile">
-    Full-featured apps with PrismUI components, PrismArchitecture state management, and PrismNetwork for API calls.
+  <Card title="Native iOS/macOS Apps" icon="mobile" href="/ui/theme">
+    Full-featured apps with PrismUI components, PrismArchitecture state management, and PrismNetwork.
   </Card>
-  <Card title="ML-Powered Features" icon="brain">
-    On-device text classification, sentiment analysis, RAG pipelines, and Apple Intelligence integration.
+  <Card title="ML-Powered Features" icon="brain" href="/intelligence/overview">
+    On-device text classification, sentiment analysis, RAG pipelines, and Apple Intelligence.
   </Card>
 </CardGroup>
 
@@ -232,15 +195,15 @@ try await server.start()
 
 <Steps>
   <Step title="Install Prism">
-    Add Prism to your Swift package and start building. [Installation guide →](/installation)
+    Add Prism to your Swift package. [Installation guide](/installation)
   </Step>
   <Step title="Build Your First API">
-    Follow the quickstart tutorial to build a REST API from scratch. [Quickstart →](/quickstart)
+    Follow the quickstart to build a REST API from scratch. [Quickstart](/quickstart)
   </Step>
   <Step title="Explore Server Features">
-    Dive into [GraphQL](/graphql/schema), [WebSockets](/realtime/websocket), or [Database](/database/overview).
+    Dive into [routing](/server/core/routing), [database](/server/database/overview), [GraphQL](/server/graphql/schema), or [WebSockets](/server/realtime/websocket).
   </Step>
   <Step title="Explore Client Features">
-    Build UIs with [PrismUI](/ui/theme), manage state with [PrismArchitecture](/architecture/store), or add ML with [PrismIntelligence](/intelligence/overview).
+    Build UIs with [PrismUI](/ui/theme), manage state with [PrismArchitecture](/architecture/store), or secure data with [PrismSecurity](/security/overview).
   </Step>
 </Steps>
