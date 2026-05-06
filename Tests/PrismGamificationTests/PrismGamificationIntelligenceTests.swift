@@ -83,11 +83,12 @@ struct GamMsgTests {
 
     @Test("equatable")
     func equatable() {
+        let date = Date(timeIntervalSince1970: 1_000_000)
         let a = PrismGamificationMessage(
-            id: "1", kind: .streakMotivation, content: "Go!", entityID: "daily"
+            id: "1", kind: .streakMotivation, content: "Go!", entityID: "daily", generatedAt: date
         )
         let b = PrismGamificationMessage(
-            id: "1", kind: .streakMotivation, content: "Go!", entityID: "daily"
+            id: "1", kind: .streakMotivation, content: "Go!", entityID: "daily", generatedAt: date
         )
         #expect(a == b)
     }
