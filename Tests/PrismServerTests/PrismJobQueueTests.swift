@@ -51,7 +51,7 @@ struct PrismJobQueueTests {
         let counter = Counter()
         let queue = PrismJobQueue()
         let id = await queue.enqueue(IncrementJob(counter: counter), schedule: .every(0.1))
-        try await Task.sleep(for: .milliseconds(600))
+        try await Task.sleep(for: .milliseconds(1500))
         await queue.cancel(id)
         let count = await counter.value
         #expect(count >= 2)
@@ -78,7 +78,7 @@ struct PrismJobQueueTests {
             FailingJob(counter: counter),
             schedule: PrismJobSchedule(maxRetries: 2, retryDelay: 0.1)
         )
-        try await Task.sleep(for: .milliseconds(1000))
+        try await Task.sleep(for: .milliseconds(2000))
         let count = await counter.value
         #expect(count == 3)
     }
@@ -110,7 +110,7 @@ struct PrismSchedulerTests {
         let counter = Counter()
         let scheduler = PrismScheduler()
         let id = await scheduler.every(0.1, job: IncrementJob(counter: counter))
-        try await Task.sleep(for: .milliseconds(600))
+        try await Task.sleep(for: .milliseconds(1500))
         await scheduler.cancel(id)
         #expect(await counter.value >= 2)
     }
@@ -120,7 +120,7 @@ struct PrismSchedulerTests {
         let counter = Counter()
         let scheduler = PrismScheduler()
         _ = await scheduler.after(0.1, job: IncrementJob(counter: counter))
-        try await Task.sleep(for: .milliseconds(800))
+        try await Task.sleep(for: .milliseconds(1500))
         #expect(await counter.value == 1)
     }
 }

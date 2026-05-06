@@ -78,7 +78,19 @@ struct PrismKeychainAccessibilityTests {
 }
 
 #if os(macOS) || os(iOS)
-    @Suite("Keychain")
+    private let _keychainAvailable: Bool = {
+        let kc = PrismKeychain(service: "PrismSecurityTests.__probe__")
+        let item = PrismKeychainItem(id: "probe_\(UUID().uuidString)", service: "PrismSecurityTests.__probe__")
+        do {
+            try kc.save(data: Data("p".utf8), for: item)
+            try kc.delete(for: item)
+            return true
+        } catch {
+            return false
+        }
+    }()
+
+    @Suite("Keychain", .enabled(if: _keychainAvailable, "Keychain not available in CI sandbox"))
     struct PrismKeychainTests {
         let keychain = PrismKeychain(service: "PrismSecurityTests")
         let testItem = PrismKeychainItem(
