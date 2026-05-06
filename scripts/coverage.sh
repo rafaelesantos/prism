@@ -42,7 +42,10 @@ if [ -z "$REPORT" ]; then
     exit 1
 fi
 
-TOTAL=$(echo "$REPORT" | grep '^TOTAL' | awk '{print $NF}' | tr -d '%')
+TOTAL_LINE=$(echo "$REPORT" | grep '^TOTAL')
+echo "DEBUG llvm-cov TOTAL line: $TOTAL_LINE"
+
+TOTAL=$(echo "$TOTAL_LINE" | grep -oE '[0-9]+\.[0-9]+%' | tail -1 | tr -d '%')
 
 if [ -z "$TOTAL" ]; then
     echo "Could not extract coverage percentage."
