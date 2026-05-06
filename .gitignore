@@ -4,6 +4,7 @@
 DerivedData/
 *.xcresult
 .build/test-results.xml
+docs-output/
 
 # === SPM ===
 .swiftpm/configuration/registries.json
