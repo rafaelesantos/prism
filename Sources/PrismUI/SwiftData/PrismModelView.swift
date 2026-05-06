@@ -1,6 +1,6 @@
 #if canImport(SwiftData)
-    import SwiftUI
     import SwiftData
+    import SwiftUI
 
     @MainActor
     public struct PrismModelView<Model: PersistentModel>: View {

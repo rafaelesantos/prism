@@ -128,7 +128,6 @@ struct PrismRAGConfigTests {
 // MARK: - Vision Classification Tests
 
 #if canImport(Vision)
-
     @Suite("PrismVisionClassifier")
     struct PrismVisionClassifierTests {
         @Test("Classification result stores label and confidence")
@@ -151,7 +150,6 @@ struct PrismRAGConfigTests {
 // MARK: - NLP Tests
 
 #if canImport(NaturalLanguage)
-
     @Suite("PrismNLPActions")
     struct PrismNLPActionsTests {
         @Test("Sentiment has 4 cases")

@@ -40,8 +40,8 @@ public enum PrismAppClipExperience: Sendable {
 #if canImport(AppClip) && canImport(UIKit)
     import AppClip
     import CoreLocation
-    import UIKit
     import StoreKit
+    import UIKit
 
     public final class PrismAppClipClient: Sendable {
 

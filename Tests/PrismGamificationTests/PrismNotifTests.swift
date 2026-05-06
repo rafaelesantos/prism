@@ -71,7 +71,9 @@
             if case .daily(let h, let m) = req.trigger {
                 #expect(h == 8)
                 #expect(m == 0)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
     }
 
@@ -118,7 +120,9 @@
             if case .daily(let h, let m) = req.trigger {
                 #expect(h == 9)
                 #expect(m == 15)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
     }
 
@@ -163,7 +167,9 @@
             if case .timeInterval(let s, let rep) = req.trigger {
                 #expect(s == 7200)
                 #expect(rep == true)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
     }
 

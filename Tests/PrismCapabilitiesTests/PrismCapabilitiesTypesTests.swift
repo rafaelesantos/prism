@@ -6,7 +6,6 @@ import Testing
 // MARK: - Bluetooth Types Tests
 
 #if canImport(CoreBluetooth)
-
     @Suite("PrismBluetoothState")
     struct PrismBluetoothStateTypesTests {
 
@@ -145,7 +144,6 @@ import Testing
 // MARK: - Motion Types Tests
 
 #if canImport(CoreMotion)
-
     @Suite("PrismAccelerometerData")
     struct PrismAccelerometerDataTypesTests {
 
@@ -286,7 +284,6 @@ import Testing
 // MARK: - Camera Types Tests
 
 #if canImport(AVFoundation)
-
     @Suite("PrismCameraPosition")
     struct PrismCameraPositionTypesTests {
 

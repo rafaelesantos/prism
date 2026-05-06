@@ -157,20 +157,28 @@
         func conditions() {
             if case .challengeCompleted(let id) = TB.starter.condition {
                 #expect(id == "firstLogin")
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
 
             if case .pointsReached(let t) = TB.scorer.condition {
                 #expect(t == 30)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
 
             if case .streakReached(let id, let d) = TB.streaker.condition {
                 #expect(id == "daily")
                 #expect(d == 3)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
 
             if case .custom(let id) = TB.custom.condition {
                 #expect(id == "special")
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("default iconName nil")

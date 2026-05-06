@@ -1,6 +1,6 @@
 #if canImport(CryptoKit)
-    import Foundation
     import CryptoKit
+    import Foundation
 
     public enum PrismJWTAlgorithm: String, Sendable, Codable {
         case hs256 = "HS256"

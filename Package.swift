@@ -220,5 +220,5 @@ let package = Package(
 // MARK: - Swift Settings
 
 private let swiftSettings: [SwiftSetting] = [
-    .enableExperimentalFeature("StrictConcurrency"),
+    .enableExperimentalFeature("StrictConcurrency")
 ]

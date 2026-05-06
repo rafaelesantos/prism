@@ -202,7 +202,9 @@
             {
                 #expect(id == "t")
                 #expect(pts == 10)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("progressed")
@@ -213,7 +215,9 @@
                 #expect(id == "x")
                 #expect(c == 3)
                 #expect(g == 10)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("streakExtended")
@@ -223,7 +227,9 @@
             {
                 #expect(id == "d")
                 #expect(s == 5)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("streakBroken")
@@ -233,7 +239,9 @@
             {
                 #expect(id == "d")
                 #expect(p == 7)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("newRecord")
@@ -243,7 +251,9 @@
             {
                 #expect(id == "d")
                 #expect(l == 30)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("badgeUnlocked")
@@ -253,7 +263,9 @@
             {
                 #expect(id == "starter")
                 #expect(tier == "bronze")
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
 
         @Test("leaderboardUpdated")
@@ -263,7 +275,9 @@
             {
                 #expect(uid == "u1")
                 #expect(rank == 3)
-            } else { #expect(Bool(false)) }
+            } else {
+                #expect(Bool(false))
+            }
         }
     }
 

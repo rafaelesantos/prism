@@ -21,7 +21,11 @@ public protocol PrismChainableMiddleware: Sendable {
 public struct PrismLoggingMiddleware: PrismChainableMiddleware, Sendable {
     private let logger: @Sendable (String) -> Void
 
-    public init(logger: @escaping @Sendable (String) -> Void = { os.Logger(subsystem: "com.prism.architecture", category: "middleware").debug("\($0)") }) {
+    public init(
+        logger: @escaping @Sendable (String) -> Void = {
+            os.Logger(subsystem: "com.prism.architecture", category: "middleware").debug("\($0)")
+        }
+    ) {
         self.logger = logger
     }
 

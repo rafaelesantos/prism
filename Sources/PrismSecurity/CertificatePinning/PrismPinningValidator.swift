@@ -108,8 +108,8 @@ public actor PrismPinningValidator {
 
     private func extractPublicKeyHash(from trust: SecTrust) -> String? {
         guard SecTrustGetCertificateCount(trust) > 0,
-              let certificate = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
-              let leaf = certificate.first
+            let certificate = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
+            let leaf = certificate.first
         else { return nil }
 
         guard let publicKey = SecCertificateCopyKey(leaf) else { return nil }

@@ -1,10 +1,10 @@
+import Foundation
+
 #if canImport(UIKit)
     import UIKit
 #elseif canImport(AppKit)
     import AppKit
 #endif
-
-import Foundation
 
 public final class PrismClipboardGuard: @unchecked Sendable {
     private let clearAfter: TimeInterval

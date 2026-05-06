@@ -9,7 +9,7 @@ public enum PrismBadgeTier: String, Codable, Sendable, CaseIterable, Comparable 
 
     public static func < (lhs: Self, rhs: Self) -> Bool {
         guard let l = allCases.firstIndex(of: lhs),
-              let r = allCases.firstIndex(of: rhs)
+            let r = allCases.firstIndex(of: rhs)
         else { return false }
         return l < r
     }

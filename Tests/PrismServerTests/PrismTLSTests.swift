@@ -1,6 +1,7 @@
 #if canImport(Network)
-    import Testing
     import Foundation
+    import Testing
+
     @testable import PrismServer
 
     @Suite("PrismTLSConfiguration Tests")

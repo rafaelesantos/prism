@@ -1,5 +1,6 @@
 #if canImport(CoreLocation)
     import CoreLocation
+
     #if canImport(MapKit)
         import MapKit
     #endif

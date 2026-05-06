@@ -1,6 +1,7 @@
 #if canImport(SQLite3)
-    import Testing
     import Foundation
+    import Testing
+
     @testable import PrismServer
 
     @Suite("PrismQueryBuilder Tests")

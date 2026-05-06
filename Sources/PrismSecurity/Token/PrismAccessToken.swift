@@ -36,9 +36,11 @@ public struct PrismAccessToken: Sendable, Equatable {
         let headerDict = (try? JSONSerialization.jsonObject(with: headerJSON)) as? [String: String] ?? [:]
         let payloadDict = (try? JSONSerialization.jsonObject(with: payloadJSON)) as? [String: Any] ?? [:]
 
-        let exp: Date? = (payloadDict["exp"] as? TimeInterval).map { Date(timeIntervalSince1970: $0) }
+        let exp: Date? =
+            (payloadDict["exp"] as? TimeInterval).map { Date(timeIntervalSince1970: $0) }
             ?? (payloadDict["exp"] as? Int).map { Date(timeIntervalSince1970: TimeInterval($0)) }
-        let iat: Date? = (payloadDict["iat"] as? TimeInterval).map { Date(timeIntervalSince1970: $0) }
+        let iat: Date? =
+            (payloadDict["iat"] as? TimeInterval).map { Date(timeIntervalSince1970: $0) }
             ?? (payloadDict["iat"] as? Int).map { Date(timeIntervalSince1970: TimeInterval($0)) }
         let sub = payloadDict["sub"] as? String
         let iss = payloadDict["iss"] as? String
@@ -66,7 +68,8 @@ public struct PrismAccessToken: Sendable, Equatable {
     }
 
     private static func decodeBase64URL(_ string: String) throws -> Data {
-        var base64 = string
+        var base64 =
+            string
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         let remainder = base64.count % 4

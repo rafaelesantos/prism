@@ -1,6 +1,6 @@
 #if canImport(CommonCrypto)
-    import Foundation
     import CommonCrypto
+    import Foundation
 
     public enum PrismPasswordHashingError: Error, Sendable {
         case hashingFailed

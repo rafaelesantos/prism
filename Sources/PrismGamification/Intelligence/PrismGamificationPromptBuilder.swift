@@ -80,8 +80,11 @@ public struct PrismGamificationPromptBuilder: Sendable {
         if let rank = ctx.rank { parts.append("The user is now ranked #\(rank).") }
         if let prev = ctx.previousRank, let rank = ctx.rank {
             let diff = prev - rank
-            if diff > 0 { parts.append("They moved up \(diff) position(s).") }
-            else if diff < 0 { parts.append("They dropped \(abs(diff)) position(s).") }
+            if diff > 0 {
+                parts.append("They moved up \(diff) position(s).")
+            } else if diff < 0 {
+                parts.append("They dropped \(abs(diff)) position(s).")
+            }
         }
         if let score = ctx.score { parts.append("Score: \(score).") }
         parts.append("Write a leaderboard update message.")

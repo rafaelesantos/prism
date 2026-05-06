@@ -1,6 +1,6 @@
 #if canImport(SwiftData)
-    import SwiftUI
     import SwiftData
+    import SwiftUI
 
     public enum PrismSyncState: Sendable, Equatable {
         case idle

@@ -148,10 +148,13 @@ public actor PrismDiskStore: PrismAsyncStorageProtocol {
         let contents = try fileManager.contentsOfDirectory(
             at: baseDirectory, includingPropertiesForKeys: nil
         )
-        return contents
+        return
+            contents
             .filter { $0.pathExtension == "json" }
-            .compactMap { $0.deletingPathExtension().lastPathComponent
-                .removingPercentEncoding }
+            .compactMap {
+                $0.deletingPathExtension().lastPathComponent
+                    .removingPercentEncoding
+            }
     }
 
     // MARK: - TTL

@@ -56,18 +56,18 @@
             case .contacts:
                 mapCNStatus(CNContactStore.authorizationStatus(for: .contacts))
             #if canImport(EventKit)
-            case .calendars:
-                mapEKStatus(EKEventStore.authorizationStatus(for: .event))
-            case .reminders:
-                mapEKStatus(EKEventStore.authorizationStatus(for: .reminder))
+                case .calendars:
+                    mapEKStatus(EKEventStore.authorizationStatus(for: .event))
+                case .reminders:
+                    mapEKStatus(EKEventStore.authorizationStatus(for: .reminder))
             #endif
             #if canImport(Speech)
-            case .speechRecognition:
-                mapSpeechStatus(SFSpeechRecognizer.authorizationStatus())
+                case .speechRecognition:
+                    mapSpeechStatus(SFSpeechRecognizer.authorizationStatus())
             #endif
             #if canImport(LocalAuthentication)
-            case .faceID:
-                checkBiometricStatus()
+                case .faceID:
+                    checkBiometricStatus()
             #endif
             default:
                 .notDetermined
@@ -92,26 +92,26 @@
             case .contacts:
                 return try await requestContacts()
             #if canImport(EventKit)
-            case .calendars:
-                return try await requestEventKit(.event)
-            case .reminders:
-                return try await requestEventKit(.reminder)
+                case .calendars:
+                    return try await requestEventKit(.event)
+                case .reminders:
+                    return try await requestEventKit(.reminder)
             #endif
             #if canImport(UserNotifications)
-            case .notifications:
-                return try await requestNotifications()
+                case .notifications:
+                    return try await requestNotifications()
             #endif
             #if canImport(Speech)
-            case .speechRecognition:
-                return await requestSpeechRecognition()
+                case .speechRecognition:
+                    return await requestSpeechRecognition()
             #endif
             #if canImport(AppTrackingTransparency)
-            case .tracking:
-                return await requestTracking()
+                case .tracking:
+                    return await requestTracking()
             #endif
             #if canImport(LocalAuthentication)
-            case .faceID:
-                return try await requestBiometric()
+                case .faceID:
+                    return try await requestBiometric()
             #endif
             default:
                 throw PrismSecurityError.permissionNotAvailable(permission.rawValue)

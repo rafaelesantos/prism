@@ -1,6 +1,7 @@
 #if canImport(CommonCrypto)
-    import Testing
     import Foundation
+    import Testing
+
     @testable import PrismServer
 
     @Suite("PrismPBKDF2Hasher Tests")

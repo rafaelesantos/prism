@@ -493,7 +493,7 @@ struct GamIntTests {
         mock.shouldThrow = true
         let intel = PrismGamificationIntelligence(provider: mock)
         let items: [(kind: PrismGamificationMessageKind, context: PrismGamificationContext)] = [
-            (.challengeCompleted, PrismGamificationContext(entityID: "a")),
+            (.challengeCompleted, PrismGamificationContext(entityID: "a"))
         ]
         let msgs = await intel.generateMessages(items)
         #expect(msgs.isEmpty)

@@ -31,7 +31,7 @@ struct PrismSecurityEventTests {
     func equality() {
         let e1 = PrismSecurityEvent(kind: .biometricSuccess, detail: "ok")
         let e2 = PrismSecurityEvent(kind: .biometricSuccess, detail: "ok")
-        #expect(e1 != e2) // different IDs
+        #expect(e1 != e2)  // different IDs
     }
 }
 

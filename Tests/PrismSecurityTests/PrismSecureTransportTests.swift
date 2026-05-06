@@ -23,7 +23,7 @@ struct PrismKeyAgreementTests {
     func publicKeyExport() {
         let ka = PrismKeyAgreement()
         #expect(!ka.publicKeyData.isEmpty)
-        #expect(ka.publicKeyData.count == 64) // P256 raw = 64 bytes
+        #expect(ka.publicKeyData.count == 64)  // P256 raw = 64 bytes
     }
 
     @Test("Different salt produces different key")

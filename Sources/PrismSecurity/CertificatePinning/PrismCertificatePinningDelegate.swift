@@ -19,7 +19,7 @@ public final class PrismCertificatePinningDelegate: NSObject, URLSessionDelegate
         didReceive challenge: URLAuthenticationChallenge
     ) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-              let serverTrust = challenge.protectionSpace.serverTrust
+            let serverTrust = challenge.protectionSpace.serverTrust
         else {
             return (.performDefaultHandling, nil)
         }
@@ -54,9 +54,9 @@ public final class PrismCertificatePinningDelegate: NSObject, URLSessionDelegate
 
     private static func extractPublicKeyHash(from trust: SecTrust) -> String? {
         guard SecTrustGetCertificateCount(trust) > 0,
-              let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
-              let leaf = chain.first,
-              let publicKey = SecCertificateCopyKey(leaf)
+            let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
+            let leaf = chain.first,
+            let publicKey = SecCertificateCopyKey(leaf)
         else { return nil }
 
         var error: Unmanaged<CFError>?

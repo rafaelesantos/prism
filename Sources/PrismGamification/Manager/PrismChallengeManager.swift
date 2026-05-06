@@ -64,11 +64,12 @@
                 record.completedAt = .now
                 eventContinuation.yield(.completed(challengeID: challenge.rawValue, points: challenge.points))
             } else {
-                eventContinuation.yield(.progressed(
-                    challengeID: challenge.rawValue,
-                    currentValue: record.currentValue,
-                    goalValue: record.goalValue
-                ))
+                eventContinuation.yield(
+                    .progressed(
+                        challengeID: challenge.rawValue,
+                        currentValue: record.currentValue,
+                        goalValue: record.goalValue
+                    ))
             }
 
             try modelContext.save()

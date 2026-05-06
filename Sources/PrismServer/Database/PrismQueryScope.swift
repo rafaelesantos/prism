@@ -1,19 +1,19 @@
 #if canImport(SQLite3)
-import Foundation
+    import Foundation
 
-public struct PrismQueryScope: Sendable {
-    public let name: String
-    public let apply: @Sendable (PrismQueryBuilder) -> PrismQueryBuilder
+    public struct PrismQueryScope: Sendable {
+        public let name: String
+        public let apply: @Sendable (PrismQueryBuilder) -> PrismQueryBuilder
 
-    public init(name: String, apply: @escaping @Sendable (PrismQueryBuilder) -> PrismQueryBuilder) {
-        self.name = name
-        self.apply = apply
+        public init(name: String, apply: @escaping @Sendable (PrismQueryBuilder) -> PrismQueryBuilder) {
+            self.name = name
+            self.apply = apply
+        }
     }
-}
 
-extension PrismQueryBuilder {
-    public func scope(_ scope: PrismQueryScope) -> PrismQueryBuilder {
-        scope.apply(self)
+    extension PrismQueryBuilder {
+        public func scope(_ scope: PrismQueryScope) -> PrismQueryBuilder {
+            scope.apply(self)
+        }
     }
-}
 #endif

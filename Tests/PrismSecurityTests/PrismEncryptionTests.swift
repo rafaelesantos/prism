@@ -148,7 +148,7 @@ struct PrismHasherTests {
     func hexFormat() {
         let hasher = PrismHasher()
         let hex = hasher.hashHex("test")
-        #expect(hex.count == 64) // 32 bytes = 64 hex chars
+        #expect(hex.count == 64)  // 32 bytes = 64 hex chars
         #expect(hex.allSatisfy { "0123456789abcdef".contains($0) })
     }
 

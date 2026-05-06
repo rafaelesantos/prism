@@ -1,7 +1,7 @@
 #if canImport(Network)
+    import CryptoKit
     import Foundation
     import Network
-    import CryptoKit
 
     public enum PrismWebSocketOpcode: UInt8, Sendable {
         case continuation = 0x0

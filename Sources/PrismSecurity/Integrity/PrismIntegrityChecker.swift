@@ -20,7 +20,8 @@ public struct PrismIntegrityChecker: Sendable {
             violations.append(PrismIntegrityViolation(kind: .simulator, detail: "Running in simulator"))
         }
         if hasReverseEngineeringTools() {
-            violations.append(PrismIntegrityViolation(kind: .reverseEngineering, detail: "Reverse engineering tools detected"))
+            violations.append(
+                PrismIntegrityViolation(kind: .reverseEngineering, detail: "Reverse engineering tools detected"))
         }
 
         return violations

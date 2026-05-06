@@ -1,5 +1,6 @@
 #if canImport(PassKit)
     import PassKit
+
     #if canImport(AppKit)
         import AppKit
     #endif

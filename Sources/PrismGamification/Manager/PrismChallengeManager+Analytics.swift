@@ -32,7 +32,8 @@
             let rate = started > 0 ? Double(completedCount) / Double(started) : 0
 
             let durations = completed.compactMap(\.completionDuration)
-            let avgDuration: TimeInterval? = durations.isEmpty
+            let avgDuration: TimeInterval? =
+                durations.isEmpty
                 ? nil
                 : durations.reduce(0, +) / Double(durations.count)
 

@@ -26,7 +26,8 @@ public struct PrismStorageMigrator: Sendable {
     @discardableResult
     public func migrate(steps: [PrismMigrationStep]) throws -> Int {
         let current = currentVersion
-        let pending = steps
+        let pending =
+            steps
             .filter { $0.version > current }
             .sorted { $0.version < $1.version }
 

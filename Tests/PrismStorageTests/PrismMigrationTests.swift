@@ -22,7 +22,7 @@ struct PrismStorageMigrationTests {
         let steps = [
             PrismMigrationStep(version: 1) { s in
                 try s.save("migrated", forKey: "flag")
-            },
+            }
         ]
         let version = try migrator.migrate(steps: steps)
         #expect(version == 1)
@@ -57,15 +57,16 @@ struct PrismStorageMigrationTests {
         let step1 = [
             PrismMigrationStep(version: 1) { s in
                 try s.save("v1", forKey: "data")
-            },
+            }
         ]
         try migrator.migrate(steps: step1)
 
-        let allSteps = step1 + [
-            PrismMigrationStep(version: 2) { s in
-                try s.save("v2", forKey: "data")
-            },
-        ]
+        let allSteps =
+            step1 + [
+                PrismMigrationStep(version: 2) { s in
+                    try s.save("v2", forKey: "data")
+                }
+            ]
         let version = try migrator.migrate(steps: allSteps)
         #expect(version == 2)
         #expect(try store.load(String.self, forKey: "data") == "v2")
@@ -75,7 +76,7 @@ struct PrismStorageMigrationTests {
     func noPending() throws {
         let (migrator, _) = makeMigrator()
         let steps = [
-            PrismMigrationStep(version: 1) { _ in },
+            PrismMigrationStep(version: 1) { _ in }
         ]
         try migrator.migrate(steps: steps)
         let version = try migrator.migrate(steps: steps)
@@ -87,7 +88,7 @@ struct PrismStorageMigrationTests {
         let (migrator, _) = makeMigrator()
         #expect(migrator.needsMigration(latestVersion: 1))
         try migrator.migrate(steps: [
-            PrismMigrationStep(version: 1) { _ in },
+            PrismMigrationStep(version: 1) { _ in }
         ])
         #expect(!migrator.needsMigration(latestVersion: 1))
         #expect(migrator.needsMigration(latestVersion: 2))
@@ -97,7 +98,7 @@ struct PrismStorageMigrationTests {
     func resetVersion() throws {
         let (migrator, _) = makeMigrator()
         try migrator.migrate(steps: [
-            PrismMigrationStep(version: 1) { _ in },
+            PrismMigrationStep(version: 1) { _ in }
         ])
         #expect(migrator.currentVersion == 1)
         try migrator.reset()
