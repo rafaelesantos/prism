@@ -1,17 +1,11 @@
 import SwiftUI
 
-/// A single emoji reaction with usage count and selection state.
 public struct PrismReaction: Identifiable, Sendable, Equatable {
-    /// Stable identifier derived from the emoji character.
     public var id: String { emoji }
-    /// The emoji character representing this reaction.
     public let emoji: String
-    /// How many users chose this reaction.
     public var count: Int
-    /// Whether the current user selected this reaction.
     public var isSelected: Bool
 
-    /// Creates a reaction with the given emoji and initial state.
     public init(emoji: String, count: Int = 0, isSelected: Bool = false) {
         self.emoji = emoji
         self.count = count
@@ -19,7 +13,6 @@ public struct PrismReaction: Identifiable, Sendable, Equatable {
     }
 }
 
-/// A horizontal emoji strip that lets users pick a reaction with a pop-in animation.
 @MainActor
 public struct PrismReactionPicker: View {
     @Environment(\.prismTheme) private var theme
@@ -29,7 +22,6 @@ public struct PrismReactionPicker: View {
 
     @State private var appeared = false
 
-    /// Creates a picker from a list of emoji strings.
     public init(
         emojis: [String] = ["👍", "❤️", "😂", "😮", "😢", "🙏"],
         onSelect: @escaping (String) -> Void
@@ -38,7 +30,6 @@ public struct PrismReactionPicker: View {
         self.onSelect = onSelect
     }
 
-    /// The reaction picker view body with staggered pop-in animation.
     public var body: some View {
         HStack(spacing: SpacingToken.sm.rawValue) {
             ForEach(Array(emojis.enumerated()), id: \.offset) { index, emoji in
@@ -66,7 +57,6 @@ public struct PrismReactionPicker: View {
     }
 }
 
-/// Displays emoji reactions below a message with counts and selection highlighting.
 @MainActor
 public struct PrismReactionBar: View {
     @Environment(\.prismTheme) private var theme
@@ -74,13 +64,11 @@ public struct PrismReactionBar: View {
     @Binding private var reactions: [PrismReaction]
     private let onLongPress: (() -> Void)?
 
-    /// Creates a reaction bar bound to a list of reactions.
     public init(reactions: Binding<[PrismReaction]>, onLongPress: (() -> Void)? = nil) {
         self._reactions = reactions
         self.onLongPress = onLongPress
     }
 
-    /// The reaction bar view body with toggleable emoji chips.
     public var body: some View {
         if !reactions.isEmpty {
             HStack(spacing: SpacingToken.xs.rawValue) {

@@ -1,41 +1,29 @@
 import Foundation
 
-/// Decoded JWT access token with claim inspection (no signature verification — client-side only).
 public struct PrismAccessToken: Sendable, Equatable {
-    /// Raw JWT string.
     public let rawToken: String
-    /// Decoded header.
     public let header: [String: String]
-    /// Raw payload JSON data.
     public let payloadData: Data
-    /// Token expiration date (from `exp` claim).
     public let expiresAt: Date?
-    /// Token issued-at date (from `iat` claim).
     public let issuedAt: Date?
-    /// Subject claim.
     public let subject: String?
-    /// Issuer claim.
     public let issuer: String?
 
-    /// Whether the token has expired.
     public var isExpired: Bool {
         guard let expiresAt else { return false }
         return Date.now >= expiresAt
     }
 
-    /// Whether the token will expire within the given interval.
     public func expiresWithin(_ interval: TimeInterval) -> Bool {
         guard let expiresAt else { return false }
         return Date.now.addingTimeInterval(interval) >= expiresAt
     }
 
-    /// Time remaining until expiration.
     public var timeUntilExpiry: TimeInterval? {
         guard let expiresAt else { return nil }
         return expiresAt.timeIntervalSinceNow
     }
 
-    /// Decodes a JWT string into an access token (no signature verification).
     public static func decode(_ jwt: String) throws -> PrismAccessToken {
         let parts = jwt.components(separatedBy: ".")
         guard parts.count == 3 else {
@@ -66,7 +54,6 @@ public struct PrismAccessToken: Sendable, Equatable {
         )
     }
 
-    /// Gets a typed claim value by key from the payload.
     public func claim<T>(_ key: String) -> T? {
         guard let dict = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] else {
             return nil
@@ -74,7 +61,6 @@ public struct PrismAccessToken: Sendable, Equatable {
         return dict[key] as? T
     }
 
-    /// All payload claims as a dictionary.
     public var claims: [String: Any] {
         (try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any]) ?? [:]
     }

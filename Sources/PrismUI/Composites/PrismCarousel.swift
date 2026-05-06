@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Paged horizontal carousel with optional page indicators.
 public struct PrismCarousel<Data: RandomAccessCollection, Content: View>: View
 where Data.Element: Identifiable {
     private let data: Data
@@ -10,7 +9,6 @@ where Data.Element: Identifiable {
 
     @State private var currentIndex = 0
 
-    /// Creates a paged carousel with optional page indicators.
     public init(
         _ data: Data,
         spacing: SpacingToken = .md,
@@ -23,7 +21,6 @@ where Data.Element: Identifiable {
         self.content = content
     }
 
-    /// The carousel view body with paged horizontal scroll and indicators.
     public var body: some View {
         VStack(spacing: SpacingToken.sm.rawValue) {
             ScrollView(.horizontal) {

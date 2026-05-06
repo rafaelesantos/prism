@@ -1,35 +1,15 @@
 import SwiftUI
 
-/// Declarative keyframe animation builder using SwiftUI's KeyframeAnimator.
-///
-/// ```swift
-/// PrismKeyframeView(trigger: showItem) { value in
-///     Text("Hello")
-///         .scaleEffect(value.scale)
-///         .opacity(value.opacity)
-/// } keyframes: {
-///     PrismKeyframeView.Keyframe(at: 0, scale: 0.5, opacity: 0)
-///     PrismKeyframeView.Keyframe(at: 0.3, scale: 1.1, opacity: 1)
-///     PrismKeyframeView.Keyframe(at: 0.5, scale: 1, opacity: 1)
-/// }
-/// ```
 @MainActor
 public struct PrismKeyframeView<Content: View>: View {
 
-    /// Animatable values tracked across keyframe interpolation.
     public struct Values: Sendable {
-        /// Scale factor applied to the content.
         public var scale: Double
-        /// Opacity level of the content.
         public var opacity: Double
-        /// Horizontal offset in points.
         public var offsetX: Double
-        /// Vertical offset in points.
         public var offsetY: Double
-        /// Rotation angle in degrees.
         public var rotation: Double
 
-        /// Creates keyframe values with the given transform properties.
         public init(
             scale: Double = 1,
             opacity: Double = 1,
@@ -49,7 +29,6 @@ public struct PrismKeyframeView<Content: View>: View {
     private let content: (Values) -> Content
     private let frames: [KeyframeFrame]
 
-    /// Creates a keyframe animation view triggered by a boolean change.
     public init(
         trigger: Bool,
         @ViewBuilder content: @escaping (Values) -> Content,
@@ -60,7 +39,6 @@ public struct PrismKeyframeView<Content: View>: View {
         self.frames = frames()
     }
 
-    /// The keyframe-animated view body driven by the trigger boolean.
     public var body: some View {
         KeyframeAnimator(
             initialValue: frames.first.map {
@@ -103,22 +81,14 @@ public struct PrismKeyframeView<Content: View>: View {
 
 extension PrismKeyframeView {
 
-    /// A single frame in a keyframe animation sequence.
     public struct KeyframeFrame: Sendable {
-        /// Duration of this keyframe segment in seconds.
         public let duration: Double
-        /// Scale factor at this keyframe.
         public let scale: Double
-        /// Opacity at this keyframe.
         public let opacity: Double
-        /// Horizontal offset at this keyframe.
         public let offsetX: Double
-        /// Vertical offset at this keyframe.
         public let offsetY: Double
-        /// Rotation angle in degrees at this keyframe.
         public let rotation: Double
 
-        /// Creates a keyframe frame with the given transform values and duration.
         public init(
             duration: Double = 0.3,
             scale: Double = 1,
@@ -137,10 +107,8 @@ extension PrismKeyframeView {
     }
 }
 
-/// Preset keyframe sequences.
 extension PrismKeyframeView {
 
-    /// Returns a pop-in keyframe sequence with overshoot bounce.
     public static func popIn() -> [KeyframeFrame] {
         [
             KeyframeFrame(duration: 0, scale: 0.3, opacity: 0),
@@ -150,7 +118,6 @@ extension PrismKeyframeView {
         ]
     }
 
-    /// Returns a drop-in keyframe sequence that falls from above.
     public static func dropIn() -> [KeyframeFrame] {
         [
             KeyframeFrame(duration: 0, scale: 0.8, opacity: 0, offsetY: -40),
@@ -159,7 +126,6 @@ extension PrismKeyframeView {
         ]
     }
 
-    /// Returns a flip-in keyframe sequence with rotation entrance.
     public static func flipIn() -> [KeyframeFrame] {
         [
             KeyframeFrame(duration: 0, scale: 0.5, opacity: 0, rotation: -15),
@@ -168,7 +134,6 @@ extension PrismKeyframeView {
         ]
     }
 
-    /// Returns a heartbeat keyframe sequence with pulsing scale.
     public static func heartbeat() -> [KeyframeFrame] {
         [
             KeyframeFrame(duration: 0, scale: 1),

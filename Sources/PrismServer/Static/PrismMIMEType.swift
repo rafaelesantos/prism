@@ -1,6 +1,5 @@
 import Foundation
 
-/// MIME type resolution for common file extensions.
 public struct PrismMIMEType: Sendable {
 
     private static let types: [String: String] = [
@@ -60,7 +59,6 @@ public struct PrismMIMEType: Sendable {
         "map": "application/json",
     ]
 
-    /// Returns the MIME type for a file extension, defaulting to application/octet-stream.
     public static func forExtension(_ ext: String) -> String {
         types[ext.lowercased()] ?? "application/octet-stream"
     }

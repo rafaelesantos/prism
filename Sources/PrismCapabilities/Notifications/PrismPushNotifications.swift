@@ -8,68 +8,43 @@
 
     // MARK: - Permission
 
-    /// The current notification permission status.
     public enum PrismNotificationPermission: Sendable, CaseIterable {
-        /// The user has not yet been asked for notification permission.
         case notDetermined
-        /// The user has denied notification permission.
         case denied
-        /// The user has granted full notification permission.
         case authorized
-        /// Notifications are delivered quietly without interrupting the user.
         case provisional
-        /// Notifications are authorized for a limited time (e.g., App Clips).
         case ephemeral
     }
 
     // MARK: - Notification Option
 
-    /// Options to request when asking for notification permissions.
     public enum PrismNotificationOption: Sendable {
-        /// Display alerts (banners, lock screen).
         case alert
-        /// Update the app icon badge number.
         case badge
-        /// Play a notification sound.
         case sound
-        /// Deliver notifications provisionally without explicit user permission.
         case provisional
-        /// Deliver critical alerts that bypass Do Not Disturb.
         case criticalAlert
     }
 
     // MARK: - Sound
 
-    /// The sound to play when a notification is delivered.
     public enum PrismNotificationSound: Sendable {
-        /// The system default notification sound.
         case default_
-        /// A custom sound file identified by name.
         case named(String)
-        /// The critical alert sound that plays even when the device is muted.
         case critical
     }
 
     // MARK: - Content
 
-    /// The content payload for a local notification.
     public struct PrismNotificationContent: Sendable {
-        /// The primary title text.
         public let title: String
-        /// The body text.
         public let body: String
-        /// The secondary subtitle text.
         public let subtitle: String?
-        /// The badge number to display on the app icon.
         public let badge: Int?
-        /// The notification sound.
         public let sound: PrismNotificationSound?
-        /// The category identifier for actionable notifications.
         public let categoryIdentifier: String?
-        /// Custom key-value pairs attached to the notification.
         public let userInfo: [String: String]
 
-        /// Creates notification content with the given title, body, and optional configuration.
         public init(
             title: String, body: String, subtitle: String? = nil, badge: Int? = nil,
             sound: PrismNotificationSound? = nil, categoryIdentifier: String? = nil, userInfo: [String: String] = [:]
@@ -86,34 +61,24 @@
 
     // MARK: - Trigger
 
-    /// Defines when a local notification should be delivered.
     public enum PrismNotificationTrigger: Sendable {
-        /// Deliver the notification immediately.
         case immediate
-        /// Deliver the notification after the specified time interval in seconds.
         case timeInterval(TimeInterval)
-        /// Deliver the notification at the date matching the given components.
         case calendar(DateComponents)
-        /// Deliver the notification when entering the specified geographic region.
         case location(latitude: Double, longitude: Double, radius: Double)
     }
 
     // MARK: - Push Notification Client
 
-    /// Observable client for managing local and remote push notifications.
     @MainActor @Observable
     public final class PrismPushNotificationClient {
-        /// The current notification permission status.
         public private(set) var permissionStatus: PrismNotificationPermission = .notDetermined
-        /// The device token for remote notifications, if registered.
         public var deviceToken: Data?
 
         private let center = UNUserNotificationCenter.current()
 
-        /// Creates a new push notification client.
         public init() {}
 
-        /// Requests notification permission with the specified options.
         public func requestPermission(options: [PrismNotificationOption]) async throws -> Bool {
             var authOptions: UNAuthorizationOptions = []
             for option in options {
@@ -130,7 +95,6 @@
             return granted
         }
 
-        /// Schedules a local notification with the given content, trigger, and identifier.
         public func scheduleLocal(
             content: PrismNotificationContent, trigger: PrismNotificationTrigger, identifier: String
         ) async throws {
@@ -173,17 +137,14 @@
             try await center.add(request)
         }
 
-        /// Removes delivered notifications with the specified identifiers.
         public func removeDelivered(identifiers: [String]) {
             center.removeDeliveredNotifications(withIdentifiers: identifiers)
         }
 
-        /// Removes pending notification requests with the specified identifiers.
         public func removePending(identifiers: [String]) {
             center.removePendingNotificationRequests(withIdentifiers: identifiers)
         }
 
-        /// Registers the app for remote push notifications.
         public func registerForRemoteNotifications() {
             #if canImport(UIKit)
                 UIApplication.shared.registerForRemoteNotifications()

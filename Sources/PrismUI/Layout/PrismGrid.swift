@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Responsive grid that adapts column count to available width.
 public struct PrismGrid<Data: RandomAccessCollection, Content: View>: View
 where Data.Element: Identifiable {
 
@@ -9,7 +8,6 @@ where Data.Element: Identifiable {
     private let spacing: SpacingToken
     private let content: (Data.Element) -> Content
 
-    /// Creates a responsive grid with the given data and minimum item width.
     public init(
         _ data: Data,
         minItemWidth: CGFloat = 280,
@@ -22,7 +20,6 @@ where Data.Element: Identifiable {
         self.content = content
     }
 
-    /// The content and behavior of the grid.
     public var body: some View {
         LazyVGrid(
             columns: [

@@ -1,18 +1,10 @@
 import SwiftUI
 
-/// Complete preview catalog covering every component in every state.
-///
-/// Drop any preview into an Xcode `#Preview` block:
-/// ```swift
-/// #Preview("Buttons") { PrismPreviews.buttons }
-/// #Preview("Cards") { PrismPreviews.cards }
-/// ```
 @MainActor
 public enum PrismPreviews {
 
     // MARK: - Primitives
 
-    /// Preview of all button variants and roles.
     public static var buttons: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -38,7 +30,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of text field styles and validation states.
     public static var textFields: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -58,7 +49,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of card styles and elevation levels.
     public static var cards: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -85,7 +75,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of tag styles across semantic categories.
     public static var tags: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -103,7 +92,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of avatar sizes and status indicators.
     public static var avatars: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -127,7 +115,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of loading, empty, and error states.
     public static var loadingStates: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -156,7 +143,6 @@ public enum PrismPreviews {
 
     // MARK: - Composites
 
-    /// Preview of banner styles across all feedback levels.
     public static var banners: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -171,7 +157,6 @@ public enum PrismPreviews {
         .prismTheme(DefaultTheme())
     }
 
-    /// Preview of search bar in empty and populated states.
     public static var searchBar: some View {
         VStack(spacing: 16) {
             sectionHeader("Search Bar")
@@ -184,7 +169,6 @@ public enum PrismPreviews {
 
     // MARK: - Forms
 
-    /// Preview of form controls including toggles, sliders, and secure fields.
     public static var forms: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -205,7 +189,6 @@ public enum PrismPreviews {
 
     // MARK: - Layout
 
-    /// Preview of layout primitives including adaptive stacks, sections, and dividers.
     public static var layout: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -236,7 +219,6 @@ public enum PrismPreviews {
 
     // MARK: - Tokens
 
-    /// Preview of all elevation token shadow levels.
     public static var elevationScale: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -258,7 +240,6 @@ public enum PrismPreviews {
         }
     }
 
-    /// Preview of all motion token durations.
     public static var motionScale: some View {
         VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Motion Tokens")
@@ -278,7 +259,6 @@ public enum PrismPreviews {
 
     // MARK: - Themes
 
-    /// Preview of all built-in themes side by side.
     public static var allThemes: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 16) {

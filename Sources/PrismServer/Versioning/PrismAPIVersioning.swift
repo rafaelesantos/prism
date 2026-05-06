@@ -1,24 +1,18 @@
 import Foundation
 
-/// Represents an API version with major and optional minor component.
 public struct PrismAPIVersion: Sendable, Comparable, Hashable, CustomStringConvertible {
-    /// The major.
     public let major: Int
-    /// The minor.
     public let minor: Int
 
-    /// Creates a new `PrismAPIVersion` with the specified configuration.
     public init(major: Int, minor: Int = 0) {
         self.major = major
         self.minor = minor
     }
 
-    /// The description.
     public var description: String {
         minor == 0 ? "v\(major)" : "v\(major).\(minor)"
     }
 
-    /// Parses a version string like "v1", "v1.2", "1", "1.2".
     public static func parse(_ string: String) -> PrismAPIVersion? {
         let trimmed =
             string.hasPrefix("v") || string.hasPrefix("V")
@@ -30,27 +24,23 @@ public struct PrismAPIVersion: Sendable, Comparable, Hashable, CustomStringConve
         return PrismAPIVersion(major: major, minor: minor)
     }
 
-    /// Compares two API versions using semantic versioning order.
     public static func < (lhs: PrismAPIVersion, rhs: PrismAPIVersion) -> Bool {
         if lhs.major != rhs.major { return lhs.major < rhs.major }
         return lhs.minor < rhs.minor
     }
 }
 
-/// Strategy for extracting the API version from a request.
 public enum PrismVersioningStrategy: Sendable {
     case urlPrefix
     case header(String = "Accept-Version")
     case queryParam(String = "version")
 }
 
-/// Middleware that extracts API version from the request.
 public struct PrismVersioningMiddleware: PrismMiddleware, Sendable {
     private let strategy: PrismVersioningStrategy
     private let supportedVersions: [PrismAPIVersion]
     private let defaultVersion: PrismAPIVersion
 
-    /// Creates a new `PrismVersioningMiddleware` with the specified configuration.
     public init(
         strategy: PrismVersioningStrategy = .urlPrefix,
         supportedVersions: [PrismAPIVersion],
@@ -61,7 +51,6 @@ public struct PrismVersioningMiddleware: PrismMiddleware, Sendable {
         self.defaultVersion = defaultVersion
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         var req = request
@@ -112,23 +101,19 @@ public struct PrismVersioningMiddleware: PrismMiddleware, Sendable {
 }
 
 extension PrismHTTPRequest {
-    /// The API version extracted by PrismVersioningMiddleware.
     public var apiVersion: PrismAPIVersion? {
         userInfo["apiVersion"].flatMap(PrismAPIVersion.parse)
     }
 }
 
-/// Routes requests to version-specific handlers.
 public struct PrismVersionedRouter: Sendable {
     private var routes:
         [(version: PrismAPIVersion, method: PrismHTTPMethod, pattern: String, handler: PrismRouteHandler)]
 
-    /// Creates a new `PrismVersionedRouter`.
     public init() {
         self.routes = []
     }
 
-    /// Registers a handler for a specific API version.
     public mutating func route(
         version: PrismAPIVersion,
         _ method: PrismHTTPMethod,
@@ -138,7 +123,6 @@ public struct PrismVersionedRouter: Sendable {
         routes.append((version, method, pattern, handler))
     }
 
-    /// Finds and invokes the handler matching the request's version, method, and path.
     public func handle(_ request: PrismHTTPRequest) async throws -> PrismHTTPResponse? {
         let version = request.apiVersion
         for route in routes {

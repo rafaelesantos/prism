@@ -1,9 +1,7 @@
 import Foundation
 
-/// Static fallback messages when AI generation is unavailable.
 public enum PrismGamificationFallbacks: Sendable {
 
-    /// Returns a static fallback message for the given kind and context.
     public static func message(
         for kind: PrismGamificationMessageKind,
         context: PrismGamificationContext

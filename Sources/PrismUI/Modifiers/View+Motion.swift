@@ -2,7 +2,6 @@ import SwiftUI
 
 extension View {
 
-    /// Applies an animation that respects the "Reduce Motion" accessibility setting.
     public func prismAnimation(
         _ token: MotionToken,
         value: some Equatable
@@ -10,7 +9,6 @@ extension View {
         modifier(ReduceMotionAnimationModifier(token: token, value: value))
     }
 
-    /// Wraps content in a transition that respects "Reduce Motion".
     public func prismTransition(_ transition: AnyTransition, motion: MotionToken = .normal) -> some View {
         self.transition(transition)
             .animation(motion.animation, value: UUID())

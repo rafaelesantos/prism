@@ -1,18 +1,15 @@
 import Foundation
 import Security
 
-/// Full-featured keychain wrapper for storing, retrieving, and managing sensitive data.
 public struct PrismKeychain: Sendable {
     private let defaultService: String
 
-    /// Creates a keychain instance with a default service identifier.
     public init(service: String = "PrismSecurity") {
         self.defaultService = service
     }
 
     // MARK: - Data Operations
 
-    /// Saves raw data to the keychain.
     public func save(data: Data, for item: PrismKeychainItem) throws {
         var query = baseQuery(for: item)
 
@@ -35,7 +32,6 @@ public struct PrismKeychain: Sendable {
         }
     }
 
-    /// Retrieves raw data from the keychain.
     public func load(for item: PrismKeychainItem) throws -> Data {
         var query = baseQuery(for: item)
         query[kSecReturnData as String] = kCFBooleanTrue
@@ -55,7 +51,6 @@ public struct PrismKeychain: Sendable {
         return data
     }
 
-    /// Deletes an item from the keychain.
     public func delete(for item: PrismKeychainItem) throws {
         let query = baseQuery(for: item)
         let status = SecItemDelete(query as CFDictionary)
@@ -64,7 +59,6 @@ public struct PrismKeychain: Sendable {
         }
     }
 
-    /// Whether an item exists in the keychain.
     public func exists(for item: PrismKeychainItem) -> Bool {
         var query = baseQuery(for: item)
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -76,13 +70,11 @@ public struct PrismKeychain: Sendable {
 
     // MARK: - Codable Operations
 
-    /// Saves a Codable value to the keychain.
     public func save<T: Codable & Sendable>(_ value: T, for item: PrismKeychainItem) throws {
         let data = try JSONEncoder().encode(value)
         try save(data: data, for: item)
     }
 
-    /// Loads a Codable value from the keychain.
     public func load<T: Codable & Sendable>(_ type: T.Type, for item: PrismKeychainItem) throws -> T {
         let data = try load(for: item)
         do {
@@ -94,7 +86,6 @@ public struct PrismKeychain: Sendable {
 
     // MARK: - String Operations
 
-    /// Saves a string value to the keychain.
     public func save(string: String, for item: PrismKeychainItem) throws {
         guard let data = string.data(using: .utf8) else {
             throw PrismSecurityError.keychainDataConversionFailed
@@ -102,7 +93,6 @@ public struct PrismKeychain: Sendable {
         try save(data: data, for: item)
     }
 
-    /// Loads a string value from the keychain.
     public func loadString(for item: PrismKeychainItem) throws -> String {
         let data = try load(for: item)
         guard let string = String(data: data, encoding: .utf8) else {
@@ -113,7 +103,6 @@ public struct PrismKeychain: Sendable {
 
     // MARK: - Bulk Operations
 
-    /// Deletes all items for the default service.
     public func deleteAll() throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

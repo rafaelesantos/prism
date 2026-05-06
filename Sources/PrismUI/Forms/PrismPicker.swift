@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Themed picker with label, supporting menu and inline styles.
 public struct PrismPicker<Selection: Hashable, Content: View>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -9,7 +8,6 @@ public struct PrismPicker<Selection: Hashable, Content: View>: View {
     private let icon: String?
     private let content: Content
 
-    /// Creates a themed picker with title, selection binding, and option content.
     public init(
         _ title: LocalizedStringKey,
         selection: Binding<Selection>,
@@ -22,7 +20,6 @@ public struct PrismPicker<Selection: Hashable, Content: View>: View {
         self.content = content()
     }
 
-    /// The picker view body with themed label and interactive tint.
     public var body: some View {
         Picker(selection: $selection) {
             content

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// OTP/PIN code input with individual character cells.
 public struct PrismPinField: View {
     @Environment(\.prismTheme) private var theme
     @FocusState private var isFocused: Bool
@@ -9,7 +8,6 @@ public struct PrismPinField: View {
     private let length: Int
     private let isSecure: Bool
 
-    /// Creates a PIN field with configurable length and secure display mode.
     public init(
         code: Binding<String>,
         length: Int = 6,
@@ -20,7 +18,6 @@ public struct PrismPinField: View {
         self.isSecure = isSecure
     }
 
-    /// The PIN field view body with hidden input and individual character cells.
     public var body: some View {
         ZStack {
             hiddenTextField

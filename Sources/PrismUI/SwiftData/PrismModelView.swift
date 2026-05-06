@@ -2,7 +2,6 @@
     import SwiftUI
     import SwiftData
 
-    /// Generic CRUD list for SwiftData persistent models with swipe-to-delete and toolbar add button.
     @MainActor
     public struct PrismModelView<Model: PersistentModel>: View {
         @Environment(\.prismTheme) private var theme
@@ -18,7 +17,6 @@
         private let detailContent: ((Model) -> AnyView)?
         private let makeNew: (() -> Model)?
 
-        /// Creates a model view with CRUD scaffolding.
         public init(
             title: String,
             emptyIcon: String = "tray",
@@ -40,7 +38,6 @@
             self.makeNew = makeNew
         }
 
-        /// Creates a model view with CRUD scaffolding and a detail view.
         public init(
             title: String,
             emptyIcon: String = "tray",
@@ -63,7 +60,6 @@
             self.makeNew = makeNew
         }
 
-        /// The view body.
         public var body: some View {
             PrismModelViewContent(
                 title: title,
@@ -79,7 +75,6 @@
         }
     }
 
-    /// Internal content view that owns the @Query for dynamic fetching.
     @MainActor
     struct PrismModelViewContent<Model: PersistentModel>: View {
         @Environment(\.prismTheme) private var theme
@@ -175,7 +170,6 @@
         }
     }
 
-    /// Detail view showing model properties via reflection.
     @MainActor
     public struct PrismModelDetailView<Model: PersistentModel>: View {
         @Environment(\.prismTheme) private var theme
@@ -183,13 +177,11 @@
         private let model: Model
         private let title: String
 
-        /// Creates a detail view for a persistent model.
         public init(_ model: Model, title: String = "Details") {
             self.model = model
             self.title = title
         }
 
-        /// The view body.
         public var body: some View {
             Form {
                 let mirror = Mirror(reflecting: model)

@@ -1,12 +1,8 @@
 import SwiftUI
 
-/// Rendering style for markdown content.
 public enum PrismMarkdownStyle: String, Sendable, CaseIterable {
-    /// Full-size rendering with generous spacing.
     case `default`
-    /// Tighter spacing for constrained layouts.
     case compact
-    /// Optimized for API/library documentation pages.
     case documentation
 }
 
@@ -23,7 +19,6 @@ package enum MarkdownBlock: Sendable {
     case image(alt: String, url: String)
 }
 
-/// A SwiftUI view that renders a Markdown string using PrismUI design tokens.
 @MainActor
 public struct PrismMarkdownView: View {
     @Environment(\.prismTheme) package var theme
@@ -31,13 +26,11 @@ public struct PrismMarkdownView: View {
     private let markdown: String
     private let style: PrismMarkdownStyle
 
-    /// Creates a markdown renderer with the given content and style.
     public init(_ markdown: String, style: PrismMarkdownStyle = .default) {
         self.markdown = markdown
         self.style = style
     }
 
-    /// The view body.
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: blockSpacing) {

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Multi-line text input with character count and configurable height.
 public struct PrismTextArea: View {
     @Environment(\.prismTheme) private var theme
     @FocusState private var isFocused: Bool
@@ -10,7 +9,6 @@ public struct PrismTextArea: View {
     private let maxCharacters: Int?
     private let minHeight: CGFloat
 
-    /// Creates a text area with title, optional character limit, and configurable height.
     public init(
         _ title: LocalizedStringKey,
         text: Binding<String>,
@@ -23,7 +21,6 @@ public struct PrismTextArea: View {
         self.minHeight = minHeight
     }
 
-    /// The text area view body with placeholder, character count, and focus border.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.xs.rawValue) {
             TextEditor(text: $text)

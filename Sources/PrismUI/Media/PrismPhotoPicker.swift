@@ -3,15 +3,6 @@ import SwiftUI
 #if canImport(PhotosUI)
     import PhotosUI
 
-    /// Themed photo picker wrapping PhotosUI `PhotosPicker`.
-    ///
-    /// ```swift
-    /// @State private var selectedPhoto: PhotosPickerItem?
-    ///
-    /// PrismPhotoPicker(selection: $selectedPhoto) {
-    ///     Label("Choose Photo", systemImage: "photo")
-    /// }
-    /// ```
     public struct PrismPhotoPicker<Label: View>: View {
         @Environment(\.prismTheme) private var theme
 
@@ -19,7 +10,6 @@ import SwiftUI
         private let matching: PHPickerFilter
         private let label: Label
 
-        /// Creates a photo picker with a selection binding, filter, and custom label.
         public init(
             selection: Binding<PhotosPickerItem?>,
             matching filter: PHPickerFilter = .images,
@@ -30,7 +20,6 @@ import SwiftUI
             self.label = label()
         }
 
-        /// The content and behavior of the photo picker.
         public var body: some View {
             PhotosPicker(selection: $selection, matching: matching) {
                 label
@@ -41,7 +30,6 @@ import SwiftUI
 
     extension PrismPhotoPicker where Label == SwiftUI.Label<Text, Image> {
 
-        /// Creates a photo picker with a localized title and system image.
         public init(
             _ title: LocalizedStringKey,
             systemImage: String = "photo.on.rectangle",
@@ -54,7 +42,6 @@ import SwiftUI
         }
     }
 
-    /// Multi-selection photo picker.
     public struct PrismMultiPhotoPicker<Label: View>: View {
         @Environment(\.prismTheme) private var theme
 
@@ -63,7 +50,6 @@ import SwiftUI
         private let matching: PHPickerFilter
         private let label: Label
 
-        /// Creates a multi-selection photo picker with a max count, filter, and label.
         public init(
             selection: Binding<[PhotosPickerItem]>,
             maxSelectionCount: Int = 0,
@@ -76,7 +62,6 @@ import SwiftUI
             self.label = label()
         }
 
-        /// The content and behavior of the multi photo picker.
         public var body: some View {
             PhotosPicker(
                 selection: $selection,

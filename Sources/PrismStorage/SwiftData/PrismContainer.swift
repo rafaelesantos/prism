@@ -2,9 +2,7 @@
     import Foundation
     import SwiftData
 
-    /// Unified SwiftData container creation with CloudKit and migration support.
     public struct PrismContainer: Sendable {
-        /// Creates a model container for the given schema.
         public static func create(
             for types: [any PersistentModel.Type],
             inMemory: Bool = false,
@@ -36,7 +34,6 @@
             )
         }
 
-        /// Creates an in-memory container for testing.
         public static func inMemory(
             for types: [any PersistentModel.Type]
         ) throws -> ModelContainer {

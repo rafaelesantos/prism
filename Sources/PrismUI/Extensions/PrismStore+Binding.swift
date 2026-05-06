@@ -3,7 +3,6 @@ import SwiftUI
 
 extension PrismStore {
 
-    /// Creates a SwiftUI `Binding` that reads from store state and dispatches an action on write.
     public func binding<Value: Sendable>(
         for keyPath: KeyPath<State, Value>,
         send action: @escaping @Sendable (Value) -> Action

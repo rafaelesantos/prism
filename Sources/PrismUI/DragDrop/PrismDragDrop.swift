@@ -1,11 +1,5 @@
 import SwiftUI
 
-/// Themed drag indicator overlay for draggable content.
-///
-/// ```swift
-/// PrismCard { Text("Drag me") }
-///     .prismDraggable(item)
-/// ```
 private struct PrismDraggableModifier<T: Transferable>: ViewModifier {
     @Environment(\.prismTheme) private var theme
     let item: T
@@ -22,7 +16,6 @@ private struct PrismDraggableModifier<T: Transferable>: ViewModifier {
     }
 }
 
-/// Themed drop target with visual indicator.
 private struct PrismDropTargetModifier<T: Transferable>: ViewModifier {
     @Environment(\.prismTheme) private var theme
     let type: T.Type
@@ -51,7 +44,6 @@ private struct PrismDropTargetModifier<T: Transferable>: ViewModifier {
     }
 }
 
-/// Reorderable list with drag handles.
 public struct PrismReorderableList<Data: RandomAccessCollection & MutableCollection, ID: Hashable, Content: View>: View
 where Data.Index == Int {
     @Environment(\.prismTheme) private var theme
@@ -60,7 +52,6 @@ where Data.Index == Int {
     private let id: KeyPath<Data.Element, ID>
     private let content: (Data.Element) -> Content
 
-    /// Creates a reorderable list bound to a mutable collection with a custom ID key path.
     public init(
         _ data: Binding<Data>,
         id: KeyPath<Data.Element, ID>,
@@ -71,7 +62,6 @@ where Data.Index == Int {
         self.content = content
     }
 
-    /// The reorderable list view body with move support.
     public var body: some View {
         List {
             ForEach(data, id: id) { item in
@@ -87,7 +77,6 @@ where Data.Index == Int {
 
 extension PrismReorderableList where Data.Element: Identifiable, ID == Data.Element.ID {
 
-    /// Creates a reorderable list using the element's Identifiable conformance.
     public init(
         _ data: Binding<Data>,
         @ViewBuilder content: @escaping (Data.Element) -> Content
@@ -100,12 +89,10 @@ extension PrismReorderableList where Data.Element: Identifiable, ID == Data.Elem
 
 extension View {
 
-    /// Makes view draggable with themed preview.
     public func prismDraggable<T: Transferable>(_ item: T) -> some View {
         modifier(PrismDraggableModifier(item: item))
     }
 
-    /// Makes view a themed drop target.
     public func prismDropTarget<T: Transferable>(
         for type: T.Type,
         action: @Sendable @escaping ([T]) -> Bool

@@ -1,12 +1,10 @@
 import SwiftUI
 
-/// Direction of a metric trend: up, down, or flat.
 public enum PrismTrend: String, Sendable, CaseIterable {
     case up
     case down
     case flat
 
-    /// Semantic color for the trend direction.
     public var colorToken: ColorToken {
         switch self {
         case .up: .success
@@ -15,7 +13,6 @@ public enum PrismTrend: String, Sendable, CaseIterable {
         }
     }
 
-    /// SF Symbol arrow for the trend direction.
     public var systemImage: String {
         switch self {
         case .up: "arrow.up.right"
@@ -25,15 +22,11 @@ public enum PrismTrend: String, Sendable, CaseIterable {
     }
 }
 
-/// Display size for a KPI card.
 public enum PrismKPISize: Sendable {
-    /// Compact horizontal layout for tight spaces.
     case compact
-    /// Full vertical layout with optional sparkline.
     case expanded
 }
 
-/// Key Performance Indicator card showing a metric with optional trend and sparkline.
 public struct PrismKPICard: View {
     @Environment(\.prismTheme) private var theme
 
@@ -46,7 +39,6 @@ public struct PrismKPICard: View {
     private let sparklineData: [Double]?
     private let size: PrismKPISize
 
-    /// Creates a KPI card with metric value, optional trend, and sparkline data.
     public init(
         title: String,
         value: String,
@@ -67,7 +59,6 @@ public struct PrismKPICard: View {
         self.size = size
     }
 
-    /// The KPI card view body with compact or expanded layout.
     public var body: some View {
         PrismCard {
             switch size {
@@ -157,7 +148,6 @@ public struct PrismKPICard: View {
     }
 }
 
-/// Inline sparkline chart drawn with a simple path.
 struct PrismKPISparkline: View {
     @Environment(\.prismTheme) private var theme
 

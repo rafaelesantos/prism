@@ -2,18 +2,11 @@ import Foundation
 
 // MARK: - Peer
 
-/// Represents a discovered or connected peer in a MultipeerConnectivity session.
-///
-/// Provides a simplified view of `MCPeerID` with connection status tracking.
 public struct PrismPeer: Sendable {
-    /// Unique identifier for the peer (typically `MCPeerID.displayName`).
     public let id: String
-    /// Human-readable display name of the peer.
     public let displayName: String
-    /// Whether this peer is currently connected.
     public let isConnected: Bool
 
-    /// Creates a new peer with the given identifier, display name, and connection status.
     public init(id: String, displayName: String, isConnected: Bool = false) {
         self.id = id
         self.displayName = displayName
@@ -23,15 +16,9 @@ public struct PrismPeer: Sendable {
 
 // MARK: - Multipeer State
 
-/// The connection state of a MultipeerConnectivity session.
-///
-/// Mirrors `MCSessionState` for use without importing MultipeerConnectivity.
 public enum PrismMultipeerState: Sendable, CaseIterable {
-    /// No active connection.
     case notConnected
-    /// A connection attempt is in progress.
     case connecting
-    /// Successfully connected to at least one peer.
     case connected
 }
 
@@ -40,66 +27,27 @@ public enum PrismMultipeerState: Sendable, CaseIterable {
 #if canImport(MultipeerConnectivity)
     import MultipeerConnectivity
 
-    /// Thread-safe wrapper around `MCPeerID` for cross-isolation-boundary usage.
-    ///
-    /// `MCPeerID` is not `Sendable`, but it conforms to `NSSecureCoding`. This
-    /// wrapper archives the peer ID into `Data` on the originating isolation
-    /// context and restores it on the destination, avoiding data races.
     private struct SendablePeerID: @unchecked Sendable {
         let peerID: MCPeerID
     }
 
-    /// Observable client that manages MultipeerConnectivity advertising, browsing,
-    /// and peer-to-peer data exchange.
-    ///
-    /// Wraps `MCSession`, `MCNearbyServiceAdvertiser`, and `MCNearbyServiceBrowser`
-    /// behind a simple API. State changes are published via `@Observable` so SwiftUI
-    /// views react automatically.
-    ///
-    /// ## Example
-    /// ```swift
-    /// let client = PrismMultipeerClient()
-    ///
-    /// // Device A — advertise
-    /// client.startAdvertising(serviceType: "my-app", displayName: "Alice's iPhone")
-    ///
-    /// // Device B — browse and connect
-    /// client.startBrowsing(serviceType: "my-app")
-    /// if let peer = client.peers.first {
-    ///     try await client.invitePeer(peer)
-    ///     try client.send(data: payload, to: [peer])
-    /// }
-    /// ```
     @MainActor @Observable
     public final class PrismMultipeerClient: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiserDelegate,
         MCNearbyServiceBrowserDelegate
     {
-        /// All discovered and/or connected peers.
         public private(set) var peers: [PrismPeer] = []
-        /// Current connection state of the session.
         public private(set) var state: PrismMultipeerState = .notConnected
 
         private var session: MCSession?
         private var localPeerID: MCPeerID?
         private var advertiser: MCNearbyServiceAdvertiser?
         private var browser: MCNearbyServiceBrowser?
-        /// Maps peer display names to their MCPeerID for invitation and sending.
         private var knownPeers: [String: MCPeerID] = [:]
 
-        /// Creates a new multipeer connectivity client.
         public override init() {
             super.init()
         }
 
-        /// Begins advertising this device so nearby browsers can discover it.
-        ///
-        /// Creates a local `MCPeerID`, an `MCSession`, and starts an
-        /// `MCNearbyServiceAdvertiser`. The `serviceType` must be a short, unique
-        /// Bonjour-compatible identifier (1-15 lowercase ASCII letters/digits/hyphens).
-        ///
-        /// - Parameters:
-        ///   - serviceType: Bonjour service type identifier (e.g. `"my-app"`).
-        ///   - displayName: Human-readable name shown to browsers.
         public func startAdvertising(serviceType: String, displayName: String) {
             let peerID = MCPeerID(displayName: displayName)
             localPeerID = peerID
@@ -114,21 +62,11 @@ public enum PrismMultipeerState: Sendable, CaseIterable {
             advertiser = adv
         }
 
-        /// Stops advertising this device.
         public func stopAdvertising() {
             advertiser?.stopAdvertisingPeer()
             advertiser = nil
         }
 
-        /// Begins browsing for nearby advertisers.
-        ///
-        /// Creates a local `MCPeerID` and `MCSession` if not already present, then
-        /// starts an `MCNearbyServiceBrowser`. Discovered peers are appended to the
-        /// `peers` array automatically.
-        ///
-        /// - Parameters:
-        ///   - serviceType: Bonjour service type to browse for.
-        ///   - displayName: Human-readable name for this device.
         public func startBrowsing(serviceType: String, displayName: String = ProcessInfo.processInfo.hostName) {
             if localPeerID == nil {
                 let peerID = MCPeerID(displayName: displayName)
@@ -144,19 +82,11 @@ public enum PrismMultipeerState: Sendable, CaseIterable {
             browser = br
         }
 
-        /// Stops browsing for nearby advertisers.
         public func stopBrowsing() {
             browser?.stopBrowsingForPeers()
             browser = nil
         }
 
-        /// Sends an invitation to the specified peer.
-        ///
-        /// The invitation times out after 30 seconds. Connection state updates are
-        /// delivered through the `state` property.
-        ///
-        /// - Parameter peer: The peer to invite.
-        /// - Throws: An error if the peer is unknown or the session is unavailable.
         public func invitePeer(_ peer: PrismPeer) async throws {
             guard let mcSession = session,
                 let mcPeerID = knownPeers[peer.id]
@@ -166,12 +96,6 @@ public enum PrismMultipeerState: Sendable, CaseIterable {
             browser?.invitePeer(mcPeerID, to: mcSession, withContext: nil, timeout: 30)
         }
 
-        /// Sends data to the specified peers using reliable transport.
-        ///
-        /// - Parameters:
-        ///   - data: The payload to send.
-        ///   - peers: The list of target peers.
-        /// - Throws: `MCError` if the send fails.
         public func send(data: Data, to peers: [PrismPeer]) throws {
             guard let mcSession = session else { return }
             let mcPeers = peers.compactMap { knownPeers[$0.id] }
@@ -179,7 +103,6 @@ public enum PrismMultipeerState: Sendable, CaseIterable {
             try mcSession.send(data, toPeers: mcPeers, with: .reliable)
         }
 
-        /// Disconnects the session and cleans up all resources.
         public func disconnect() {
             session?.disconnect()
             advertiser?.stopAdvertisingPeer()

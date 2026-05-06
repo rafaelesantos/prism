@@ -1,12 +1,9 @@
 import SwiftUI
 
-/// Applies token-based syntax coloring to source code strings.
 public struct PrismSyntaxHighlighter: Sendable {
 
-    /// Creates a syntax highlighter instance.
     public init() {}
 
-    /// Highlights the given source code for the specified language.
     public func highlight(_ code: String, language: PrismSyntaxLanguage) -> AttributedString {
         guard language != .plainText else {
             return AttributedString(code)
@@ -161,7 +158,6 @@ public struct PrismSyntaxHighlighter: Sendable {
     }
 }
 
-/// A themed code block view with line numbers, syntax highlighting, and a copy button.
 @MainActor
 public struct PrismCodeBlock: View {
     @Environment(\.prismTheme) private var theme
@@ -172,14 +168,12 @@ public struct PrismCodeBlock: View {
 
     @State private var copied = false
 
-    /// Creates a code block view with the given source and language.
     public init(_ code: String, language: PrismSyntaxLanguage = .plainText, showLineNumbers: Bool = true) {
         self.code = code
         self.language = language
         self.showLineNumbers = showLineNumbers
     }
 
-    /// The view body.
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header with language label and copy button

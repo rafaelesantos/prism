@@ -1,6 +1,5 @@
 import Foundation
 
-/// Errors thrown by PrismSecurity operations.
 public enum PrismSecurityError: Error, Sendable, Equatable, LocalizedError {
     // MARK: - Permission
 

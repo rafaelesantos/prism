@@ -1,6 +1,5 @@
 import Foundation
 
-/// Unified permission types supported by PrismSecurity.
 public enum PrismPermission: String, Sendable, CaseIterable, Hashable {
     case camera
     case microphone
@@ -19,7 +18,6 @@ public enum PrismPermission: String, Sendable, CaseIterable, Hashable {
     case tracking
     case faceID
 
-    /// Human-readable display name.
     public var displayName: String {
         switch self {
         case .camera: "Camera"
@@ -41,7 +39,6 @@ public enum PrismPermission: String, Sendable, CaseIterable, Hashable {
         }
     }
 
-    /// The Info.plist usage description key required for this permission.
     public var usageDescriptionKey: String {
         switch self {
         case .camera: "NSCameraUsageDescription"

@@ -1,9 +1,7 @@
 import CryptoKit
 import Foundation
 
-/// Cryptographic hashing and HMAC operations via CryptoKit.
 public struct PrismHasher: Sendable {
-    /// Supported hash algorithms.
     public enum Algorithm: String, Sendable, Hashable, CaseIterable {
         case sha256
         case sha384
@@ -12,12 +10,10 @@ public struct PrismHasher: Sendable {
 
     private let algorithm: Algorithm
 
-    /// Creates a hasher with the specified algorithm.
     public init(algorithm: Algorithm = .sha256) {
         self.algorithm = algorithm
     }
 
-    /// Computes a hash digest of the given data.
     public func hash(_ data: Data) -> Data {
         switch algorithm {
         case .sha256: Data(SHA256.hash(data: data))
@@ -26,22 +22,18 @@ public struct PrismHasher: Sendable {
         }
     }
 
-    /// Computes a hash digest of the given string.
     public func hash(_ string: String) -> Data {
         hash(Data(string.utf8))
     }
 
-    /// Computes a hex-encoded hash digest.
     public func hashHex(_ data: Data) -> String {
         hash(data).map { String(format: "%02x", $0) }.joined()
     }
 
-    /// Computes a hex-encoded hash of a string.
     public func hashHex(_ string: String) -> String {
         hashHex(Data(string.utf8))
     }
 
-    /// Computes an HMAC authentication code.
     public func hmac(_ data: Data, key: SymmetricKey) -> Data {
         switch algorithm {
         case .sha256:
@@ -53,7 +45,6 @@ public struct PrismHasher: Sendable {
         }
     }
 
-    /// Verifies an HMAC authentication code.
     public func verifyHMAC(_ mac: Data, for data: Data, key: SymmetricKey) -> Bool {
         switch algorithm {
         case .sha256:

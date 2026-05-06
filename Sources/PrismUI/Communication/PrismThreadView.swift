@@ -1,17 +1,11 @@
 import SwiftUI
 
-/// A conversation thread with a root message and its replies.
 public struct PrismThread: Identifiable, Sendable, Equatable {
-    /// Unique identifier for this thread.
     public let id: UUID
-    /// The original message that started the thread.
     public let rootMessage: PrismMessage
-    /// Ordered replies to the root message.
     public let replies: [PrismMessage]
-    /// Total number of replies (may differ from loaded replies for pagination).
     public let replyCount: Int
 
-    /// Creates a thread from a root message and its replies.
     public init(
         id: UUID = UUID(),
         rootMessage: PrismMessage,
@@ -25,7 +19,6 @@ public struct PrismThread: Identifiable, Sendable, Equatable {
     }
 }
 
-/// Displays a root message with indented, collapsible replies.
 @MainActor
 public struct PrismThreadView: View {
     @Environment(\.prismTheme) private var theme
@@ -35,14 +28,12 @@ public struct PrismThreadView: View {
 
     @State private var isExpanded: Bool
 
-    /// Creates a thread view that can expand and collapse replies.
     public init(thread: PrismThread, bubbleStyle: PrismBubbleStyle = .filled, expanded: Bool = false) {
         self.thread = thread
         self.bubbleStyle = bubbleStyle
         self._isExpanded = State(initialValue: expanded)
     }
 
-    /// The thread view body with root message and collapsible replies.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             PrismChatBubble(

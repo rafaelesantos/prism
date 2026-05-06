@@ -5,18 +5,6 @@
     extension PrismChallengeManager {
         // MARK: - Submit Score
 
-        /// Submits or updates a score for a user in the given period.
-        ///
-        /// Creates a new leaderboard record if none exists for the user/period pair,
-        /// or updates the existing record's score. After saving, computes the user's
-        /// new rank and emits a `.leaderboardUpdated` event.
-        ///
-        /// - Parameters:
-        ///   - userID: Unique identifier for the user.
-        ///   - displayName: The user's display name shown on the leaderboard.
-        ///   - score: The score to set.
-        ///   - period: The leaderboard period to submit to.
-        /// - Returns: The user's leaderboard entry with current rank.
         @discardableResult
         public func submitScore(
             userID: String,
@@ -50,14 +38,6 @@
 
         // MARK: - Update Score
 
-        /// Updates the score for an existing leaderboard entry.
-        ///
-        /// - Parameters:
-        ///   - userID: The user whose score to update.
-        ///   - score: The new score value.
-        ///   - period: The leaderboard period.
-        /// - Returns: The updated leaderboard entry with current rank.
-        /// - Throws: ``PrismGamificationError/leaderboardEntryNotFound(_:)`` if no record exists.
         @discardableResult
         public func updateScore(
             userID: String,
@@ -76,12 +56,6 @@
 
         // MARK: - Leaderboard Query
 
-        /// Returns a ranked leaderboard snapshot for the given period.
-        ///
-        /// - Parameters:
-        ///   - period: The leaderboard period to query.
-        ///   - limit: Maximum number of entries to return. Defaults to 100.
-        /// - Returns: A ``PrismLeaderboardSnapshot`` with ranked entries.
         public func leaderboard(
             period: PrismLeaderboardPeriod,
             limit: Int = 100
@@ -107,13 +81,6 @@
 
         // MARK: - Rank Query
 
-        /// Returns the rank and entry for a specific user in the given period.
-        ///
-        /// - Parameters:
-        ///   - userID: The user to look up.
-        ///   - period: The leaderboard period.
-        /// - Returns: The user's ``PrismLeaderboardEntry`` with computed rank.
-        /// - Throws: ``PrismGamificationError/leaderboardEntryNotFound(_:)`` if no record exists.
         public func rank(
             for userID: String,
             period: PrismLeaderboardPeriod
@@ -125,9 +92,6 @@
 
         // MARK: - Reset
 
-        /// Deletes all leaderboard entries for the given period.
-        ///
-        /// - Parameter period: The leaderboard period to reset.
         public func resetLeaderboard(period: PrismLeaderboardPeriod) throws {
             let periodValue = period.rawValue
             let descriptor = FetchDescriptor<PrismLeaderboardRecord>(

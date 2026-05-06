@@ -1,8 +1,5 @@
 import Foundation
 
-/// Read-through/write-through composite of multiple stores (e.g. memory → disk).
-/// On load: tries each store in order, populates misses upstream.
-/// On save: writes to all stores.
 public final class PrismCompositeStore: PrismStorageProtocol, @unchecked Sendable {
     private let stores: [PrismStorageProtocol]
     private let lock = NSLock()
@@ -71,7 +68,6 @@ public final class PrismCompositeStore: PrismStorageProtocol, @unchecked Sendabl
     }
 }
 
-/// Async variant for actor-based stores.
 public actor PrismCompositeAsyncStore: PrismAsyncStorageProtocol {
     private let stores: [PrismAsyncStorageProtocol]
 

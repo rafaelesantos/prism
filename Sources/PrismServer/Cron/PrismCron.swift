@@ -1,23 +1,15 @@
 import Foundation
 
-/// Errors during cron expression parsing.
 public enum PrismCronError: Error, Sendable {
-    /// The cron expression could not be parsed.
     case invalidExpression(String)
-    /// A specific cron field value is invalid.
     case invalidField(String, String)
 }
 
-/// A parsed cron field supporting *, */N, N, N-M, and N,M,O.
 public struct PrismCronField: Sendable, Equatable {
-    /// The set of integer values matched by this field.
     public let allowedValues: Set<Int>
-    /// The minimum valid value for this field.
     public let min: Int
-    /// The maximum valid value for this field.
     public let max: Int
 
-    /// Parses a cron field expression within the given min/max range.
     public init(expression: String, min: Int, max: Int) throws {
         self.min = min
         self.max = max
@@ -58,28 +50,19 @@ public struct PrismCronField: Sendable, Equatable {
         self.allowedValues = values
     }
 
-    /// Returns whether the given integer is in this field's allowed values.
     public func matches(_ value: Int) -> Bool {
         allowedValues.contains(value)
     }
 }
 
-/// A parsed 5-field cron expression (minute hour dayOfMonth month dayOfWeek).
 public struct PrismCronExpression: Sendable {
-    /// The minute field (0-59).
     public let minute: PrismCronField
-    /// The hour field (0-23).
     public let hour: PrismCronField
-    /// The day-of-month field (1-31).
     public let dayOfMonth: PrismCronField
-    /// The month field (1-12).
     public let month: PrismCronField
-    /// The day-of-week field (0-6, Sunday=0).
     public let dayOfWeek: PrismCronField
-    /// The original cron expression string.
     public let raw: String
 
-    /// Parses a 5-field cron expression string.
     public init(_ expression: String) throws {
         self.raw = expression
         let fields = expression.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
@@ -94,7 +77,6 @@ public struct PrismCronExpression: Sendable {
         self.dayOfWeek = try PrismCronField(expression: fields[4], min: 0, max: 6)
     }
 
-    /// Checks if a date matches this cron expression.
     public func matches(_ date: Date) -> Bool {
         let cal = Calendar.current
         let comps = cal.dateComponents([.minute, .hour, .day, .month, .weekday], from: date)
@@ -110,7 +92,6 @@ public struct PrismCronExpression: Sendable {
             && dayOfWeek.matches(cronWeekday)
     }
 
-    /// Finds the next date after the given date that matches this expression.
     public func nextFire(after date: Date) -> Date? {
         let cal = Calendar.current
         var candidate = cal.date(byAdding: .minute, value: 1, to: date)!
@@ -124,16 +105,11 @@ public struct PrismCronExpression: Sendable {
     }
 }
 
-/// A named cron job with an expression and handler.
 public struct PrismCronJob: Sendable {
-    /// The human-readable name of the cron job.
     public let name: String
-    /// The cron expression controlling when this job fires.
     public let expression: PrismCronExpression
-    /// The async handler to execute when the job fires.
     public let handler: @Sendable () async throws -> Void
 
-    /// Creates a cron job with the given name, schedule expression, and handler.
     public init(name: String, expression: PrismCronExpression, handler: @escaping @Sendable () async throws -> Void) {
         self.name = name
         self.expression = expression
@@ -141,16 +117,13 @@ public struct PrismCronJob: Sendable {
     }
 }
 
-/// Actor-based cron scheduler that checks jobs every 60 seconds.
 public actor PrismCronScheduler {
     private var cronJobs: [String: PrismCronJob] = [:]
     private var task: Task<Void, Never>?
     private var running = false
 
-    /// Creates a cron scheduler.
     public init() {}
 
-    /// Schedules a job with a cron expression string.
     public func schedule(_ name: String, expression: String, handler: @escaping @Sendable () async throws -> Void)
         throws
     {
@@ -158,12 +131,10 @@ public actor PrismCronScheduler {
         cronJobs[name] = PrismCronJob(name: name, expression: expr, handler: handler)
     }
 
-    /// Removes a scheduled job.
     public func unschedule(_ name: String) {
         cronJobs.removeValue(forKey: name)
     }
 
-    /// Starts the scheduler loop.
     public func start() {
         guard !running else { return }
         running = true
@@ -176,17 +147,14 @@ public actor PrismCronScheduler {
         }
     }
 
-    /// Stops the scheduler.
     public func stop() {
         running = false
         task?.cancel()
         task = nil
     }
 
-    /// List of scheduled job names.
     public var jobs: [String] { Array(cronJobs.keys) }
 
-    /// Whether the scheduler is running.
     public var isRunning: Bool { running }
 
     private func tick() async {

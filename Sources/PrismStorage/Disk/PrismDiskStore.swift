@@ -1,6 +1,5 @@
 import Foundation
 
-/// File-based storage engine with atomic writes, TTL, and compression support.
 public actor PrismDiskStore: PrismAsyncStorageProtocol {
     public enum Directory: Sendable {
         case documents
@@ -173,7 +172,6 @@ public actor PrismDiskStore: PrismAsyncStorageProtocol {
         try? metaData.write(to: metaURL(for: key), options: .atomic)
     }
 
-    /// Removes all expired entries.
     public func pruneExpired() async throws {
         for key in try await keys() {
             if let meta = loadMeta(for: key), meta.isExpired {
@@ -182,7 +180,6 @@ public actor PrismDiskStore: PrismAsyncStorageProtocol {
         }
     }
 
-    /// Total bytes used on disk.
     public func totalSize() async throws -> Int {
         guard fileManager.fileExists(atPath: baseDirectory.path) else { return 0 }
         let contents = try fileManager.contentsOfDirectory(

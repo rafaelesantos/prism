@@ -1,15 +1,10 @@
 import Foundation
 
-/// An HTTP response to be sent back to the client.
 public struct PrismHTTPResponse: Sendable {
-    /// The HTTP status code and reason.
     public var status: PrismHTTPStatus
-    /// The response headers.
     public var headers: PrismHTTPHeaders
-    /// The response body.
     public var body: PrismHTTPBody
 
-    /// Creates an HTTP response with the given status, headers, and body.
     public init(
         status: PrismHTTPStatus = .ok,
         headers: PrismHTTPHeaders = PrismHTTPHeaders(),
@@ -22,7 +17,6 @@ public struct PrismHTTPResponse: Sendable {
 
     // MARK: - Convenience Factories
 
-    /// Creates a 200 OK response with a JSON-encoded body.
     public static func json<T: Encodable>(
         _ value: T, status: PrismHTTPStatus = .ok, encoder: JSONEncoder = JSONEncoder()
     ) -> PrismHTTPResponse {
@@ -37,7 +31,6 @@ public struct PrismHTTPResponse: Sendable {
         }
     }
 
-    /// Creates a response with a plain text body.
     public static func text(_ string: String, status: PrismHTTPStatus = .ok) -> PrismHTTPResponse {
         let data = Data(string.utf8)
         var headers = PrismHTTPHeaders()
@@ -46,7 +39,6 @@ public struct PrismHTTPResponse: Sendable {
         return PrismHTTPResponse(status: status, headers: headers, body: .data(data))
     }
 
-    /// Creates a response with an HTML body.
     public static func html(_ string: String, status: PrismHTTPStatus = .ok) -> PrismHTTPResponse {
         let data = Data(string.utf8)
         var headers = PrismHTTPHeaders()
@@ -55,7 +47,6 @@ public struct PrismHTTPResponse: Sendable {
         return PrismHTTPResponse(status: status, headers: headers, body: .data(data))
     }
 
-    /// Creates a redirect response.
     public static func redirect(to location: String, permanent: Bool = false) -> PrismHTTPResponse {
         var headers = PrismHTTPHeaders()
         headers.set(name: PrismHTTPHeaders.location, value: location)
@@ -66,10 +57,8 @@ public struct PrismHTTPResponse: Sendable {
         )
     }
 
-    /// Creates a 204 No Content response.
     public static let noContent = PrismHTTPResponse(status: .noContent)
 
-    /// Serializes this response to raw HTTP/1.1 bytes.
     public func serialize() -> Data {
         var result = Data()
         let statusLine = "HTTP/1.1 \(status.code) \(status.reason)\r\n"
@@ -94,16 +83,11 @@ public struct PrismHTTPResponse: Sendable {
     }
 }
 
-/// Represents the body of an HTTP response.
 public enum PrismHTTPBody: Sendable {
-    /// An empty body with no content.
     case empty
-    /// A body containing raw binary data.
     case data(Data)
-    /// A body containing a UTF-8 text string.
     case text(String)
 
-    /// The raw bytes of the body.
     public var data: Data {
         switch self {
         case .empty: Data()
@@ -112,7 +96,6 @@ public enum PrismHTTPBody: Sendable {
         }
     }
 
-    /// Whether the body has content.
     public var isEmpty: Bool {
         switch self {
         case .empty: true

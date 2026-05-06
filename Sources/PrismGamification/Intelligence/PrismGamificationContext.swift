@@ -1,39 +1,22 @@
 import Foundation
 
-/// Contextual data for AI-generated gamification messages.
 public struct PrismGamificationContext: Sendable, Equatable {
-    /// The entity ID (challenge, badge, streak, or user).
     public let entityID: String
-    /// Challenge title, if applicable.
     public let challengeTitle: String?
-    /// Current progress value.
     public let currentValue: Int?
-    /// Goal value for the challenge.
     public let goalValue: Int?
-    /// Points earned for this action.
     public let points: Int?
-    /// Total accumulated points.
     public let totalPoints: Int?
-    /// Current streak count.
     public let currentStreak: Int?
-    /// Longest streak ever.
     public let longestStreak: Int?
-    /// Badge display title.
     public let badgeTitle: String?
-    /// Badge tier name.
     public let badgeTier: String?
-    /// Current leaderboard rank.
     public let rank: Int?
-    /// Previous leaderboard rank.
     public let previousRank: Int?
-    /// Current score.
     public let score: Int?
-    /// Number of completed challenges.
     public let completedChallenges: Int?
-    /// Active challenge categories.
     public let activeCategories: [String]?
 
-    /// Creates gamification context.
     public init(
         entityID: String,
         challengeTitle: String? = nil,

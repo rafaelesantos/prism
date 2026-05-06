@@ -1,13 +1,5 @@
 import SwiftUI
 
-/// Themed gauge with semantic color styling.
-///
-/// ```swift
-/// PrismGauge(value: 0.7, label: "Battery")
-/// PrismGauge(value: progress, in: 0...100, label: "Upload") {
-///     Image(systemName: "arrow.up.circle")
-/// }
-/// ```
 public struct PrismGauge<CurrentValueLabel: View>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -16,7 +8,6 @@ public struct PrismGauge<CurrentValueLabel: View>: View {
     private let label: LocalizedStringKey
     private let currentValueLabel: CurrentValueLabel
 
-    /// Creates a gauge with a value, bounds, label, and current value label.
     public init(
         value: Double,
         in bounds: ClosedRange<Double> = 0...1,
@@ -29,7 +20,6 @@ public struct PrismGauge<CurrentValueLabel: View>: View {
         self.currentValueLabel = currentValueLabel()
     }
 
-    /// The content and behavior of the gauge.
     public var body: some View {
         Gauge(value: value, in: bounds) {
             Text(label)
@@ -62,7 +52,6 @@ public struct PrismGauge<CurrentValueLabel: View>: View {
 
 extension PrismGauge where CurrentValueLabel == EmptyView {
 
-    /// Creates a gauge with a value, bounds, and label but no current value label.
     public init(
         value: Double,
         in bounds: ClosedRange<Double> = 0...1,

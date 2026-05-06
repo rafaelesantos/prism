@@ -1,9 +1,7 @@
 import CryptoKit
 import Foundation
 
-/// Symmetric encryption using AES-GCM or ChaChaPoly via CryptoKit.
 public struct PrismEncryptor: Sendable {
-    /// Encryption algorithm selection.
     public enum Algorithm: String, Sendable, Hashable, CaseIterable {
         case aesGCM
         case chaChaPoly
@@ -11,32 +9,22 @@ public struct PrismEncryptor: Sendable {
 
     private let algorithm: Algorithm
 
-    /// Creates an encryptor with the specified algorithm.
-    /// - Parameter algorithm: Encryption algorithm. Defaults to `.aesGCM`.
     public init(algorithm: Algorithm = .aesGCM) {
         self.algorithm = algorithm
     }
 
-    /// Generates a new random 256-bit symmetric key.
     public func generateKey() -> SymmetricKey {
         SymmetricKey(size: .bits256)
     }
 
-    /// Exports a symmetric key as raw data.
     public func exportKey(_ key: SymmetricKey) -> Data {
         key.withUnsafeBytes { Data($0) }
     }
 
-    /// Imports a symmetric key from raw data.
     public func importKey(_ data: Data) -> SymmetricKey {
         SymmetricKey(data: data)
     }
 
-    /// Encrypts data using the configured algorithm.
-    /// - Parameters:
-    ///   - data: Plaintext data.
-    ///   - key: Symmetric key for encryption.
-    /// - Returns: Combined sealed box data (nonce + ciphertext + tag).
     public func encrypt(_ data: Data, using key: SymmetricKey) throws -> Data {
         switch algorithm {
         case .aesGCM:
@@ -51,11 +39,6 @@ public struct PrismEncryptor: Sendable {
         }
     }
 
-    /// Decrypts data using the configured algorithm.
-    /// - Parameters:
-    ///   - data: Combined sealed box data.
-    ///   - key: Symmetric key used for encryption.
-    /// - Returns: Decrypted plaintext data.
     public func decrypt(_ data: Data, using key: SymmetricKey) throws -> Data {
         do {
             switch algorithm {
@@ -71,13 +54,11 @@ public struct PrismEncryptor: Sendable {
         }
     }
 
-    /// Encrypts a Codable value.
     public func encrypt<T: Codable & Sendable>(_ value: T, using key: SymmetricKey) throws -> Data {
         let data = try JSONEncoder().encode(value)
         return try encrypt(data, using: key)
     }
 
-    /// Decrypts data into a Codable value.
     public func decrypt<T: Codable & Sendable>(_ type: T.Type, from data: Data, using key: SymmetricKey) throws -> T {
         let decrypted = try decrypt(data, using: key)
         do {

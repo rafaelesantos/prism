@@ -7,14 +7,11 @@
 
 import Foundation
 
-/// Coalesces identical in-flight requests so only one network call is made per unique key.
 public actor PrismRequestDeduplicator {
     private var inFlight: [String: Task<any Sendable, Error>] = [:]
 
-    /// Creates a new request deduplicator.
     public init() {}
 
-    /// Executes the request or returns the result of an existing in-flight request with the same key.
     public func deduplicate<T: Sendable>(
         _ request: @Sendable @escaping () async throws -> T,
         key: String
@@ -39,7 +36,6 @@ public actor PrismRequestDeduplicator {
         }
     }
 
-    /// Generates a deduplication key from URL, HTTP method, and body hash.
     public static func key(
         url: URL,
         method: String,

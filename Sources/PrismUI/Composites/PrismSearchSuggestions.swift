@@ -1,17 +1,5 @@
 import SwiftUI
 
-/// Search bar with autocomplete suggestion dropdown.
-///
-/// ```swift
-/// PrismSearchSuggestions(
-///     text: $query,
-///     suggestions: filteredItems
-/// ) { item in
-///     Text(item.name)
-/// } onSelect: { item in
-///     navigateTo(item)
-/// }
-/// ```
 @MainActor
 public struct PrismSearchSuggestions<Item: Identifiable & Sendable, Row: View>: View {
     @Environment(\.prismTheme) private var theme
@@ -26,7 +14,6 @@ public struct PrismSearchSuggestions<Item: Identifiable & Sendable, Row: View>: 
 
     @State private var showSuggestions = false
 
-    /// Creates a search bar with autocomplete suggestions and selection handler.
     public init(
         text: Binding<String>,
         suggestions: [Item],
@@ -43,7 +30,6 @@ public struct PrismSearchSuggestions<Item: Identifiable & Sendable, Row: View>: 
         self.onSelect = onSelect
     }
 
-    /// The search suggestions view body with dropdown list.
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             searchField

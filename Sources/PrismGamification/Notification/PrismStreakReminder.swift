@@ -1,6 +1,5 @@
 import Foundation
 
-/// Configuration for a streak protection reminder.
 public struct PrismStreakReminder: Sendable {
     public let streakID: String
     public let reminderHour: Int
@@ -16,12 +15,10 @@ public struct PrismStreakReminder: Sendable {
         self.body = body
     }
 
-    /// Unique identifier for this reminder's notification.
     public var notificationIdentifier: String {
         "prism.streak.\(streakID)"
     }
 
-    /// Converts to a notification request.
     public var notificationRequest: PrismNotificationRequest {
         PrismNotificationRequest(
             identifier: notificationIdentifier,

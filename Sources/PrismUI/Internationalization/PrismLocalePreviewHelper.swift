@@ -1,11 +1,9 @@
 import SwiftUI
 
-/// Renders content in multiple locales side by side for preview comparison.
 public struct PrismMultiLocalePreview<Content: View>: View {
     private let locales: [Locale]
     private let content: Content
 
-    /// Default locales for multi-locale preview.
     public static var defaultLocales: [Locale] {
         [
             Locale(identifier: "en"),
@@ -17,7 +15,6 @@ public struct PrismMultiLocalePreview<Content: View>: View {
         ]
     }
 
-    /// Creates a multi-locale preview with the given locales and content.
     public init(
         locales: [Locale]? = nil,
         @ViewBuilder content: () -> Content
@@ -26,7 +23,6 @@ public struct PrismMultiLocalePreview<Content: View>: View {
         self.content = content()
     }
 
-    /// The preview body rendering content side by side for each locale.
     public var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: 16) {
@@ -63,7 +59,6 @@ public struct PrismMultiLocalePreview<Content: View>: View {
 
 extension View {
 
-    /// Wraps this view in a multi-locale preview with the specified locales.
     public func prismPreviewLocales(_ locales: [Locale] = PrismMultiLocalePreview<EmptyView>.defaultLocales)
         -> some View
     {

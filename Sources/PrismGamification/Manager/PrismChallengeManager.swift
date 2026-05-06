@@ -2,34 +2,12 @@
     import Foundation
     import SwiftData
 
-    /// Primary entry point for gamification features.
-    ///
-    /// Bridges enum-based challenge definitions to persisted SwiftData progress
-    /// with optional CloudKit sync.
-    ///
-    /// ```swift
-    /// let container = try PrismChallengeContainerProvider.makeContainer(
-    ///     cloudKitContainerIdentifier: "iCloud.com.app"
-    /// )
-    /// let manager = PrismChallengeManager(container: container)
-    ///
-    /// try await manager.register(AppChallenge.self)
-    /// try await manager.increment(.tenWorkouts)
-    /// try await manager.complete(.firstLogin)
-    ///
-    /// let done = try await manager.isCompleted(.firstLogin)
-    /// let streak = try await manager.currentStreak("daily")
-    /// ```
     public actor PrismChallengeManager: ModelActor {
-        /// The model executor.
         public nonisolated let modelExecutor: any ModelExecutor
-        /// The model container.
         public nonisolated let modelContainer: ModelContainer
-        /// Stream of challenge events for UI observation.
         public nonisolated let events: AsyncStream<PrismChallengeEvent>
         nonisolated let eventContinuation: AsyncStream<PrismChallengeEvent>.Continuation
 
-        /// Creates a challenge manager backed by the given ModelContainer.
         public init(container: ModelContainer) {
             self.modelContainer = container
             let context = ModelContext(container)
@@ -41,7 +19,6 @@
 
         // MARK: - Registration
 
-        /// Registers all cases of a PrismChallenge enum, creating progress records for new challenges.
         public func register<C: PrismChallenge>(_ challengeType: C.Type) throws {
             for challenge in C.allCases {
                 let id = challenge.rawValue
@@ -63,7 +40,6 @@
 
         // MARK: - Increment
 
-        /// Increments a counter challenge by the given amount.
         @discardableResult
         public func increment<C: PrismChallenge>(
             _ challenge: C,
@@ -101,7 +77,6 @@
 
         // MARK: - Complete
 
-        /// Marks a milestone challenge as completed.
         @discardableResult
         public func complete<C: PrismChallenge>(_ challenge: C) throws -> PrismChallengeSnapshot {
             let record = try fetchProgress(for: challenge.rawValue)
@@ -122,17 +97,14 @@
 
         // MARK: - Query
 
-        /// Returns progress snapshot for a challenge.
         public func progress<C: PrismChallenge>(for challenge: C) throws -> PrismChallengeSnapshot {
             try fetchProgress(for: challenge.rawValue).snapshot
         }
 
-        /// Returns whether a challenge has been completed.
         public func isCompleted<C: PrismChallenge>(_ challenge: C) throws -> Bool {
             try fetchProgress(for: challenge.rawValue).isCompleted
         }
 
-        /// Returns all registered progress snapshots.
         public func allProgress() throws -> [PrismChallengeSnapshot] {
             let descriptor = FetchDescriptor<PrismChallengeProgress>(
                 sortBy: [SortDescriptor(\.createdAt)]
@@ -140,7 +112,6 @@
             return try modelContext.fetch(descriptor).map(\.snapshot)
         }
 
-        /// Returns total points earned from completed challenges.
         public func totalPoints<C: PrismChallenge>(_ challengeType: C.Type) throws -> Int {
             let allRecords = try allProgress()
             let completedIDs = Set(allRecords.filter(\.isCompleted).map(\.challengeID))
@@ -151,7 +122,6 @@
 
         // MARK: - Reset
 
-        /// Resets a single challenge to zero progress.
         public func reset<C: PrismChallenge>(_ challenge: C) throws {
             let record = try fetchProgress(for: challenge.rawValue)
             record.currentValue = 0
@@ -161,7 +131,6 @@
             try modelContext.save()
         }
 
-        /// Resets all challenges of the given type.
         public func resetAll<C: PrismChallenge>(_ challengeType: C.Type) throws {
             for challenge in C.allCases {
                 let record = try fetchProgress(for: challenge.rawValue)
@@ -175,7 +144,6 @@
 
         // MARK: - Streaks
 
-        /// Records a streak-qualifying activity for today.
         public func recordStreakActivity(_ streakID: String, calendar: Calendar = .current) throws {
             let record = try fetchOrCreateStreak(streakID)
             let today = calendar.startOfDay(for: .now)
@@ -209,22 +177,18 @@
             try modelContext.save()
         }
 
-        /// Returns current streak count.
         public func currentStreak(_ streakID: String) throws -> Int {
             try fetchStreak(streakID).currentStreak
         }
 
-        /// Returns longest-ever streak.
         public func longestStreak(_ streakID: String) throws -> Int {
             try fetchStreak(streakID).longestStreak
         }
 
-        /// Returns full streak snapshot.
         public func streakRecord(_ streakID: String) throws -> PrismStreakSnapshot {
             try fetchStreak(streakID).snapshot
         }
 
-        /// Resets a streak to zero.
         public func resetStreak(_ streakID: String) throws {
             let record = try fetchStreak(streakID)
             record.currentStreak = 0

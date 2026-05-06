@@ -1,13 +1,10 @@
 import SwiftUI
 
-/// Debug panel displaying all active design tokens from the current theme.
 public struct PrismTokenInspector: View {
     @Environment(\.prismTheme) private var theme
 
-    /// Creates a token inspector view.
     public init() {}
 
-    /// The token inspector view body with categorized design token sections.
     public var body: some View {
         NavigationStack {
             List {
@@ -143,7 +140,6 @@ public struct PrismTokenInspector: View {
 
 // MARK: - View Modifier
 
-/// Modifier that presents the token inspector as a sheet.
 private struct PrismTokenInspectorModifier: ViewModifier {
     @Binding var isPresented: Bool
 
@@ -155,7 +151,6 @@ private struct PrismTokenInspectorModifier: ViewModifier {
 }
 
 extension View {
-    /// Presents a debug sheet showing all active design tokens.
     public func prismTokenInspector(isPresented: Binding<Bool>) -> some View {
         modifier(PrismTokenInspectorModifier(isPresented: isPresented))
     }

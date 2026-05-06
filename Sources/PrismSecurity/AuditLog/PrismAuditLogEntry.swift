@@ -1,13 +1,10 @@
 import CryptoKit
 import Foundation
 
-/// A tamper-evident audit log entry with hash chain integrity.
 public struct PrismAuditLogEntry: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let event: PrismSecurityEvent
-    /// SHA-256 hash of the previous entry (empty string for first entry).
     public let previousHash: String
-    /// SHA-256 hash of this entry (event + previousHash).
     public let entryHash: String
     public let sequence: Int
 

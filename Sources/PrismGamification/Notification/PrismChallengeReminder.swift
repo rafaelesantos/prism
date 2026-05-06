@@ -1,6 +1,5 @@
 import Foundation
 
-/// Configuration for an incomplete challenge reminder.
 public struct PrismChallengeReminder: Sendable {
     public let challengeID: String
     public let intervalSeconds: TimeInterval

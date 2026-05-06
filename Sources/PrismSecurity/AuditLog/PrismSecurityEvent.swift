@@ -1,6 +1,5 @@
 import Foundation
 
-/// Types of security events tracked in the audit log.
 public enum PrismSecurityEventKind: String, Codable, Sendable, Hashable, CaseIterable {
     case biometricSuccess
     case biometricFailure
@@ -28,7 +27,6 @@ public enum PrismSecurityEventKind: String, Codable, Sendable, Hashable, CaseIte
     case clipboardCleared
 }
 
-/// A single security event for the audit log.
 public struct PrismSecurityEvent: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let kind: PrismSecurityEventKind

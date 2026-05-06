@@ -1,9 +1,5 @@
 import SwiftUI
 
-/// visionOS ornament modifier with graceful fallback on other platforms.
-///
-/// On visionOS, attaches content as an ornament to the specified edge.
-/// On other platforms, renders as an overlay aligned to the corresponding edge.
 private struct PrismOrnamentModifier<OrnamentContent: View>: ViewModifier {
     let edge: Edge
     let ornamentContent: OrnamentContent
@@ -44,7 +40,6 @@ private struct PrismOrnamentModifier<OrnamentContent: View>: ViewModifier {
 
 extension View {
 
-    /// Attaches ornament content on visionOS, or overlay on other platforms.
     public func prismOrnament<Content: View>(
         edge: Edge = .bottom,
         @ViewBuilder content: () -> Content

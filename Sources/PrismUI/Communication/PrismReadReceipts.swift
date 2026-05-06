@@ -1,18 +1,12 @@
 import SwiftUI
 
-/// A record of when a specific user read a message.
 public struct PrismReadReceipt: Identifiable, Sendable, Equatable {
-    /// Unique identifier for the user who read the message.
     public let userId: String
-    /// Display name of the reader.
     public let name: String
-    /// Timestamp when the message was read.
     public let readAt: Date
 
-    /// Stable identifier derived from the userId.
     public var id: String { userId }
 
-    /// Creates a read receipt for a specific user.
     public init(userId: String, name: String, readAt: Date = .now) {
         self.userId = userId
         self.name = name
@@ -20,19 +14,16 @@ public struct PrismReadReceipt: Identifiable, Sendable, Equatable {
     }
 }
 
-/// Small checkmark icon reflecting message delivery and read status.
 @MainActor
 public struct PrismReadReceiptIndicator: View {
     @Environment(\.prismTheme) private var theme
 
     private let status: PrismMessageStatus
 
-    /// Creates a status indicator for the given message status.
     public init(status: PrismMessageStatus) {
         self.status = status
     }
 
-    /// The read receipt indicator view body with status-specific icons.
     public var body: some View {
         Group {
             switch status {
@@ -67,7 +58,6 @@ public struct PrismReadReceiptIndicator: View {
     }
 }
 
-/// An expandable list showing which users have read a message.
 @MainActor
 public struct PrismReadReceiptList: View {
     @Environment(\.prismTheme) private var theme
@@ -76,12 +66,10 @@ public struct PrismReadReceiptList: View {
 
     @State private var isExpanded = false
 
-    /// Creates a receipt list for all readers of a message.
     public init(receipts: [PrismReadReceipt]) {
         self.receipts = receipts
     }
 
-    /// The read receipt list view body with expandable reader details.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.xs.rawValue) {
             Button {

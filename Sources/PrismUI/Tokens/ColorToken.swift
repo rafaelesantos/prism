@@ -1,9 +1,5 @@
 import SwiftUI
 
-/// Semantic color tokens following Apple HIG color roles.
-///
-/// Each case maps to a semantic purpose, not a specific hue.
-/// The theme resolves each token to a concrete `Color`.
 public enum ColorToken: String, Sendable, CaseIterable {
 
     // MARK: - Brand

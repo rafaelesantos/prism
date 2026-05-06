@@ -1,26 +1,13 @@
 import SwiftUI
 
-/// Stagger animation style.
 public enum PrismStaggerStyle: Sendable {
-    /// Items slide up from below.
     case slideUp
-    /// Items slide in from the right.
     case slideLeft
-    /// Items fade in without movement.
     case fadeIn
-    /// Items scale up from a smaller size.
     case scaleIn
-    /// Items slide in from the left.
     case slideRight
 }
 
-/// Staggered animation for lists — each item animates in with a delay.
-///
-/// ```swift
-/// PrismStaggeredList(items: items) { item, index in
-///     PrismCard { Text(item.name) }
-/// }
-/// ```
 @MainActor
 public struct PrismStaggeredList<Item: Identifiable, Content: View>: View {
     let items: [Item]
@@ -29,7 +16,6 @@ public struct PrismStaggeredList<Item: Identifiable, Content: View>: View {
     let animation: PrismStaggerStyle
     let content: (Item, Int) -> Content
 
-    /// Creates a staggered list with configurable delay, spring, and animation style.
     public init(
         items: [Item],
         staggerDelay: Double = 0.05,
@@ -44,7 +30,6 @@ public struct PrismStaggeredList<Item: Identifiable, Content: View>: View {
         self.content = content
     }
 
-    /// The staggered list body rendering items with delayed entrance animations.
     public var body: some View {
         ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
             StaggeredItemView(
@@ -113,7 +98,6 @@ private struct StaggeredItemView<Content: View>: View {
     }
 }
 
-/// Modifier to apply staggered entrance to any view.
 private struct PrismStaggerModifier: ViewModifier {
     @State private var isVisible = false
 
@@ -135,7 +119,6 @@ private struct PrismStaggerModifier: ViewModifier {
 
 extension View {
 
-    /// Staggers this view's entrance animation based on index.
     public func prismStagger(
         index: Int,
         delay: Double = 0.05,

@@ -1,6 +1,5 @@
 import Foundation
 
-/// Routes HTTP requests to registered handlers with middleware support.
 public final class PrismRouter: Sendable {
     private let routes: [PrismRoute]
     private let middlewares: [any PrismMiddleware]
@@ -16,7 +15,6 @@ public final class PrismRouter: Sendable {
         self.groups = groups
     }
 
-    /// Resolves a request to the matching handler, applying middleware chain.
     func handle(_ request: PrismHTTPRequest) async throws -> PrismHTTPResponse {
         if let (route, params) = findRoute(method: request.method, path: request.path, in: routes, groups: groups) {
             var req = request
@@ -101,7 +99,6 @@ public final class PrismRouter: Sendable {
     }
 }
 
-/// A group of routes sharing a common path prefix and middleware stack.
 struct PrismRouteGroup: Sendable {
     let prefix: String
     let middlewares: [any PrismMiddleware]

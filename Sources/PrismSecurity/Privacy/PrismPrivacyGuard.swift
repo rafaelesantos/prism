@@ -1,25 +1,10 @@
 import Foundation
 
-/// Unified privacy guard combining redaction, screen protection, and clipboard management.
-///
-/// ```swift
-/// let privacy = PrismPrivacyGuard()
-///
-/// // Redact PII
-/// let safe = privacy.redact("Email: john@example.com")
-///
-/// // Classify field sensitivity
-/// let level = privacy.classify("email")  // .sensitive
-///
-/// // Secure clipboard
-/// privacy.copySecurely("secret-token")
-/// ```
 public struct PrismPrivacyGuard: Sendable {
     private let redactor: PrismRedactor
     private let clipboardGuard: PrismClipboardGuard
     private let fieldClassifications: [String: PrismPrivacyLevel]
 
-    /// Creates a privacy guard with default configurations.
     public init(
         redactionStyle: PrismRedactor.Style = .mask,
         clipboardTimeout: TimeInterval = 30,
@@ -30,17 +15,14 @@ public struct PrismPrivacyGuard: Sendable {
         self.fieldClassifications = fieldClassifications
     }
 
-    /// Redacts PII from a string.
     public func redact(_ string: String) -> String {
         redactor.redact(string)
     }
 
-    /// Redacts a specific value.
     public func redactValue(_ value: String, type: PrismPIIType) -> String {
         redactor.redactValue(value, type: type)
     }
 
-    /// Classifies a field name by privacy level.
     public func classify(_ fieldName: String) -> PrismPrivacyLevel {
         let lower = fieldName.lowercased()
         if let level = fieldClassifications[lower] { return level }
@@ -57,17 +39,14 @@ public struct PrismPrivacyGuard: Sendable {
         return .public
     }
 
-    /// Copies to clipboard with auto-clear.
     public func copySecurely(_ string: String) {
         clipboardGuard.copySecurely(string)
     }
 
-    /// Clears clipboard immediately.
     public func clearClipboard() {
         clipboardGuard.clearNow()
     }
 
-    /// Applies redaction to a value based on its field classification.
     public func protect(field: String, value: String) -> String {
         let level = classify(field)
         switch level {
@@ -82,7 +61,6 @@ public struct PrismPrivacyGuard: Sendable {
         }
     }
 
-    /// Default field name → privacy level mappings.
     public static let defaultClassifications: [String: PrismPrivacyLevel] = [
         "password": .restricted,
         "secret": .restricted,

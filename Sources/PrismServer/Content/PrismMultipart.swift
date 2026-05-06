@@ -1,17 +1,11 @@
 import Foundation
 
-/// A single part from a multipart/form-data request.
 public struct PrismMultipartPart: Sendable {
-    /// The field name from Content-Disposition.
     public let name: String
-    /// The original filename, if this part is a file upload.
     public let filename: String?
-    /// The Content-Type of this part.
     public let contentType: String?
-    /// The raw data of this part.
     public let data: Data
 
-    /// Creates a multipart part with the given field name, optional filename, content type, and data.
     public init(name: String, filename: String? = nil, contentType: String? = nil, data: Data) {
         self.name = name
         self.filename = filename
@@ -19,19 +13,15 @@ public struct PrismMultipartPart: Sendable {
         self.data = data
     }
 
-    /// Returns the part data as a UTF-8 string.
     public var stringValue: String? {
         String(data: data, encoding: .utf8)
     }
 }
 
-/// Parser for multipart/form-data request bodies.
 public struct PrismMultipartParser: Sendable {
 
-    /// Creates a multipart parser.
     public init() {}
 
-    /// Extracts the boundary string from a Content-Type header.
     public func extractBoundary(from contentType: String) -> String? {
         let parts = contentType.split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) }
         for part in parts {
@@ -46,7 +36,6 @@ public struct PrismMultipartParser: Sendable {
         return nil
     }
 
-    /// Parses multipart/form-data body into individual parts.
     public func parse(data: Data, boundary: String) throws -> [PrismMultipartPart] {
         let boundaryData = Data("--\(boundary)".utf8)
         let endBoundaryData = Data("--\(boundary)--".utf8)
@@ -139,7 +128,6 @@ public struct PrismMultipartParser: Sendable {
 }
 
 extension PrismHTTPRequest {
-    /// Parses the request body as multipart/form-data.
     public func multipartParts() throws -> [PrismMultipartPart] {
         guard let contentType = headers.value(for: PrismHTTPHeaders.contentType),
             contentType.lowercased().contains("multipart/form-data")

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Popover-style hint that appears on long press or hover.
 private struct PrismTooltipModifier: ViewModifier {
     @Environment(\.prismTheme) private var theme
     @State private var isShowing = false
@@ -32,7 +31,6 @@ private struct PrismTooltipModifier: ViewModifier {
 
 extension View {
 
-    /// Adds a tooltip that shows on long press (iOS/tvOS/watchOS) or hover (macOS/visionOS).
     public func prismTooltip(
         _ text: LocalizedStringKey,
         edge: Edge = .top

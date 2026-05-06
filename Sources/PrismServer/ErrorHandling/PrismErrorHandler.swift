@@ -1,22 +1,15 @@
 import Foundation
 
-/// Protocol for application-level errors that map to HTTP responses.
 public protocol PrismHTTPErrorResponse: Error, Sendable {
-    /// The HTTP status code for this error.
     var statusCode: PrismHTTPStatus { get }
-    /// A machine-readable error code string.
     var errorCode: String { get }
-    /// A human-readable error message.
     var message: String { get }
-    /// Optional additional details about the error.
     var details: [String: String]? { get }
 }
 
 extension PrismHTTPErrorResponse {
-    /// Default implementation returning nil details.
     public var details: [String: String]? { nil }
 
-    /// Converts to a structured JSON response.
     public func toResponse() -> PrismHTTPResponse {
         var dict: [String: Any] = [
             "error": errorCode,
@@ -31,18 +24,12 @@ extension PrismHTTPErrorResponse {
     }
 }
 
-/// Common HTTP errors with structured responses.
 public struct PrismAppError: PrismHTTPErrorResponse {
-    /// The HTTP status code for this error.
     public let statusCode: PrismHTTPStatus
-    /// A machine-readable error code string.
     public let errorCode: String
-    /// A human-readable error message.
     public let message: String
-    /// Optional additional details about the error.
     public let details: [String: String]?
 
-    /// Creates an application error with the given status, code, message, and optional details.
     public init(status: PrismHTTPStatus, code: String, message: String, details: [String: String]? = nil) {
         self.statusCode = status
         self.errorCode = code
@@ -50,33 +37,27 @@ public struct PrismAppError: PrismHTTPErrorResponse {
         self.details = details
     }
 
-    /// Creates a 400 Bad Request error.
     public static func badRequest(_ message: String, code: String = "BAD_REQUEST") -> PrismAppError {
         PrismAppError(status: .badRequest, code: code, message: message)
     }
 
-    /// Creates a 401 Unauthorized error.
     public static func unauthorized(_ message: String = "Unauthorized", code: String = "UNAUTHORIZED") -> PrismAppError
     {
         PrismAppError(status: .unauthorized, code: code, message: message)
     }
 
-    /// Creates a 403 Forbidden error.
     public static func forbidden(_ message: String = "Forbidden", code: String = "FORBIDDEN") -> PrismAppError {
         PrismAppError(status: .forbidden, code: code, message: message)
     }
 
-    /// Creates a 404 Not Found error.
     public static func notFound(_ message: String = "Not Found", code: String = "NOT_FOUND") -> PrismAppError {
         PrismAppError(status: .notFound, code: code, message: message)
     }
 
-    /// Creates a 409 Conflict error.
     public static func conflict(_ message: String, code: String = "CONFLICT") -> PrismAppError {
         PrismAppError(status: .conflict, code: code, message: message)
     }
 
-    /// Creates a 500 Internal Server Error.
     public static func internalError(_ message: String = "Internal Server Error", code: String = "INTERNAL_ERROR")
         -> PrismAppError
     {
@@ -84,12 +65,10 @@ public struct PrismAppError: PrismHTTPErrorResponse {
     }
 }
 
-/// Global error handling middleware.
 public struct PrismErrorMiddleware: PrismMiddleware, Sendable {
     private let includeStackTrace: Bool
     private let customHandler: (@Sendable (Error, PrismHTTPRequest) -> PrismHTTPResponse?)?
 
-    /// Creates an error middleware with optional stack trace inclusion and custom handler.
     public init(
         includeStackTrace: Bool = false,
         customHandler: (@Sendable (Error, PrismHTTPRequest) -> PrismHTTPResponse?)? = nil
@@ -98,7 +77,6 @@ public struct PrismErrorMiddleware: PrismMiddleware, Sendable {
         self.customHandler = customHandler
     }
 
-    /// Catches errors thrown by downstream handlers and converts them to structured responses.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         do {
@@ -128,20 +106,13 @@ public struct PrismErrorMiddleware: PrismMiddleware, Sendable {
     }
 }
 
-/// Problem Details response (RFC 7807).
 public struct PrismProblemDetails: Sendable {
-    /// The URI identifying the problem type.
     public let type: String
-    /// A short human-readable summary of the problem.
     public let title: String
-    /// The HTTP status code for this problem.
     public let status: Int
-    /// A detailed explanation of the problem.
     public let detail: String?
-    /// A URI identifying the specific occurrence of the problem.
     public let instance: String?
 
-    /// Creates a problem details response with the given fields.
     public init(
         type: String = "about:blank", title: String, status: Int, detail: String? = nil, instance: String? = nil
     ) {
@@ -152,7 +123,6 @@ public struct PrismProblemDetails: Sendable {
         self.instance = instance
     }
 
-    /// Converts this problem details to an HTTP response with application/problem+json content type.
     public func toResponse() -> PrismHTTPResponse {
         var dict: [String: Any] = [
             "type": type,

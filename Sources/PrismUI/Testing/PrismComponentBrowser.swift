@@ -1,23 +1,12 @@
 import SwiftUI
 
-/// Developer tool that lists all PrismUI components with live previews and toggles.
-///
-/// Not a demo app — a debugging/review tool for development builds.
-///
-/// ```swift
-/// #if DEBUG
-/// PrismComponentBrowser()
-/// #endif
-/// ```
 public struct PrismComponentBrowser: View {
     @Environment(\.prismTheme) private var theme
     @State private var searchText = ""
     @State private var selectedCategory: ComponentCategory?
 
-    /// Creates a component browser instance.
     public init() {}
 
-    /// The view body.
     public var body: some View {
         NavigationStack {
             List {

@@ -1,22 +1,15 @@
 import SwiftUI
 
-/// Contract for a complete Prism design theme.
-///
-/// Implement this protocol to provide a custom color palette
-/// while keeping all other design tokens consistent.
 @MainActor
 public protocol PrismTheme: Sendable {
     func color(_ token: ColorToken) -> Color
 }
 
-/// Default theme using Apple HIG system colors.
 public struct DefaultTheme: PrismTheme, Sendable {
 
-    /// Creates a default theme instance.
     public init() {}
 
     // swiftlint:disable:next cyclomatic_complexity
-    /// Resolves a color token to a concrete color using system-adaptive defaults.
     public func color(_ token: ColorToken) -> Color {
         switch token {
         case .brand: .accentColor

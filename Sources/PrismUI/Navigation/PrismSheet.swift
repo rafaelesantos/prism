@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Themed sheet presentation with configurable detents, sizing, and dismiss control.
 private struct PrismSheetModifier<SheetContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     let detents: Set<PresentationDetent>
@@ -21,13 +20,9 @@ private struct PrismSheetModifier<SheetContent: View>: ViewModifier {
     }
 }
 
-/// Sheet background style options.
 public enum PrismSheetBackground: Sendable {
-    /// Represents the system-default sheet background.
     case automatic
-    /// Represents an ultra-thin material sheet background.
     case material
-    /// Represents a transparent sheet background.
     case clear
 }
 
@@ -48,7 +43,6 @@ private struct SheetBackgroundModifier: ViewModifier {
     }
 }
 
-/// Item-based sheet presentation.
 private struct PrismItemSheetModifier<Item: Identifiable, SheetContent: View>: ViewModifier {
     @Binding var item: Item?
     let detents: Set<PresentationDetent>
@@ -65,7 +59,6 @@ private struct PrismItemSheetModifier<Item: Identifiable, SheetContent: View>: V
     }
 }
 
-/// Confirmation dialog with themed presentation.
 private struct PrismConfirmationDialogModifier<Actions: View, Message: View>: ViewModifier {
     let title: LocalizedStringKey
     @Binding var isPresented: Bool
@@ -89,7 +82,6 @@ private struct PrismConfirmationDialogModifier<Actions: View, Message: View>: Vi
     }
 }
 
-/// Inspector sidebar presentation for iPad/macOS.
 private struct PrismInspectorModifier<InspectorContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     let inspectorContent: () -> InspectorContent
@@ -104,7 +96,6 @@ private struct PrismInspectorModifier<InspectorContent: View>: ViewModifier {
 
 extension View {
 
-    /// Presents a themed sheet with configurable detents.
     public func prismSheet<Content: View>(
         isPresented: Binding<Bool>,
         detents: Set<PresentationDetent> = [.large],
@@ -124,7 +115,6 @@ extension View {
             ))
     }
 
-    /// Presents a sheet bound to an optional identifiable item.
     public func prismSheet<Item: Identifiable, Content: View>(
         item: Binding<Item?>,
         detents: Set<PresentationDetent> = [.large],
@@ -140,7 +130,6 @@ extension View {
             ))
     }
 
-    /// Presents a confirmation dialog with themed actions.
     public func prismConfirmationDialog<Actions: View>(
         _ title: LocalizedStringKey,
         isPresented: Binding<Bool>,
@@ -155,7 +144,6 @@ extension View {
             ))
     }
 
-    /// Presents a confirmation dialog with message.
     public func prismConfirmationDialog<Actions: View, Message: View>(
         _ title: LocalizedStringKey,
         isPresented: Binding<Bool>,
@@ -171,7 +159,6 @@ extension View {
             ))
     }
 
-    /// Presents an inspector sidebar (iPad/macOS).
     public func prismInspector<Content: View>(
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content

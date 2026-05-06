@@ -4,7 +4,6 @@
 
     // MARK: - Migration Protocol
 
-    /// MigrationStep protocol.
     public protocol PrismMigrationStep: Sendable {
         var name: String { get }
         func up(_ db: PrismDatabase) async throws
@@ -13,18 +12,12 @@
 
     // MARK: - Migration Record
 
-    /// Tracks the name and timestamp of an applied database migration.
     public struct PrismMigrationRecord: Sendable {
-        /// The id.
         public let id: Int
-        /// The name.
         public let name: String
-        /// The batch.
         public let batch: Int
-        /// The applied at.
         public let appliedAt: String
 
-        /// Creates a new `PrismMigrationRecord` with the specified configuration.
         public init(id: Int, name: String, batch: Int, appliedAt: String) {
             self.id = id
             self.name = name
@@ -35,20 +28,15 @@
 
     // MARK: - Migration Status
 
-    /// Whether a migration has been applied or is still pending.
     public enum PrismMigrationStatus: Sendable {
         case pending
         case applied(batch: Int, appliedAt: String)
     }
 
-    /// Information about a Migration.
     public struct PrismMigrationInfo: Sendable {
-        /// The name.
         public let name: String
-        /// The status.
         public let status: PrismMigrationStatus
 
-        /// Creates a new `PrismMigrationInfo` with the specified configuration.
         public init(name: String, status: PrismMigrationStatus) {
             self.name = name
             self.status = status
@@ -57,23 +45,19 @@
 
     // MARK: - Migration Runner
 
-    /// Executes, rolls back, and tracks database migrations.
     public actor PrismMigrationRunner {
         private let db: PrismDatabase
         private var migrations: [any PrismMigrationStep] = []
         private var initialized = false
 
-        /// Creates a new `PrismMigrationRunner` with the specified configuration.
         public init(database: PrismDatabase) {
             self.db = database
         }
 
-        /// Registers a new entry.
         public func register(_ migration: any PrismMigrationStep) {
             migrations.append(migration)
         }
 
-        /// Registers all provided migrations in order.
         public func registerAll(_ steps: [any PrismMigrationStep]) {
             migrations.append(contentsOf: steps)
         }
@@ -92,7 +76,6 @@
             initialized = true
         }
 
-        /// Applies all pending migrations and returns the list of applied migration names.
         public func migrate() async throws -> [String] {
             try await ensureTable()
             let applied = try await appliedNames()
@@ -115,7 +98,6 @@
             return ran
         }
 
-        /// Rolls back the specified number of most recent migrations.
         public func rollback() async throws -> [String] {
             try await ensureTable()
             let lastBatch = try await currentBatch()
@@ -142,7 +124,6 @@
             return rolledBack
         }
 
-        /// Rolls back all applied migrations in reverse order.
         public func rollbackAll() async throws -> [String] {
             try await ensureTable()
             var allRolledBack: [String] = []
@@ -155,14 +136,12 @@
             return allRolledBack
         }
 
-        /// Resets to the initial state.
         public func reset() async throws -> [String] {
             let rolledBack = try await rollbackAll()
             let migrated = try await migrate()
             return rolledBack + migrated
         }
 
-        /// Returns the migration status list showing applied and pending migrations.
         public func status() async throws -> [PrismMigrationInfo] {
             try await ensureTable()
             let applied = try await appliedRecords()
@@ -180,7 +159,6 @@
             }
         }
 
-        /// Returns the number of migrations that have not yet been applied.
         public func pendingCount() async throws -> Int {
             try await ensureTable()
             let applied = try await appliedNames()

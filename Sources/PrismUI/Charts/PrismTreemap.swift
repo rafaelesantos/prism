@@ -1,19 +1,12 @@
 import SwiftUI
 
-/// A node in a treemap hierarchy.
 public struct PrismTreemapItem: Sendable, Identifiable, Hashable {
-    /// Unique identifier for this item.
     public let id: String
-    /// Display label for the node.
     public let label: String
-    /// Numeric weight driving the area allocation.
     public let value: Double
-    /// Optional override color for this node.
     public let color: Color?
-    /// Child nodes for drill-down navigation.
     public let children: [PrismTreemapItem]
 
-    /// Creates a treemap node.
     public init(
         id: String,
         label: String,
@@ -28,18 +21,15 @@ public struct PrismTreemapItem: Sendable, Identifiable, Hashable {
         self.children = children
     }
 
-    /// Compares two treemap items by their unique identifiers.
     public static func == (lhs: PrismTreemapItem, rhs: PrismTreemapItem) -> Bool {
         lhs.id == rhs.id
     }
 
-    /// Hashes the treemap item using its unique identifier.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
-/// A treemap chart using a squarified layout algorithm with drill-down.
 @MainActor
 public struct PrismTreemap: View {
     @Environment(\.prismTheme) private var theme
@@ -48,7 +38,6 @@ public struct PrismTreemap: View {
     private let rootItems: [PrismTreemapItem]
     private let palette: [Color]
 
-    /// Creates a treemap from a list of hierarchical items.
     public init(
         items: [PrismTreemapItem],
         palette: [Color]? = nil
@@ -67,7 +56,6 @@ public struct PrismTreemap: View {
         }
     }
 
-    /// The treemap view body with breadcrumb navigation and squarified layout.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             if !breadcrumb.isEmpty {
@@ -148,7 +136,6 @@ public struct PrismTreemap: View {
         }
     }
 
-    /// Squarified treemap layout producing positioned rects for each item.
     private func squarify(items: [PrismTreemapItem], in rect: CGRect) -> [(PrismTreemapItem, CGRect)] {
         let totalValue = items.reduce(0) { $0 + max($1.value, 0) }
         guard totalValue > 0, !items.isEmpty else { return [] }

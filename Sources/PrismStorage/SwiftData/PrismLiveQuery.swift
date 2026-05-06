@@ -2,7 +2,6 @@
     import Foundation
     import SwiftData
 
-    /// Provides an AsyncStream that emits the count of matching models at a polling interval.
     public struct PrismLiveQuery<T: PersistentModel>: Sendable {
         private let container: ModelContainer
         private let descriptor: FetchDescriptor<T>
@@ -18,7 +17,6 @@
             self.interval = interval
         }
 
-        /// Stream of result counts — use to trigger re-fetches from the main context.
         public func countStream() -> AsyncStream<Int> {
             let container = self.container
             let descriptor = self.descriptor

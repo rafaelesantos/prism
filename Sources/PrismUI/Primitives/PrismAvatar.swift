@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// User avatar with image, initials fallback, and optional status indicator.
 public struct PrismAvatar: View {
     @Environment(\.prismTheme) private var theme
 
@@ -8,7 +7,6 @@ public struct PrismAvatar: View {
     private let size: Size
     private let status: Status?
 
-    /// Creates an avatar from a SwiftUI Image.
     public init(
         image: Image,
         size: Size = .medium,
@@ -19,7 +17,6 @@ public struct PrismAvatar: View {
         self.status = status
     }
 
-    /// Creates an avatar that loads an image from a URL.
     public init(
         url: URL?,
         size: Size = .medium,
@@ -30,7 +27,6 @@ public struct PrismAvatar: View {
         self.status = status
     }
 
-    /// Creates an avatar displaying up to two initials on a branded background.
     public init(
         initials: String,
         size: Size = .medium,
@@ -41,7 +37,6 @@ public struct PrismAvatar: View {
         self.status = status
     }
 
-    /// The content and behavior of the avatar.
     public var body: some View {
         avatarContent
             .frame(width: size.dimension, height: size.dimension)
@@ -126,17 +121,11 @@ extension PrismAvatar {
         case initials(String)
     }
 
-    /// Predefined avatar sizes.
     public enum Size: Sendable {
-        /// Represents a 32pt avatar.
         case small
-        /// Represents a 40pt avatar.
         case medium
-        /// Represents a 56pt avatar.
         case large
-        /// Represents an 80pt avatar.
         case xLarge
-        /// Represents a custom-sized avatar.
         case custom(CGFloat)
 
         var dimension: CGFloat {
@@ -160,15 +149,10 @@ extension PrismAvatar {
         }
     }
 
-    /// Online presence status indicators for the avatar.
     public enum Status: Sendable {
-        /// Represents an online/available status.
         case online
-        /// Represents an offline/disconnected status.
         case offline
-        /// Represents a busy/do-not-disturb status.
         case busy
-        /// Represents an away/idle status.
         case away
 
         @MainActor

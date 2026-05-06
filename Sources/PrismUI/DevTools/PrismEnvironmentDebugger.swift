@@ -1,21 +1,13 @@
 import SwiftUI
 
-/// Captures a snapshot of the current SwiftUI environment values.
 public struct PrismEnvironmentSnapshot: Sendable {
-    /// The current color scheme (light/dark).
     public let colorScheme: ColorScheme
-    /// The current dynamic type size.
     public let dynamicTypeSize: DynamicTypeSize
-    /// The current layout direction (LTR/RTL).
     public let layoutDirection: LayoutDirection
-    /// Whether accessibility features are enabled.
     public let accessibilityEnabled: Bool
-    /// Whether reduce motion is active.
     public let reduceMotion: Bool
-    /// Whether reduce transparency is active.
     public let reduceTransparency: Bool
 
-    /// Creates a snapshot with explicit environment values.
     public init(
         colorScheme: ColorScheme,
         dynamicTypeSize: DynamicTypeSize,
@@ -33,7 +25,6 @@ public struct PrismEnvironmentSnapshot: Sendable {
     }
 }
 
-/// Displays the current environment values in a debug panel.
 public struct PrismEnvironmentDebugger: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -42,10 +33,8 @@ public struct PrismEnvironmentDebugger: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
-    /// Creates an environment debugger view.
     public init() {}
 
-    /// Returns a snapshot of the current environment.
     public var snapshot: PrismEnvironmentSnapshot {
         PrismEnvironmentSnapshot(
             colorScheme: colorScheme,
@@ -57,7 +46,6 @@ public struct PrismEnvironmentDebugger: View {
         )
     }
 
-    /// The environment debugger view body listing current settings.
     public var body: some View {
         List {
             Section("Environment") {
@@ -116,7 +104,6 @@ public struct PrismEnvironmentDebugger: View {
 
 // MARK: - Floating Badge Modifier
 
-/// Modifier that adds a small floating badge with key environment values.
 private struct PrismEnvironmentDebugBadge: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -150,7 +137,6 @@ private struct PrismEnvironmentDebugBadge: ViewModifier {
 }
 
 extension View {
-    /// Adds a small floating badge showing key environment values in DEBUG builds.
     public func prismEnvironmentDebug() -> some View {
         modifier(PrismEnvironmentDebugBadge())
     }

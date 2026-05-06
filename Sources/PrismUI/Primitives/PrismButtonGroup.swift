@@ -1,20 +1,11 @@
 import SwiftUI
 
-/// Horizontal group of related buttons with consistent spacing and style.
-///
-/// ```swift
-/// PrismButtonGroup {
-///     PrismButton("Cancel", variant: .bordered) { dismiss() }
-///     PrismButton("Delete", variant: .filled, role: .destructive) { delete() }
-/// }
-/// ```
 @MainActor
 public struct PrismButtonGroup<Content: View>: View {
     private let alignment: HorizontalAlignment
     private let spacing: SpacingToken
     private let content: Content
 
-    /// Creates a button group with alignment, spacing, and button content.
     public init(
         alignment: HorizontalAlignment = .center,
         spacing: SpacingToken = .md,
@@ -25,7 +16,6 @@ public struct PrismButtonGroup<Content: View>: View {
         self.content = content()
     }
 
-    /// The content and behavior of the button group.
     public var body: some View {
         HStack(spacing: spacing.rawValue) {
             content
@@ -35,14 +25,6 @@ public struct PrismButtonGroup<Content: View>: View {
     }
 }
 
-/// Segmented button strip — mutually exclusive option group.
-///
-/// ```swift
-/// PrismSegmentedButtons(
-///     options: ["Day", "Week", "Month"],
-///     selection: $period
-/// )
-/// ```
 @MainActor
 public struct PrismSegmentedButtons: View {
     @Environment(\.prismTheme) private var theme
@@ -50,13 +32,11 @@ public struct PrismSegmentedButtons: View {
     let options: [String]
     @Binding var selection: String
 
-    /// Creates a segmented control with the given options and selection binding.
     public init(options: [String], selection: Binding<String>) {
         self.options = options
         self._selection = selection
     }
 
-    /// The content and behavior of the segmented buttons.
     public var body: some View {
         HStack(spacing: 0) {
             ForEach(options, id: \.self) { option in

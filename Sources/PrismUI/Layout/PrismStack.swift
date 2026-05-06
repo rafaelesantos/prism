@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Adaptive stack that switches between VStack and HStack based on size class.
 public struct PrismAdaptiveStack<Content: View>: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
 
@@ -9,7 +8,6 @@ public struct PrismAdaptiveStack<Content: View>: View {
     private let alignment: Alignment
     private let content: Content
 
-    /// Creates an adaptive stack that switches layout based on size class threshold.
     public init(
         spacing: SpacingToken = .md,
         threshold: UserInterfaceSizeClass = .regular,
@@ -22,7 +20,6 @@ public struct PrismAdaptiveStack<Content: View>: View {
         self.content = content()
     }
 
-    /// The content and behavior of the adaptive stack.
     public var body: some View {
         if sizeClass == threshold {
             HStack(alignment: alignment.vertical, spacing: spacing.rawValue) {

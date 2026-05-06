@@ -1,19 +1,5 @@
 import SwiftUI
 
-/// Themed master-detail navigation with NavigationSplitView.
-///
-/// Provides two-column (sidebar + detail) and three-column layouts
-/// following Apple HIG split view patterns.
-///
-/// ```swift
-/// PrismSplitView {
-///     List(items) { item in
-///         NavigationLink(value: item) { Text(item.name) }
-///     }
-/// } detail: {
-///     Text("Select an item")
-/// }
-/// ```
 public struct PrismSplitView<Sidebar: View, Detail: View>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -21,7 +7,6 @@ public struct PrismSplitView<Sidebar: View, Detail: View>: View {
     private let sidebar: Sidebar
     private let detail: Detail
 
-    /// Creates a two-column split view with sidebar and detail panes.
     public init(
         columnVisibility: NavigationSplitViewVisibility? = nil,
         @ViewBuilder sidebar: () -> Sidebar,
@@ -32,7 +17,6 @@ public struct PrismSplitView<Sidebar: View, Detail: View>: View {
         self.detail = detail()
     }
 
-    /// The content and behavior of the split view.
     public var body: some View {
         if let columnVisibility {
             NavigationSplitView(columnVisibility: .constant(columnVisibility)) {
@@ -50,13 +34,11 @@ public struct PrismSplitView<Sidebar: View, Detail: View>: View {
     }
 }
 
-/// Three-column split view (sidebar, content, detail).
 public struct PrismThreeColumnView<Sidebar: View, Content: View, Detail: View>: View {
     private let sidebar: Sidebar
     private let content: Content
     private let detail: Detail
 
-    /// Creates a three-column split view with sidebar, content, and detail panes.
     public init(
         @ViewBuilder sidebar: () -> Sidebar,
         @ViewBuilder content: () -> Content,
@@ -67,7 +49,6 @@ public struct PrismThreeColumnView<Sidebar: View, Content: View, Detail: View>: 
         self.detail = detail()
     }
 
-    /// The content and behavior of the three-column split view.
     public var body: some View {
         NavigationSplitView {
             sidebar

@@ -1,29 +1,11 @@
 import CryptoKit
 import Foundation
 
-/// High-level secure storage combining encryption + keychain in one call.
-///
-/// Encrypts data with AES-GCM or ChaChaPoly, stores the encryption key in the Keychain
-/// (optionally biometric-protected), and persists the encrypted payload alongside it.
-///
-/// ```swift
-/// let store = PrismSecureStore()
-///
-/// // Save
-/// try store.save("secret-token", forKey: "apiToken")
-///
-/// // Load
-/// let token: String = try store.load(String.self, forKey: "apiToken")
-///
-/// // Delete
-/// try store.delete(forKey: "apiToken")
-/// ```
 public struct PrismSecureStore: Sendable {
     private let encryptor: PrismEncryptor
     private let keychain: PrismKeychain
     private let configuration: PrismSecureStoreConfiguration
 
-    /// Creates a secure store with the given configuration.
     public init(configuration: PrismSecureStoreConfiguration = .default) {
         self.encryptor = PrismEncryptor(algorithm: configuration.algorithm)
         self.keychain = PrismKeychain(service: configuration.service)
@@ -32,10 +14,6 @@ public struct PrismSecureStore: Sendable {
 
     // MARK: - Codable Operations
 
-    /// Encrypts and stores a Codable value.
-    /// - Parameters:
-    ///   - value: Value to store securely.
-    ///   - key: Storage key identifier.
     public func save<T: Codable & Sendable>(_ value: T, forKey key: String) throws {
         let data: Data
         do {
@@ -47,11 +25,6 @@ public struct PrismSecureStore: Sendable {
         try saveData(data, forKey: key)
     }
 
-    /// Loads and decrypts a Codable value.
-    /// - Parameters:
-    ///   - type: Expected value type.
-    ///   - key: Storage key identifier.
-    /// - Returns: Decrypted and decoded value.
     public func load<T: Codable & Sendable>(_ type: T.Type, forKey key: String) throws -> T {
         let data = try loadData(forKey: key)
 
@@ -64,7 +37,6 @@ public struct PrismSecureStore: Sendable {
 
     // MARK: - String Operations
 
-    /// Encrypts and stores a string value.
     public func save(_ string: String, forKey key: String) throws {
         guard let data = string.data(using: .utf8) else {
             throw PrismSecurityError.serializationFailed
@@ -72,7 +44,6 @@ public struct PrismSecureStore: Sendable {
         try saveData(data, forKey: key)
     }
 
-    /// Loads and decrypts a string value.
     public func loadString(forKey key: String) throws -> String {
         let data = try loadData(forKey: key)
         guard let string = String(data: data, encoding: .utf8) else {
@@ -83,7 +54,6 @@ public struct PrismSecureStore: Sendable {
 
     // MARK: - Data Operations
 
-    /// Encrypts and stores raw data.
     public func saveData(_ data: Data, forKey key: String) throws {
         let encryptionKey = try getOrCreateEncryptionKey(forKey: key)
         let encrypted = try encryptor.encrypt(data, using: encryptionKey)
@@ -97,7 +67,6 @@ public struct PrismSecureStore: Sendable {
         try keychain.save(data: encrypted, for: dataItem)
     }
 
-    /// Loads and decrypts raw data.
     public func loadData(forKey key: String) throws -> Data {
         let encryptionKey = try loadEncryptionKey(forKey: key)
 
@@ -113,7 +82,6 @@ public struct PrismSecureStore: Sendable {
 
     // MARK: - Management
 
-    /// Deletes a stored value and its encryption key.
     public func delete(forKey key: String) throws {
         let keyItem = PrismKeychainItem(
             id: "key_\(key)",
@@ -131,7 +99,6 @@ public struct PrismSecureStore: Sendable {
         try keychain.delete(for: dataItem)
     }
 
-    /// Whether a value exists for the given key.
     public func exists(forKey key: String) -> Bool {
         let dataItem = PrismKeychainItem(
             id: "data_\(key)",
@@ -142,7 +109,6 @@ public struct PrismSecureStore: Sendable {
         return keychain.exists(for: dataItem)
     }
 
-    /// Deletes all stored values and keys.
     public func deleteAll() throws {
         try keychain.deleteAll()
     }

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// A themed button with variant styles, loading state, haptic feedback, and built-in accessibility.
 public struct PrismButton<Label: View>: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.isEnabled) private var isEnabled
@@ -15,7 +14,6 @@ public struct PrismButton<Label: View>: View {
     @State private var isLoading = false
     @State private var isPressed = false
 
-    /// Creates a button with a localized title, variant style, and async action.
     public init(
         _ title: LocalizedStringKey,
         variant: PrismButtonVariant = .filled,
@@ -30,7 +28,6 @@ public struct PrismButton<Label: View>: View {
         self.action = action
     }
 
-    /// Creates a button with a custom label, variant style, and async action.
     public init(
         variant: PrismButtonVariant = .filled,
         role: ButtonRole? = nil,
@@ -45,7 +42,6 @@ public struct PrismButton<Label: View>: View {
         self.action = action
     }
 
-    /// The content and behavior of the button.
     public var body: some View {
         let button = Button(role: role) {
             guard !isLoading else { return }
@@ -113,31 +109,19 @@ public struct PrismButton<Label: View>: View {
 
 // MARK: - Types
 
-/// Visual style variants for PrismButton.
 public enum PrismButtonVariant: Sendable {
-    /// Represents a solid filled button with brand color.
     case filled
-    /// Represents a tinted button with a translucent background.
     case tinted
-    /// Represents a button with a visible border outline.
     case bordered
-    /// Represents a plain text button with no background.
     case plain
-    /// Represents a Liquid Glass styled button.
     case glass
-    /// Represents a prominent Liquid Glass styled button.
     case glassProminent
 }
 
-/// Haptic feedback intensity for PrismButton taps.
 public enum PrismButtonHaptic: Sendable {
-    /// Represents no haptic feedback.
     case none
-    /// Represents a light haptic feedback.
     case light
-    /// Represents a medium haptic feedback.
     case medium
-    /// Represents a heavy haptic feedback.
     case heavy
 }
 

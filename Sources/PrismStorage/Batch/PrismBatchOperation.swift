@@ -1,12 +1,10 @@
 import Foundation
 
-/// Batch operation types for bulk storage mutations.
 public enum PrismBatchAction<T: Codable & Sendable>: Sendable {
     case save(key: String, value: T)
     case delete(key: String)
 }
 
-/// Executes bulk operations against a sync store in a single logical batch.
 public struct PrismBatchWriter: Sendable {
     private let store: PrismStorageProtocol
 
@@ -59,7 +57,6 @@ public struct PrismBatchWriter: Sendable {
     }
 }
 
-/// Async variant for actor-based stores.
 public struct PrismAsyncBatchWriter: Sendable {
     private let store: PrismAsyncStorageProtocol
 

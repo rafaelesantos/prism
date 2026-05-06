@@ -1,12 +1,5 @@
 import SwiftUI
 
-/// Compact circular icon button with theme-aware styling.
-///
-/// ```swift
-/// PrismIconButton("heart.fill", variant: .filled) {
-///     toggleFavorite()
-/// }
-/// ```
 public struct PrismIconButton: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.isEnabled) private var isEnabled
@@ -17,7 +10,6 @@ public struct PrismIconButton: View {
     private let role: ButtonRole?
     private let action: () -> Void
 
-    /// Creates an icon button with a system image, variant, size, and action.
     public init(
         _ systemName: String,
         variant: PrismButtonVariant = .tinted,
@@ -32,7 +24,6 @@ public struct PrismIconButton: View {
         self.action = action
     }
 
-    /// The content and behavior of the icon button.
     public var body: some View {
         Button(role: role, action: action) {
             Image(systemName: systemName)
@@ -72,13 +63,9 @@ public struct PrismIconButton: View {
 }
 
 extension PrismIconButton {
-    /// Predefined icon button sizes.
     public enum Size: Sendable {
-        /// Represents a compact 32pt icon button.
         case small
-        /// Represents a standard 40pt icon button.
         case regular
-        /// Represents a large 52pt icon button.
         case large
 
         var iconSize: CGFloat {

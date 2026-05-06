@@ -1,6 +1,5 @@
 import Foundation
 
-/// Type-safe key for UserDefaults storage.
 public struct PrismDefaultKey<Value: Codable & Sendable>: Sendable {
     public let name: String
     public let defaultValue: Value

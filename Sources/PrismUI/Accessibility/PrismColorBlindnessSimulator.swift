@@ -1,23 +1,14 @@
 import SwiftUI
 
-/// Vision deficiency types for color blindness simulation.
 public enum PrismColorBlindnessType: String, Sendable, CaseIterable, Hashable {
-    /// Red-blind — no red cone function.
     case protanopia
-    /// Green-blind — no green cone function.
     case deuteranopia
-    /// Blue-blind — no blue cone function.
     case tritanopia
-    /// Total color blindness — monochromatic vision.
     case achromatopsia
-    /// Red-weak — reduced red cone sensitivity.
     case protanomaly
-    /// Green-weak — reduced green cone sensitivity.
     case deuteranomaly
-    /// Blue-weak — reduced blue cone sensitivity.
     case tritanomaly
 
-    /// 3x3 color transformation matrix for this vision type.
     var matrix: [[Double]] {
         switch self {
         case .protanopia:
@@ -66,10 +57,8 @@ public enum PrismColorBlindnessType: String, Sendable, CaseIterable, Hashable {
     }
 }
 
-/// Simulates color appearance under different vision deficiencies.
 public struct PrismColorBlindnessSimulator: Sendable {
 
-    /// Transforms a color to simulate how it appears under a given vision deficiency.
     public static func simulate(_ color: Color, type: PrismColorBlindnessType) -> Color {
         let resolved = color.resolve(in: EnvironmentValues())
         let r = Double(resolved.red)
@@ -88,7 +77,6 @@ public struct PrismColorBlindnessSimulator: Sendable {
     }
 }
 
-/// View modifier that simulates color blindness on wrapped content.
 private struct ColorBlindnessSimulatorModifier: ViewModifier {
     let type: PrismColorBlindnessType
 
@@ -100,7 +88,6 @@ private struct ColorBlindnessSimulatorModifier: ViewModifier {
 
 extension View {
 
-    /// Wraps the view in a color blindness simulation overlay.
     public func prismSimulateColorBlindness(_ type: PrismColorBlindnessType) -> some View {
         modifier(ColorBlindnessSimulatorModifier(type: type))
     }

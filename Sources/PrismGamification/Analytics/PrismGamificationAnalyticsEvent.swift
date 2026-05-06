@@ -1,6 +1,5 @@
 import Foundation
 
-/// Structured analytics events for gamification.
 public enum PrismGamificationAnalyticsEvent: Sendable {
     case challengeStarted(challengeID: String, at: Date)
     case challengeCompleted(challengeID: String, at: Date, duration: TimeInterval?)
@@ -10,7 +9,6 @@ public enum PrismGamificationAnalyticsEvent: Sendable {
     case badgeUnlocked(badgeID: String, tier: String)
     case leaderboardScoreSubmitted(userID: String, score: Int)
 
-    /// Event type name for storage.
     public var eventType: String {
         switch self {
         case .challengeStarted: "challenge_started"
@@ -23,7 +21,6 @@ public enum PrismGamificationAnalyticsEvent: Sendable {
         }
     }
 
-    /// Entity ID associated with the event.
     public var entityID: String {
         switch self {
         case .challengeStarted(let id, _),

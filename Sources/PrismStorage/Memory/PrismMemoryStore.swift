@@ -1,6 +1,5 @@
 import Foundation
 
-/// In-memory LRU cache with TTL, eviction, and statistics.
 public actor PrismMemoryStore: PrismAsyncStorageProtocol {
     private var entries: [String: MemoryEntry] = [:]
     private var accessOrder: [String] = []

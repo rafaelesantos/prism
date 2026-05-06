@@ -1,6 +1,5 @@
 import Foundation
 
-/// A single migration step with a version identifier and transform closure.
 public struct PrismMigrationStep: Sendable {
     public let version: Int
     public let migrate: @Sendable (PrismStorageProtocol) throws -> Void
@@ -11,7 +10,6 @@ public struct PrismMigrationStep: Sendable {
     }
 }
 
-/// Runs ordered migrations against a storage engine, tracking current version.
 public struct PrismStorageMigrator: Sendable {
     private let store: PrismStorageProtocol
     private let versionKey: String

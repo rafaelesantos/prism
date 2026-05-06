@@ -1,12 +1,5 @@
 import SwiftUI
 
-/// Live runtime theme builder with sliders/pickers for every token category.
-///
-/// ```swift
-/// #if DEBUG
-/// PrismThemeEditor()
-/// #endif
-/// ```
 @MainActor
 public struct PrismThemeEditor: View {
     @State private var brandColor: Color = .blue
@@ -25,14 +18,12 @@ public struct PrismThemeEditor: View {
     @State private var previewDarkMode = false
     @State private var showExport = false
 
-    /// Creates a theme editor instance.
     public init() {}
 
     private var editorTheme: BrandTheme {
         BrandTheme(primary: brandColor, secondary: secondaryColor, accent: accentColor)
     }
 
-    /// The view body.
     public var body: some View {
         NavigationStack {
             List {

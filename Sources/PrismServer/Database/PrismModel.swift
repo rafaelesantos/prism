@@ -1,39 +1,31 @@
 #if canImport(SQLite3)
     import Foundation
 
-    /// Protocol for Codable database models with automatic CRUD operations.
     public protocol PrismModel: Codable, Sendable {
-        /// The database table name. Defaults to the type name lowercased + "s".
         static var tableName: String { get }
-        /// The primary key column name. Defaults to "id".
         static var primaryKey: String { get }
     }
 
     extension PrismModel {
-        /// Default table name derived from the type name lowercased with "s" suffix.
         public static var tableName: String {
             String(describing: Self.self).lowercased() + "s"
         }
 
-        /// Default primary key column name.
         public static var primaryKey: String { "id" }
     }
 
     extension PrismDatabase {
-        /// Fetches all rows as a model type.
         public func all<T: PrismModel>(_ type: T.Type) async throws -> [T] {
             let rows = try await query("SELECT * FROM \(T.tableName)")
             return try rows.map { try decodeRow($0, as: type) }
         }
 
-        /// Finds a model by primary key.
         public func find<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) async throws -> T? {
             let rows = try await query(
                 "SELECT * FROM \(T.tableName) WHERE \(T.primaryKey) = ? LIMIT 1", parameters: [id])
             return try rows.first.map { try decodeRow($0, as: type) }
         }
 
-        /// Inserts a model and returns the inserted row ID.
         @discardableResult
         public func insert<T: PrismModel>(_ model: T) async throws -> Int64 {
             let values = try encodeModel(model)
@@ -45,7 +37,6 @@
             return lastInsertID
         }
 
-        /// Deletes a model by primary key.
         @discardableResult
         public func delete<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) async throws -> Int {
             try await execute("DELETE FROM \(T.tableName) WHERE \(T.primaryKey) = ?", parameters: [id])

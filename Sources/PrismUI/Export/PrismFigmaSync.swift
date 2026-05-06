@@ -1,25 +1,10 @@
 import SwiftUI
 
-/// Bidirectional Figma token sync — export and import.
-///
-/// Export: generates Figma Variables-compatible JSON from current theme.
-/// Import: parses Figma Variables JSON and creates a BrandTheme.
-///
-/// ```swift
-/// // Export
-/// let json = PrismFigmaSync.exportVariables(theme: DefaultTheme())
-///
-/// // Import
-/// if let theme = PrismFigmaSync.importTheme(from: jsonData) {
-///     ContentView().prismTheme(theme)
-/// }
-/// ```
 @MainActor
 public enum PrismFigmaSync {
 
     // MARK: - Export (Figma Variables format)
 
-    /// Exports as Figma Variables-compatible JSON.
     public static func exportVariables(theme: some PrismTheme) -> [String: Any] {
         [
             "version": "1.0",
@@ -30,7 +15,6 @@ public enum PrismFigmaSync {
         ]
     }
 
-    /// Exports as Figma Variables JSON data.
     public static func exportVariablesData(theme: some PrismTheme) -> Data? {
         try? JSONSerialization.data(
             withJSONObject: exportVariables(theme: theme),
@@ -38,7 +22,6 @@ public enum PrismFigmaSync {
         )
     }
 
-    /// Exports as Figma Variables JSON string.
     public static func exportVariablesString(theme: some PrismTheme) -> String? {
         guard let data = exportVariablesData(theme: theme) else { return nil }
         return String(data: data, encoding: .utf8)
@@ -86,7 +69,6 @@ public enum PrismFigmaSync {
 
     // MARK: - Import
 
-    /// Parses Figma Variables JSON and creates a BrandTheme.
     public static func importTheme(from data: Data) -> BrandTheme? {
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
             let collections = json["collections"] as? [[String: Any]]
@@ -126,7 +108,6 @@ public enum PrismFigmaSync {
         )
     }
 
-    /// Parses a JSON string and creates a BrandTheme.
     public static func importTheme(from jsonString: String) -> BrandTheme? {
         guard let data = jsonString.data(using: .utf8) else { return nil }
         return importTheme(from: data)
@@ -134,7 +115,6 @@ public enum PrismFigmaSync {
 
     // MARK: - DTCG (Design Tokens Community Group) Format
 
-    /// Exports in W3C DTCG format for cross-tool compatibility.
     public static func exportDTCG(theme: some PrismTheme) -> [String: Any] {
         var tokens: [String: Any] = [:]
 

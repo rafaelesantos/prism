@@ -1,12 +1,8 @@
 import SwiftUI
 
-/// Scroll behavior presets following Apple HIG.
 public enum PrismScrollBehavior: Sendable {
-    /// Represents view-aligned scroll snapping behavior.
     case viewAligned
-    /// Represents page-based scroll snapping behavior.
     case paging
-    /// Represents automatic (no custom snapping) scroll behavior.
     case automatic
 }
 
@@ -33,22 +29,18 @@ private struct PrismScrollTargetModifier: ViewModifier {
 
 extension View {
 
-    /// Applies scroll snapping behavior.
     public func prismScrollTarget(_ behavior: PrismScrollBehavior = .viewAligned) -> some View {
         modifier(PrismScrollTargetModifier(behavior: behavior))
     }
 
-    /// Hides scroll indicators.
     public func prismScrollIndicators(_ visibility: ScrollIndicatorVisibility = .hidden) -> some View {
         self.scrollIndicators(visibility)
     }
 
-    /// Disables scroll clipping for effects that extend beyond bounds.
     public func prismScrollClipDisabled(_ disabled: Bool = true) -> some View {
         self.scrollClipDisabled(disabled)
     }
 
-    /// Applies toolbar background visibility.
     public func prismToolbarBackground(
         _ visibility: Visibility = .hidden,
         for bars: ToolbarPlacement = .automatic

@@ -1,26 +1,11 @@
 import SwiftUI
 
-/// Customizable brand theme with configurable primary, secondary, and accent colors.
-///
-/// Use this theme to match your app's brand identity while keeping
-/// the full token system intact.
-///
-/// ```swift
-/// let myBrand = BrandTheme(
-///     primary: .indigo,
-///     secondary: .mint,
-///     accent: .orange
-/// )
-/// ContentView()
-///     .prismTheme(myBrand)
-/// ```
 public struct BrandTheme: PrismTheme, Sendable {
 
     private let primary: Color
     private let secondary: Color
     private let accent: Color
 
-    /// Creates a brand theme with the given primary, secondary, and accent colors.
     public init(
         primary: Color = .blue,
         secondary: Color = .cyan,
@@ -31,7 +16,6 @@ public struct BrandTheme: PrismTheme, Sendable {
         self.accent = accent
     }
 
-    /// Resolves a color token to a concrete color using the brand palette.
     public func color(_ token: ColorToken) -> Color {
         switch token {
         case .brand: primary

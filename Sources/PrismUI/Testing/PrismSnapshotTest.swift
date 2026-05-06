@@ -1,33 +1,14 @@
 import SwiftUI
 
-/// Lightweight snapshot testing utility for visual regression testing.
-///
-/// Renders SwiftUI views into images for comparison. Does not require
-/// external dependencies — uses native SwiftUI rendering.
-///
-/// ```swift
-/// @Test func buttonSnapshot() async {
-///     let image = PrismSnapshotTest.render {
-///         PrismButton("Tap Me") {}
-///     }
-///     #expect(image != nil)
-/// }
-/// ```
 @MainActor
 public enum PrismSnapshotTest {
 
-    /// Configuration for snapshot rendering.
     public struct Configuration: Sendable {
-        /// The rendering frame size.
         public let size: CGSize
-        /// The color scheme used for rendering.
         public let colorScheme: ColorScheme
-        /// The Dynamic Type size used for rendering.
         public let dynamicTypeSize: DynamicTypeSize
-        /// The theme applied during rendering.
         public let theme: any PrismTheme
 
-        /// Creates a snapshot configuration with the given rendering parameters.
         @MainActor
         public init(
             size: CGSize = CGSize(width: 375, height: 200),
@@ -41,17 +22,12 @@ public enum PrismSnapshotTest {
             self.theme = theme
         }
 
-        /// Light mode configuration with default settings.
         @MainActor public static let light = Configuration()
-        /// Dark mode configuration.
         @MainActor public static let dark = Configuration(colorScheme: .dark)
-        /// Large Dynamic Type configuration.
         @MainActor public static let largeText = Configuration(dynamicTypeSize: .xxxLarge)
-        /// High-contrast theme configuration.
         @MainActor public static let highContrast = Configuration(theme: HighContrastTheme())
     }
 
-    /// Standard snapshot configurations for comprehensive visual testing.
     @MainActor
     public static let standardConfigurations: [String: Configuration] = [
         "light": .light,
@@ -61,7 +37,6 @@ public enum PrismSnapshotTest {
     ]
 
     #if canImport(UIKit) && !os(watchOS)
-        /// Renders a SwiftUI view to a UIImage for snapshot comparison.
         @MainActor
         public static func render<V: View>(
             configuration: Configuration = .light,
@@ -83,7 +58,6 @@ public enum PrismSnapshotTest {
             }
         }
 
-        /// Renders a view across all standard configurations.
         @MainActor
         public static func renderAll<V: View>(
             @ViewBuilder content: @escaping () -> V
@@ -97,7 +71,6 @@ public enum PrismSnapshotTest {
             return results
         }
 
-        /// Compares two images pixel-by-pixel and returns the percentage match (0.0–1.0).
         public static func compare(_ image1: UIImage, _ image2: UIImage, tolerance: Double = 0.99) -> Bool {
             guard let data1 = image1.pngData(), let data2 = image2.pngData() else {
                 return false

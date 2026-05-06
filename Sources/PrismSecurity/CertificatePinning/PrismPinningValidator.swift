@@ -2,18 +2,12 @@ import CryptoKit
 import Foundation
 import Security
 
-/// Validates server certificates against configured pins.
 public actor PrismPinningValidator {
     private var pins: [String: PrismCertificatePin]
     private let policy: PrismPinningPolicy
     private var tofuStore: [String: String]
     private let violationHandler: (@Sendable (PrismPinningResult) -> Void)?
 
-    /// Creates a pinning validator.
-    /// - Parameters:
-    ///   - pins: Certificate pins indexed by host.
-    ///   - policy: Pinning policy. Defaults to `.strict`.
-    ///   - onViolation: Optional callback for pin violations (logging, analytics).
     public init(
         pins: [PrismCertificatePin] = [],
         policy: PrismPinningPolicy = .strict,
@@ -29,21 +23,14 @@ public actor PrismPinningValidator {
         self.violationHandler = onViolation
     }
 
-    /// Adds a pin at runtime.
     public func addPin(_ pin: PrismCertificatePin) {
         pins[pin.host] = pin
     }
 
-    /// Removes a pin for a host.
     public func removePin(forHost host: String) {
         pins.removeValue(forKey: host)
     }
 
-    /// Validates a server trust against configured pins.
-    /// - Parameters:
-    ///   - serverTrust: The server's SecTrust from the TLS handshake.
-    ///   - host: The host being connected to.
-    /// - Returns: Validation result.
     public func validate(serverTrust: SecTrust, host: String) -> PrismPinningResult {
         guard let serverPublicKeyHash = extractPublicKeyHash(from: serverTrust) else {
             let result = PrismPinningResult(
@@ -61,7 +48,6 @@ public actor PrismPinningValidator {
         }
     }
 
-    /// Validates a raw public key hash against pins (for testing or manual checks).
     public func validate(publicKeyHash: String, forHost host: String) -> PrismPinningResult {
         switch policy {
         case .trustFirstUse:

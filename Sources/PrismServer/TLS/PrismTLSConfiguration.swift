@@ -2,20 +2,13 @@
     import Foundation
     import Network
 
-    /// TLS configuration for PrismHTTPServer using Network.framework.
     public struct PrismTLSConfiguration: Sendable {
-        /// The path to the PKCS#12 identity file.
         public let identityPath: String?
-        /// The passphrase for the identity file.
         public let passphrase: String?
-        /// The minimum TLS protocol version.
         public let minimumVersion: TLSVersion
-        /// Whether to enable HTTP Strict Transport Security.
         public let hstsEnabled: Bool
-        /// The max-age value for HSTS in seconds.
         public let hstsMaxAge: Int
 
-        /// Creates a new `PrismTLSConfiguration` with the specified configuration.
         public init(
             identityPath: String? = nil,
             passphrase: String? = nil,
@@ -30,7 +23,6 @@
             self.hstsMaxAge = hstsMaxAge
         }
 
-        /// Creates an NWProtocolTLS.Options from this configuration.
         func makeOptions() throws -> NWProtocolTLS.Options {
             let options = NWProtocolTLS.Options()
 
@@ -72,7 +64,6 @@
         }
     }
 
-    /// Supported TLS protocol versions.
     public enum TLSVersion: Sendable {
         case tlsv10
         case tlsv11
@@ -89,20 +80,17 @@
         }
     }
 
-    /// Middleware that adds HSTS headers to responses.
     public struct PrismHSTSMiddleware: PrismMiddleware {
         private let maxAge: Int
         private let includeSubDomains: Bool
         private let preload: Bool
 
-        /// Creates a new `PrismHSTSMiddleware` with the specified configuration.
         public init(maxAge: Int = 31_536_000, includeSubDomains: Bool = true, preload: Bool = false) {
             self.maxAge = maxAge
             self.includeSubDomains = includeSubDomains
             self.preload = preload
         }
 
-        /// Handles the request and returns a response.
         public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws
             -> PrismHTTPResponse
         {
@@ -117,13 +105,10 @@
         }
     }
 
-    /// Middleware that adds common security headers.
     public struct PrismSecurityHeadersMiddleware: PrismMiddleware {
 
-        /// Creates a new `PrismSecurityHeadersMiddleware` with the specified configuration.
         public init() {}
 
-        /// Handles the request and returns a response.
         public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws
             -> PrismHTTPResponse
         {

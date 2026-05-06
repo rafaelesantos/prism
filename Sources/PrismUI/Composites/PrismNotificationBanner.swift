@@ -1,13 +1,5 @@
 import SwiftUI
 
-/// In-app push-style notification banner with swipe-to-dismiss.
-///
-/// ```swift
-/// @State private var notification: PrismNotificationBanner.Content?
-///
-/// ContentView()
-///     .prismNotificationBanner($notification)
-/// ```
 public struct PrismNotificationBanner: View {
     @Environment(\.prismTheme) private var theme
     @State private var offset: CGFloat = 0
@@ -16,7 +8,6 @@ public struct PrismNotificationBanner: View {
     let content: Content
     let onDismiss: () -> Void
 
-    /// The notification banner view body with icon, title, and swipe-to-dismiss.
     public var body: some View {
         HStack(spacing: SpacingToken.md.rawValue) {
             Image(systemName: content.icon)
@@ -91,20 +82,13 @@ public struct PrismNotificationBanner: View {
         }
     }
 
-    /// Content payload for a notification banner.
     public struct Content: @unchecked Sendable {
-        /// The notification title.
         public let title: LocalizedStringKey
-        /// Optional detail message below the title.
         public let message: LocalizedStringKey?
-        /// SF Symbol name for the leading icon.
         public let icon: String
-        /// Visual style controlling the icon color.
         public let style: Style
-        /// Duration in seconds before auto-dismiss.
         public let duration: TimeInterval
 
-        /// Creates notification content with the given title, message, and style.
         public init(
             _ title: LocalizedStringKey,
             message: LocalizedStringKey? = nil,
@@ -119,15 +103,10 @@ public struct PrismNotificationBanner: View {
             self.duration = duration
         }
 
-        /// Visual style for the notification icon color.
         public enum Style: Sendable {
-            /// Informational notification.
             case info
-            /// Success notification.
             case success
-            /// Warning notification.
             case warning
-            /// Error notification.
             case error
         }
     }
@@ -161,7 +140,6 @@ private struct PrismNotificationBannerModifier: ViewModifier {
 
 extension View {
 
-    /// Presents an in-app notification banner.
     public func prismNotificationBanner(
         _ content: Binding<PrismNotificationBanner.Content?>
     ) -> some View {

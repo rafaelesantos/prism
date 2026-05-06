@@ -2,34 +2,21 @@
     import SwiftUI
     import SwiftData
 
-    /// Filter comparison operators for predicate construction.
     public enum PrismFilterOperator: String, CaseIterable, Sendable {
-        /// Exact equality match.
         case equals
-        /// Substring containment check.
         case contains
-        /// Greater-than comparison.
         case greaterThan
-        /// Less-than comparison.
         case lessThan
-        /// Range containment check.
         case between
-        /// Nil check.
         case isNil
-        /// Non-nil check.
         case isNotNil
     }
 
-    /// Describes a single filter condition with field, operator, and value.
     public struct PrismFilterField: Sendable {
-        /// The property name to filter on.
         public let name: String
-        /// The comparison operator.
         public let `operator`: PrismFilterOperator
-        /// The value to compare against, boxed as a sendable type.
         public let value: (any Sendable)?
 
-        /// Creates a filter field definition.
         public init(name: String, operator op: PrismFilterOperator, value: (any Sendable)? = nil) {
             self.name = name
             self.operator = op
@@ -37,16 +24,13 @@
         }
     }
 
-    /// Chainable builder for constructing filter field arrays.
     public struct PrismPredicateBuilder: Sendable {
         private var filters: [PrismFilterField]
 
-        /// Creates an empty predicate builder.
         public init() {
             self.filters = []
         }
 
-        /// Adds a WHERE condition.
         public func `where`(_ field: String, _ op: PrismFilterOperator, _ value: some Sendable) -> PrismPredicateBuilder
         {
             var copy = self
@@ -54,27 +38,23 @@
             return copy
         }
 
-        /// Adds an AND condition (appends to the filter chain).
         public func and(_ field: String, _ op: PrismFilterOperator, _ value: some Sendable) -> PrismPredicateBuilder {
             var copy = self
             copy.filters.append(PrismFilterField(name: field, operator: op, value: value))
             return copy
         }
 
-        /// Adds an OR condition (appends to the filter chain).
         public func or(_ field: String, _ op: PrismFilterOperator, _ value: some Sendable) -> PrismPredicateBuilder {
             var copy = self
             copy.filters.append(PrismFilterField(name: field, operator: op, value: value))
             return copy
         }
 
-        /// Builds and returns the accumulated filter fields.
         public func build() -> [PrismFilterField] {
             filters
         }
     }
 
-    /// Interactive filter bar for user-driven predicate construction.
     @MainActor
     public struct PrismFilterBar: View {
         @Environment(\.prismTheme) private var theme
@@ -88,7 +68,6 @@
 
         @State private var activeFilters: [PrismFilterField] = []
 
-        /// Creates a filter bar with a list of available field names.
         public init(
             fields: [String],
             onApply: @escaping @MainActor ([PrismFilterField]) -> Void
@@ -98,7 +77,6 @@
             self._selectedField = State(initialValue: fields.first ?? "")
         }
 
-        /// The view body.
         public var body: some View {
             VStack(spacing: 8) {
                 HStack(spacing: 8) {

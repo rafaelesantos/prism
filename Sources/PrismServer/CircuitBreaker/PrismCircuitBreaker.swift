@@ -2,30 +2,20 @@ import Foundation
 
 // MARK: - Circuit State
 
-/// Represents the current state of a circuit breaker.
 public enum PrismCircuitState: String, Sendable {
-    /// The circuit is closed and requests flow normally.
     case closed
-    /// The circuit is open and requests are rejected.
     case open
-    /// The circuit is testing whether the downstream service has recovered.
     case halfOpen = "half_open"
 }
 
 // MARK: - Circuit Config
 
-/// Configuration options for a circuit breaker.
 public struct PrismCircuitBreakerConfig: Sendable {
-    /// Number of consecutive failures before the circuit opens.
     public let failureThreshold: Int
-    /// Duration to wait before transitioning from open to half-open.
     public let resetTimeout: TimeInterval
-    /// Maximum number of trial requests allowed in the half-open state.
     public let halfOpenMaxAttempts: Int
-    /// Number of consecutive successes in half-open required to close the circuit.
     public let successThreshold: Int
 
-    /// Creates a circuit breaker configuration with the specified thresholds.
     public init(
         failureThreshold: Int = 5,
         resetTimeout: TimeInterval = 30,
@@ -41,24 +31,15 @@ public struct PrismCircuitBreakerConfig: Sendable {
 
 // MARK: - Circuit Metrics
 
-/// Snapshot of a circuit breaker's runtime metrics.
 public struct PrismCircuitMetrics: Sendable {
-    /// Total number of calls made through the breaker.
     public let totalCalls: Int
-    /// Number of successful calls.
     public let successCount: Int
-    /// Number of failed calls.
     public let failureCount: Int
-    /// Current streak of consecutive failures.
     public let consecutiveFailures: Int
-    /// Timestamp of the most recent failure.
     public let lastFailure: Date?
-    /// Number of state transitions that have occurred.
     public let stateChanges: Int
-    /// The current circuit state.
     public let state: PrismCircuitState
 
-    /// Creates a metrics snapshot with the given values.
     public init(
         totalCalls: Int = 0,
         successCount: Int = 0,
@@ -80,7 +61,6 @@ public struct PrismCircuitMetrics: Sendable {
 
 // MARK: - Circuit Breaker
 
-/// Actor that implements the circuit breaker pattern for fault-tolerant service calls.
 public actor PrismCircuitBreaker {
     private let name: String
     private let config: PrismCircuitBreakerConfig
@@ -97,20 +77,17 @@ public actor PrismCircuitBreaker {
 
     private var onStateChange: (@Sendable (String, PrismCircuitState, PrismCircuitState) async -> Void)?
 
-    /// Creates a circuit breaker with the given name and configuration.
     public init(name: String, config: PrismCircuitBreakerConfig = PrismCircuitBreakerConfig()) {
         self.name = name
         self.config = config
     }
 
-    /// Registers a callback invoked whenever the circuit state changes.
     public func onStateChange(
         _ callback: @escaping @Sendable (String, PrismCircuitState, PrismCircuitState) async -> Void
     ) {
         self.onStateChange = callback
     }
 
-    /// Executes an operation through the circuit breaker, throwing if the circuit is open.
     public func execute<T: Sendable>(_ operation: @Sendable () async throws -> T) async throws -> T {
         try checkState()
         totalCalls += 1
@@ -125,10 +102,8 @@ public actor PrismCircuitBreaker {
         }
     }
 
-    /// Returns the current state of the circuit.
     public func currentState() -> PrismCircuitState { state }
 
-    /// Returns a snapshot of the circuit breaker's metrics.
     public func metrics() -> PrismCircuitMetrics {
         PrismCircuitMetrics(
             totalCalls: totalCalls,
@@ -141,7 +116,6 @@ public actor PrismCircuitBreaker {
         )
     }
 
-    /// Resets the circuit breaker to the closed state and clears all counters.
     public func reset() {
         let oldState = state
         state = .closed
@@ -232,17 +206,14 @@ public actor PrismCircuitBreaker {
 
 // MARK: - Circuit Breaker Registry
 
-/// Registry that manages named circuit breakers with shared default configuration.
 public actor PrismCircuitBreakerRegistry {
     private var breakers: [String: PrismCircuitBreaker] = [:]
     private let defaultConfig: PrismCircuitBreakerConfig
 
-    /// Creates a registry with the given default circuit breaker configuration.
     public init(defaultConfig: PrismCircuitBreakerConfig = PrismCircuitBreakerConfig()) {
         self.defaultConfig = defaultConfig
     }
 
-    /// Returns the circuit breaker for the given name, creating one if needed.
     public func breaker(for name: String, config: PrismCircuitBreakerConfig? = nil) -> PrismCircuitBreaker {
         if let existing = breakers[name] { return existing }
         let cb = PrismCircuitBreaker(name: name, config: config ?? defaultConfig)
@@ -250,12 +221,10 @@ public actor PrismCircuitBreakerRegistry {
         return cb
     }
 
-    /// Returns an existing circuit breaker by name, or nil if not registered.
     public func getBreaker(_ name: String) -> PrismCircuitBreaker? {
         breakers[name]
     }
 
-    /// Collects metrics from all registered circuit breakers.
     public func allMetrics() async -> [String: PrismCircuitMetrics] {
         var result: [String: PrismCircuitMetrics] = [:]
         for (name, cb) in breakers {
@@ -264,14 +233,12 @@ public actor PrismCircuitBreakerRegistry {
         return result
     }
 
-    /// Resets all registered circuit breakers to the closed state.
     public func resetAll() async {
         for (_, cb) in breakers {
             await cb.reset()
         }
     }
 
-    /// Removes a circuit breaker from the registry by name.
     public func remove(_ name: String) {
         breakers.removeValue(forKey: name)
     }
@@ -279,8 +246,6 @@ public actor PrismCircuitBreakerRegistry {
 
 // MARK: - Errors
 
-/// Errors thrown by the circuit breaker.
 public enum PrismCircuitBreakerError: Error, Sendable {
-    /// The circuit is open and the operation was rejected.
     case circuitOpen(name: String, retryAfter: TimeInterval)
 }

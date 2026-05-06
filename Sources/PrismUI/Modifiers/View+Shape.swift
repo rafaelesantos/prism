@@ -2,12 +2,10 @@ import SwiftUI
 
 extension View {
 
-    /// Clips the view with a continuous corner radius.
     public func prismRadius(_ token: RadiusToken) -> some View {
         clipShape(token.shape)
     }
 
-    /// Applies a themed background with continuous corner radius.
     public func prismSurface(
         _ colorToken: ColorToken = .surface,
         radius: RadiusToken = .md
@@ -15,7 +13,6 @@ extension View {
         modifier(SurfaceModifier(colorToken: colorToken, radius: radius))
     }
 
-    /// Applies an elevation shadow.
     public func prismElevation(_ token: ElevationToken) -> some View {
         shadow(
             color: .black.opacity(token.shadowOpacity),
@@ -24,7 +21,6 @@ extension View {
         )
     }
 
-    /// Applies a themed border with continuous corner radius.
     public func prismBorder(
         _ colorToken: ColorToken = .border,
         radius: RadiusToken = .md,

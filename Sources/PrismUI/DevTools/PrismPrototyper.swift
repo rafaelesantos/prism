@@ -1,15 +1,10 @@
 import SwiftUI
 
-/// Represents a single screen in a prototype flow.
 public struct PrismPrototypeScreen: Identifiable, @unchecked Sendable {
-    /// Unique identifier for this screen.
     public let id: String
-    /// Human-readable screen name.
     public let name: String
-    /// View builders for the screen content.
     public let views: [AnyView]
 
-    /// Creates a prototype screen with the given name and views.
     @MainActor
     public init(id: String = UUID().uuidString, name: String, views: [AnyView] = []) {
         self.id = id
@@ -18,16 +13,13 @@ public struct PrismPrototypeScreen: Identifiable, @unchecked Sendable {
     }
 }
 
-/// Links prototype screens together into a navigable flow with directional arrows.
 public struct PrismPrototypeFlow: View {
     let screens: [PrismPrototypeScreen]
 
-    /// Creates a flow visualization from the given screens.
     public init(screens: [PrismPrototypeScreen]) {
         self.screens = screens
     }
 
-    /// The prototype flow view body with horizontal scroll and navigation arrows.
     public var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: SpacingToken.lg.rawValue) {
@@ -74,18 +66,15 @@ public struct PrismPrototypeFlow: View {
     }
 }
 
-/// Interactive screen builder for rapid prototyping.
 @MainActor
 public struct PrismPrototyper: View {
     @State private var screens: [PrismPrototypeScreen]
     @State private var selectedScreenID: String?
 
-    /// Creates a prototyper with optional initial screens.
     public init(screens: [PrismPrototypeScreen] = []) {
         _screens = State(initialValue: screens)
     }
 
-    /// The prototyper view body with flow visualization and screen management.
     public var body: some View {
         NavigationStack {
             prototyperContent

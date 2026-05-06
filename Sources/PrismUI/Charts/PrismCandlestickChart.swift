@@ -1,21 +1,13 @@
 import SwiftUI
 
-/// A single candlestick (OHLC) data point.
 public struct PrismCandlestick: Sendable, Hashable, Identifiable {
-    /// Stable identity derived from date.
     public var id: Date { date }
-    /// The trading period date.
     public let date: Date
-    /// Opening price.
     public let open: Double
-    /// Highest price.
     public let high: Double
-    /// Lowest price.
     public let low: Double
-    /// Closing price.
     public let close: Double
 
-    /// Creates a candlestick data point.
     public init(date: Date, open: Double, high: Double, low: Double, close: Double) {
         self.date = date
         self.open = open
@@ -24,11 +16,9 @@ public struct PrismCandlestick: Sendable, Hashable, Identifiable {
         self.close = close
     }
 
-    /// Whether the candle is bullish (close >= open).
     public var isBullish: Bool { close >= open }
 }
 
-/// A candlestick (OHLC) chart with green/red coloring for bullish/bearish candles.
 @MainActor
 public struct PrismCandlestickChart: View {
     @Environment(\.prismTheme) private var theme
@@ -37,7 +27,6 @@ public struct PrismCandlestickChart: View {
     private let bullishColor: Color?
     private let bearishColor: Color?
 
-    /// Creates a candlestick chart from an array of OHLC data.
     public init(
         candles: [PrismCandlestick],
         bullishColor: Color? = nil,
@@ -48,7 +37,6 @@ public struct PrismCandlestickChart: View {
         self.bearishColor = bearishColor
     }
 
-    /// The candlestick chart view body with price grid and colored candle bodies.
     public var body: some View {
         GeometryReader { geo in
             let sorted = candles.sorted { $0.date < $1.date }

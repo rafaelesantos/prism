@@ -1,26 +1,12 @@
 import SwiftUI
 
-/// Persisted theme preference with automatic restore on launch.
-///
-/// Saves user's theme choice to `@AppStorage` and provides
-/// an observable object for theme switching with animation.
-///
-/// ```swift
-/// @StateObject var themeStore = PrismThemeStore()
-///
-/// ContentView()
-///     .prismTheme(themeStore.currentTheme)
-///     .environmentObject(themeStore)
-/// ```
 @MainActor
 public final class PrismThemeStore: ObservableObject {
     @AppStorage("prism.theme.identifier") private var themeIdentifier: String = "default"
-    /// The currently active theme.
     @Published public private(set) var currentTheme: any PrismTheme
 
     private var registry: [String: any PrismTheme]
 
-    /// Creates a theme store with optional custom themes merged into the built-in registry.
     public init(
         customThemes: [String: any PrismTheme] = [:]
     ) {
@@ -37,12 +23,10 @@ public final class PrismThemeStore: ObservableObject {
         self.currentTheme = registry[themeIdentifier] ?? registry["default"]!
     }
 
-    /// Available theme identifiers.
     public var availableThemes: [String] {
         Array(registry.keys).sorted()
     }
 
-    /// Switch theme with optional animation.
     public func setTheme(_ identifier: String, animated: Bool = true) {
         guard let theme = registry[identifier] else { return }
         themeIdentifier = identifier
@@ -55,18 +39,15 @@ public final class PrismThemeStore: ObservableObject {
         }
     }
 
-    /// Register a custom theme at runtime.
     public func register(_ identifier: String, theme: some PrismTheme) {
         registry[identifier] = theme
     }
 
-    /// Current theme identifier.
     public var currentIdentifier: String {
         themeIdentifier
     }
 }
 
-/// View modifier that provides theme store from environment.
 private struct PrismThemeStoreModifier: ViewModifier {
     @ObservedObject var store: PrismThemeStore
 
@@ -78,7 +59,6 @@ private struct PrismThemeStoreModifier: ViewModifier {
 
 extension View {
 
-    /// Applies theme from PrismThemeStore and auto-updates on change.
     public func prismThemeStore(_ store: PrismThemeStore) -> some View {
         modifier(PrismThemeStoreModifier(store: store))
     }

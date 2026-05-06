@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Themed stepper with value display and configurable range.
 public struct PrismStepper: View {
     @Environment(\.prismTheme) private var theme
 
@@ -11,7 +10,6 @@ public struct PrismStepper: View {
     private let step: Int
     private let format: ((Int) -> String)?
 
-    /// Creates a themed stepper with label, range, step size, and optional formatting.
     public init(
         _ label: LocalizedStringKey,
         value: Binding<Int>,
@@ -28,7 +26,6 @@ public struct PrismStepper: View {
         self.format = format
     }
 
-    /// The stepper view body with icon, label, and formatted value.
     public var body: some View {
         Stepper(value: $value, in: range, step: step) {
             HStack(spacing: SpacingToken.sm.rawValue) {

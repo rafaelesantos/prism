@@ -1,7 +1,6 @@
 import CryptoKit
 import Foundation
 
-/// Transparent encryption wrapper — encrypts values before delegating to an inner store.
 public final class PrismEncryptedStore: PrismStorageProtocol, @unchecked Sendable {
     private let inner: PrismStorageProtocol
     private let key: SymmetricKey
@@ -95,7 +94,6 @@ public final class PrismEncryptedStore: PrismStorageProtocol, @unchecked Sendabl
     }
 }
 
-/// Async variant wrapping an async store.
 public actor PrismEncryptedAsyncStore: PrismAsyncStorageProtocol {
     private let inner: PrismAsyncStorageProtocol
     private let key: SymmetricKey

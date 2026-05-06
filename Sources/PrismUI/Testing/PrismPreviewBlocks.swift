@@ -1,16 +1,8 @@
 import SwiftUI
 
-/// Collection of preview helpers for rapid visual testing.
-///
-/// ```swift
-/// #Preview("Button Variants") {
-///     PrismPreviewBlocks.buttonVariants()
-/// }
-/// ```
 @MainActor
 public enum PrismPreviewBlocks {
 
-    /// All button variants in a vertical stack.
     public static func buttonVariants() -> some View {
         VStack(spacing: SpacingToken.md.rawValue) {
             PrismButton("Filled", variant: .filled) {}
@@ -22,7 +14,6 @@ public enum PrismPreviewBlocks {
         .prismTheme(DefaultTheme())
     }
 
-    /// Typography scale preview.
     public static func typographyScale() -> some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             ForEach(TypographyToken.allCases, id: \.self) { token in
@@ -34,7 +25,6 @@ public enum PrismPreviewBlocks {
         .prismTheme(DefaultTheme())
     }
 
-    /// Color token swatches.
     public static func colorSwatches() -> some View {
         let theme = DefaultTheme()
         return LazyVGrid(columns: [.init(.adaptive(minimum: 60))], spacing: 8) {
@@ -57,7 +47,6 @@ public enum PrismPreviewBlocks {
         .prismTheme(theme)
     }
 
-    /// Spacing token visualization.
     public static func spacingScale() -> some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             ForEach(SpacingToken.allCases, id: \.self) { token in
@@ -77,7 +66,6 @@ public enum PrismPreviewBlocks {
         .padding()
     }
 
-    /// All themes side by side on a card.
     public static func themeComparison() -> some View {
         HStack(spacing: SpacingToken.md.rawValue) {
             themeCard(DefaultTheme(), name: "Default")
@@ -105,7 +93,6 @@ public enum PrismPreviewBlocks {
         .prismTheme(theme)
     }
 
-    /// Radius token visualization.
     public static func radiusScale() -> some View {
         HStack(spacing: SpacingToken.md.rawValue) {
             ForEach(RadiusToken.allCases, id: \.self) { token in

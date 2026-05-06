@@ -1,15 +1,5 @@
 import SwiftUI
 
-/// Interactive Storybook-style component explorer with live controls.
-///
-/// Each component gets a dedicated page with toggleable props,
-/// theme switching, and accessibility overrides.
-///
-/// ```swift
-/// #if DEBUG
-/// PrismStorybook()
-/// #endif
-/// ```
 @MainActor
 public struct PrismStorybook: View {
     @State private var selectedStory: Story?
@@ -17,10 +7,8 @@ public struct PrismStorybook: View {
     @State private var isLargeText = false
     @State private var selectedTheme: ThemeChoice = .default
 
-    /// Creates a storybook explorer instance.
     public init() {}
 
-    /// The view body.
     public var body: some View {
         NavigationSplitView {
             sidebar

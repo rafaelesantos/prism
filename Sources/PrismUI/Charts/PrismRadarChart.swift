@@ -1,29 +1,20 @@
 import SwiftUI
 
-/// An axis definition for a radar chart.
 public struct PrismRadarAxis: Sendable, Hashable {
-    /// Display label for the axis.
     public let label: String
-    /// Maximum value on this axis.
     public let maxValue: Double
 
-    /// Creates a radar axis.
     public init(label: String, maxValue: Double) {
         self.label = label
         self.maxValue = maxValue
     }
 }
 
-/// A data set to overlay on a radar chart.
 public struct PrismRadarDataSet: Sendable, Hashable {
-    /// Values for each axis in order.
     public let values: [Double]
-    /// Fill and stroke color.
     public let color: Color
-    /// Legend label for this data set.
     public let label: String
 
-    /// Creates a radar data set.
     public init(values: [Double], color: Color, label: String) {
         self.values = values
         self.color = color
@@ -31,7 +22,6 @@ public struct PrismRadarDataSet: Sendable, Hashable {
     }
 }
 
-/// A radar (spider) chart with multiple data sets overlaid on a polygon grid.
 @MainActor
 public struct PrismRadarChart: View {
     @Environment(\.prismTheme) private var theme
@@ -40,7 +30,6 @@ public struct PrismRadarChart: View {
     private let dataSets: [PrismRadarDataSet]
     private let gridLevels: Int
 
-    /// Creates a radar chart.
     public init(
         axes: [PrismRadarAxis],
         dataSets: [PrismRadarDataSet],
@@ -51,7 +40,6 @@ public struct PrismRadarChart: View {
         self.gridLevels = max(gridLevels, 1)
     }
 
-    /// The radar chart view body with polygon grid, data overlays, and legend.
     public var body: some View {
         VStack(spacing: SpacingToken.sm.rawValue) {
             GeometryReader { geo in

@@ -1,28 +1,8 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Protocol extending FileDocument with PrismUI themed document scaffolding.
-///
-/// ```swift
-/// struct MyDocument: PrismDocument {
-///     static var readableContentTypes: [UTType] { [.plainText] }
-///     var text: String = ""
-///
-///     init(configuration: ReadConfiguration) throws {
-///         guard let data = configuration.file.regularFileContents else {
-///             throw CocoaError(.fileReadCorruptFile)
-///         }
-///         text = String(data: data, encoding: .utf8) ?? ""
-///     }
-///
-///     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-///         FileWrapper(regularFileWithContents: Data(text.utf8))
-///     }
-/// }
-/// ```
 public protocol PrismDocument: FileDocument {}
 
-/// Themed document editor scaffold with toolbar and auto-save indicator.
 public struct PrismDocumentView<Content: View>: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.undoManager) private var undoManager
@@ -30,7 +10,6 @@ public struct PrismDocumentView<Content: View>: View {
     private let title: LocalizedStringKey
     private let content: Content
 
-    /// Creates a document view with a title and content.
     public init(
         _ title: LocalizedStringKey = "Document",
         @ViewBuilder content: () -> Content
@@ -39,7 +18,6 @@ public struct PrismDocumentView<Content: View>: View {
         self.content = content()
     }
 
-    /// The document view body with navigation, undo/redo toolbar, and content.
     public var body: some View {
         NavigationStack {
             content

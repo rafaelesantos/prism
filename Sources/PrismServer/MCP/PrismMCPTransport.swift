@@ -1,15 +1,12 @@
 import Foundation
 
-/// Stdio transport for MCP — reads JSON-RPC from stdin, writes to stdout.
 public final class PrismMCPStdioTransport: Sendable {
     private let server: PrismMCPServer
 
-    /// Creates a new `PrismMCPStdioTransport` with the specified configuration.
     public init(server: PrismMCPServer) {
         self.server = server
     }
 
-    /// Starts the stdio event loop. Blocks until stdin closes.
     public func run() async {
         let input = FileHandle.standardInput
         let output = FileHandle.standardOutput
@@ -34,18 +31,15 @@ public final class PrismMCPStdioTransport: Sendable {
     }
 }
 
-/// HTTP transport for MCP — PrismMiddleware that handles JSON-RPC over HTTP.
 public struct PrismMCPHTTPTransport: PrismMiddleware, Sendable {
     private let server: PrismMCPServer
     private let basePath: String
 
-    /// Creates a new `PrismMCPHTTPTransport` with the specified configuration.
     public init(server: PrismMCPServer, path: String = "/mcp") {
         self.server = server
         self.basePath = path
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         if request.path == basePath && request.method == .POST {

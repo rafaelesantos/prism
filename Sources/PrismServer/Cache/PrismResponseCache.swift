@@ -1,6 +1,5 @@
 import Foundation
 
-/// Cached HTTP response data.
 struct CachedResponse: Sendable {
     let status: PrismHTTPStatus
     let headers: PrismHTTPHeaders
@@ -8,13 +7,11 @@ struct CachedResponse: Sendable {
     let etag: String
 }
 
-/// Middleware that caches GET responses with ETag and Cache-Control support.
 public struct PrismResponseCacheMiddleware: PrismMiddleware {
     private let cache: PrismCache<String, CachedResponse>
     private let ttl: TimeInterval
     private let cachePredicate: @Sendable (PrismHTTPRequest) -> Bool
 
-    /// Creates a response cache middleware with configurable size, TTL, and predicate.
     public init(
         maxEntries: Int = 500,
         ttl: TimeInterval = 60,
@@ -25,7 +22,6 @@ public struct PrismResponseCacheMiddleware: PrismMiddleware {
         self.cachePredicate = cachePredicate
     }
 
-    /// Serves cached responses for matching requests or caches new ones.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         guard cachePredicate(request) else {

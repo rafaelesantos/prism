@@ -1,18 +1,15 @@
 import Foundation
 import PrismFoundation
 
-/// Output format options for structured logging.
 public enum PrismLogFormat: Sendable {
     case text
     case json
 }
 
-/// Log destination that writes formatted entries to a file on disk.
 public struct PrismFileLogDestination: PrismLogDestination {
     private let filePath: String
     private let fileHandle: FileHandle?
 
-    /// Creates a new `PrismFileLogDestination` with the specified configuration.
     public init(filePath: String) {
         self.filePath = filePath
         if !FileManager.default.fileExists(atPath: filePath) {
@@ -22,7 +19,6 @@ public struct PrismFileLogDestination: PrismLogDestination {
         self.fileHandle?.seekToEndOfFile()
     }
 
-    /// Writes a log entry as a formatted text line to the file.
     public func write(_ entry: PrismLogEntry) {
         let line = "[\(entry.timestamp)] [\(entry.level)] [\(entry.category)] \(entry.message)\n"
         if let data = line.data(using: .utf8) {
@@ -31,12 +27,9 @@ public struct PrismFileLogDestination: PrismLogDestination {
     }
 }
 
-/// Log destination that writes entries as JSON objects to standard output.
 public struct PrismJSONLogDestination: PrismLogDestination {
-    /// Creates a new `PrismJSONLogDestination` with the specified configuration.
     public init() {}
 
-    /// Writes a log entry as a JSON object to standard output.
     public func write(_ entry: PrismLogEntry) {
         var dict: [String: Any] = [
             "level": "\(entry.level)",
@@ -57,13 +50,11 @@ public struct PrismJSONLogDestination: PrismLogDestination {
     }
 }
 
-/// Middleware that logs request and response details with timing.
 public struct PrismLoggerMiddleware: PrismMiddleware {
     private let logger: PrismStructuredLogger
     private let logRequestBody: Bool
     private let logResponseBody: Bool
 
-    /// Creates a new `PrismLoggerMiddleware` with the specified configuration.
     public init(
         logger: PrismStructuredLogger,
         logRequestBody: Bool = false,
@@ -74,7 +65,6 @@ public struct PrismLoggerMiddleware: PrismMiddleware {
         self.logResponseBody = logResponseBody
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         let start = ContinuousClock.now
@@ -130,16 +120,13 @@ public struct PrismLoggerMiddleware: PrismMiddleware {
     }
 }
 
-/// Middleware that assigns a unique request ID to each request.
 public struct PrismRequestIdMiddleware: PrismMiddleware {
     private let headerName: String
 
-    /// Creates a new `PrismRequestIdMiddleware` with the specified configuration.
     public init(headerName: String = "X-Request-ID") {
         self.headerName = headerName
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         var req = request

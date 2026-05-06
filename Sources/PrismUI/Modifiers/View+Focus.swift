@@ -1,18 +1,12 @@
 import SwiftUI
 
-/// Focus style tokens for themed focus rings.
 public enum PrismFocusStyle: Sendable {
-    /// Represents a visible focus ring outline.
     case ring
-    /// Represents a background highlight on focus.
     case highlight
-    /// Represents a subtle scale-up on focus.
     case scale
-    /// Represents a subtle opacity change on focus.
     case subtle
 }
 
-/// Themed focus indicator modifier.
 private struct PrismFocusModifier: ViewModifier {
     @Environment(\.prismTheme) private var theme
     @Environment(\.isFocused) private var isFocused
@@ -44,14 +38,12 @@ private struct PrismFocusModifier: ViewModifier {
     }
 }
 
-/// Focus section with themed header for tvOS/macOS focus navigation.
 public struct PrismFocusSection<Content: View>: View {
     @Environment(\.prismTheme) private var theme
 
     private let title: LocalizedStringKey?
     private let content: Content
 
-    /// Creates a focus section with an optional title and content.
     public init(
         _ title: LocalizedStringKey? = nil,
         @ViewBuilder content: () -> Content
@@ -60,7 +52,6 @@ public struct PrismFocusSection<Content: View>: View {
         self.content = content()
     }
 
-    /// The content and behavior of the focus section.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             if let title {
@@ -86,12 +77,10 @@ public struct PrismFocusSection<Content: View>: View {
 
 extension View {
 
-    /// Applies themed focus indicator.
     public func prismFocusStyle(_ style: PrismFocusStyle = .ring) -> some View {
         modifier(PrismFocusModifier(style: style))
     }
 
-    /// Makes view focusable with themed focus ring.
     public func prismFocusable(_ style: PrismFocusStyle = .ring) -> some View {
         self
             .focusable()

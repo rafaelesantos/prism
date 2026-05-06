@@ -1,21 +1,13 @@
 import Foundation
 
-/// CORS middleware that adds Cross-Origin Resource Sharing headers.
 public struct PrismCORSMiddleware: PrismMiddleware {
-    /// Allowed origins. Use ["*"] for any origin.
     public let allowedOrigins: [String]
-    /// Allowed HTTP methods.
     public let allowedMethods: [PrismHTTPMethod]
-    /// Allowed request headers.
     public let allowedHeaders: [String]
-    /// Headers exposed to the client.
     public let exposedHeaders: [String]
-    /// Whether credentials (cookies, auth) are allowed.
     public let allowCredentials: Bool
-    /// Max age in seconds for preflight cache.
     public let maxAge: Int
 
-    /// Creates a new `PrismCORSMiddleware` with the specified configuration.
     public init(
         allowedOrigins: [String] = ["*"],
         allowedMethods: [PrismHTTPMethod] = [.GET, .POST, .PUT, .PATCH, .DELETE, .OPTIONS],
@@ -32,7 +24,6 @@ public struct PrismCORSMiddleware: PrismMiddleware {
         self.maxAge = maxAge
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         if request.method == .OPTIONS {

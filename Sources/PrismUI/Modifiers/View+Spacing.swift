@@ -2,17 +2,14 @@ import SwiftUI
 
 extension View {
 
-    /// Applies uniform padding using a spacing token.
     public func prismPadding(_ token: SpacingToken) -> some View {
         padding(token.rawValue)
     }
 
-    /// Applies padding on specific edges using a spacing token.
     public func prismPadding(_ edges: Edge.Set, _ token: SpacingToken) -> some View {
         padding(edges, token.rawValue)
     }
 
-    /// Applies horizontal and vertical padding using spacing tokens.
     public func prismPadding(
         horizontal: SpacingToken,
         vertical: SpacingToken
@@ -21,7 +18,6 @@ extension View {
             .padding(.vertical, vertical.rawValue)
     }
 
-    /// Applies spacing between items in stacks.
     public func prismSpacing(_ token: SpacingToken) -> some View {
         environment(\.prismStackSpacing, token)
     }
@@ -34,7 +30,6 @@ private struct PrismStackSpacingKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    /// The spacing token applied to Prism stacks in the environment.
     public var prismStackSpacing: SpacingToken {
         get { self[PrismStackSpacingKey.self] }
         set { self[PrismStackSpacingKey.self] = newValue }

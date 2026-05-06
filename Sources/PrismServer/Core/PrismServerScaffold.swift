@@ -1,12 +1,9 @@
 import Foundation
 
-/// Generates project scaffolding files for a new PrismServer project.
 public struct PrismServerScaffold: Sendable {
 
-    /// Creates a scaffold generator.
     public init() {}
 
-    /// Returns the Package.swift content for a new server project.
     public func packageSwift(name: String) -> String {
         """
         // swift-tools-version: 6.3
@@ -30,7 +27,6 @@ public struct PrismServerScaffold: Sendable {
         """
     }
 
-    /// Returns a starter main.swift for a new server project.
     public func mainSwift(name: String) -> String {
         """
         import PrismServer
@@ -55,7 +51,6 @@ public struct PrismServerScaffold: Sendable {
         """
     }
 
-    /// Returns a .gitignore for server projects.
     public func gitignore() -> String {
         """
         .DS_Store
@@ -68,7 +63,6 @@ public struct PrismServerScaffold: Sendable {
         """
     }
 
-    /// Returns a Dockerfile for the server.
     public func dockerfile(name: String) -> String {
         """
         FROM swift:6.3-jammy AS build
@@ -84,7 +78,6 @@ public struct PrismServerScaffold: Sendable {
         """
     }
 
-    /// Generates all scaffold files as a dictionary of path → content.
     public func generate(name: String) -> [String: String] {
         [
             "Package.swift": packageSwift(name: name),

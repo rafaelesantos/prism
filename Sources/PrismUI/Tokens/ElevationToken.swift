@@ -1,9 +1,5 @@
 import SwiftUI
 
-/// Elevation tokens combining shadow and material tiers.
-///
-/// Maps to Apple's visual hierarchy — higher elevation
-/// means more visual prominence and separation from background.
 public enum ElevationToken: Int, Sendable, CaseIterable, Comparable {
     case flat = 0
     case low = 1
@@ -11,7 +7,6 @@ public enum ElevationToken: Int, Sendable, CaseIterable, Comparable {
     case high = 3
     case overlay = 4
 
-    /// The blur radius of the shadow for this elevation level.
     public var shadowRadius: CGFloat {
         switch self {
         case .flat: 0
@@ -22,7 +17,6 @@ public enum ElevationToken: Int, Sendable, CaseIterable, Comparable {
         }
     }
 
-    /// The vertical offset of the shadow for this elevation level.
     public var shadowY: CGFloat {
         switch self {
         case .flat: 0
@@ -33,7 +27,6 @@ public enum ElevationToken: Int, Sendable, CaseIterable, Comparable {
         }
     }
 
-    /// The opacity of the shadow color for this elevation level.
     public var shadowOpacity: Double {
         switch self {
         case .flat: 0
@@ -44,7 +37,6 @@ public enum ElevationToken: Int, Sendable, CaseIterable, Comparable {
         }
     }
 
-    /// Compares two elevation tokens by their raw tier value.
     public static func < (lhs: ElevationToken, rhs: ElevationToken) -> Bool {
         lhs.rawValue < rhs.rawValue
     }

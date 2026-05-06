@@ -56,7 +56,6 @@ private struct PrismSymbolTransitionModifier: ViewModifier {
 extension View {
 
     #if !os(macOS)
-        /// Applies a navigation zoom transition (iOS/iPadOS/visionOS).
         public func prismZoomTransition<ID: Hashable>(
             sourceID: ID,
             in namespace: Namespace.ID
@@ -64,7 +63,6 @@ extension View {
             modifier(PrismZoomTransitionModifier(sourceID: sourceID, namespace: namespace))
         }
 
-        /// Marks view as transition source for zoom navigation.
         public func prismTransitionSource<ID: Hashable>(
             id: ID,
             in namespace: Namespace.ID
@@ -73,22 +71,18 @@ extension View {
         }
     #endif
 
-    /// Applies scale scroll-driven transition.
     public func prismScrollTransition() -> some View {
         modifier(PrismScrollTransitionScaleModifier())
     }
 
-    /// Applies fade scroll-driven transition.
     public func prismScrollTransitionFade() -> some View {
         modifier(PrismScrollTransitionFadeModifier())
     }
 
-    /// Uses animated SF Symbol content transition.
     public func prismSymbolTransition() -> some View {
         modifier(PrismSymbolTransitionModifier())
     }
 
-    /// Applies soft edge effect on scroll boundaries.
     public func prismScrollEdge() -> some View {
         self.scrollEdgeEffectStyle(.soft, for: .all)
     }

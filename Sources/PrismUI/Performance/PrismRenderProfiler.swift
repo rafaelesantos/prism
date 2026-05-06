@@ -1,17 +1,12 @@
 import SwiftUI
 
-/// Metrics captured by the render profiler for a single named view.
 public struct PrismRenderMetrics: Sendable {
-    /// The total number of body evaluations recorded.
     public var renderCount: Int
 
-    /// The duration of the most recent render, if any.
     public var lastRenderTime: Duration?
 
-    /// The average duration across all recorded renders, if any.
     public var averageRenderTime: Duration?
 
-    /// Creates default metrics with zero renders and nil times.
     public init(
         renderCount: Int = 0,
         lastRenderTime: Duration? = nil,
@@ -23,22 +18,14 @@ public struct PrismRenderMetrics: Sendable {
     }
 }
 
-/// Tracks render counts and durations for profiled views.
 @Observable @MainActor
 public final class PrismRenderProfiler {
-    /// Metrics keyed by view name.
     public private(set) var metrics: [String: PrismRenderMetrics] = [:]
 
-    /// Accumulated total durations for computing averages.
     private var totalDurations: [String: Duration] = [:]
 
-    /// Creates an empty profiler.
     public init() {}
 
-    /// Records a render event for the named view.
-    /// - Parameters:
-    ///   - name: The profiled view identifier.
-    ///   - duration: How long the body evaluation took.
     public func recordRender(name: String, duration: Duration) {
         var current = metrics[name] ?? PrismRenderMetrics()
         current.renderCount += 1
@@ -51,14 +38,12 @@ public final class PrismRenderProfiler {
         metrics[name] = current
     }
 
-    /// Resets all collected metrics.
     public func reset() {
         metrics.removeAll()
         totalDurations.removeAll()
     }
 }
 
-/// View modifier that wraps body evaluation in timing measurement.
 private struct PrismProfileModifier: ViewModifier {
     let name: String
     let profiler: PrismRenderProfiler
@@ -76,26 +61,18 @@ private struct PrismProfileModifier: ViewModifier {
 }
 
 extension View {
-    /// Profiles body evaluation count and timing for the named view.
-    /// - Parameters:
-    ///   - name: Identifier for this profiled view.
-    ///   - profiler: The profiler instance collecting metrics.
     public func prismProfile(name: String, profiler: PrismRenderProfiler) -> some View {
         modifier(PrismProfileModifier(name: name, profiler: profiler))
     }
 }
 
-/// Debug overlay showing live render metrics from a profiler.
 public struct PrismProfilerOverlay: View {
     private let profiler: PrismRenderProfiler
 
-    /// Creates a profiler overlay.
-    /// - Parameter profiler: The profiler whose metrics to display.
     public init(profiler: PrismRenderProfiler) {
         self.profiler = profiler
     }
 
-    /// The content and behavior of the profiler overlay.
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Render Profiler")

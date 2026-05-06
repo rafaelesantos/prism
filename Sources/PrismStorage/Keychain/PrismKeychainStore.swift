@@ -1,7 +1,6 @@
 import Foundation
 import Security
 
-/// Keychain-backed storage engine with access control.
 public struct PrismKeychainStore: PrismStorageProtocol, Sendable {
     private let service: String
     private let accessGroup: String?

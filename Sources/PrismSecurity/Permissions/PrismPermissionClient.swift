@@ -40,11 +40,9 @@
         import MediaPlayer
     #endif
 
-    /// Unified client for checking and requesting system permissions.
     public final class PrismPermissionClient: Sendable {
         public init() {}
 
-        /// Checks current authorization status for a permission.
         public func status(for permission: PrismPermission) -> PrismPermissionStatus {
             switch permission {
             case .camera:
@@ -76,7 +74,6 @@
             }
         }
 
-        /// Requests authorization for a permission.
         @discardableResult
         public func request(_ permission: PrismPermission) async throws -> PrismPermissionStatus {
             switch permission {
@@ -121,7 +118,6 @@
             }
         }
 
-        /// Requests multiple permissions sequentially.
         public func request(_ permissions: [PrismPermission]) async throws -> [PrismPermission: PrismPermissionStatus] {
             var results: [PrismPermission: PrismPermissionStatus] = [:]
             for permission in permissions {
@@ -130,7 +126,6 @@
             return results
         }
 
-        /// Checks multiple permissions at once.
         public func statuses(for permissions: [PrismPermission]) -> [PrismPermission: PrismPermissionStatus] {
             var results: [PrismPermission: PrismPermissionStatus] = [:]
             for permission in permissions {

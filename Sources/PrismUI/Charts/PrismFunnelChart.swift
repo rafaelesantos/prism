@@ -1,17 +1,11 @@
 import SwiftUI
 
-/// A stage in a funnel chart.
 public struct PrismFunnelStage: Sendable, Hashable, Identifiable {
-    /// Stable identity for SwiftUI.
     public var id: String { label }
-    /// Display label for this stage.
     public let label: String
-    /// Numeric value for this stage.
     public let value: Double
-    /// Optional color override.
     public let color: Color?
 
-    /// Creates a funnel stage.
     public init(label: String, value: Double, color: Color? = nil) {
         self.label = label
         self.value = value
@@ -19,7 +13,6 @@ public struct PrismFunnelStage: Sendable, Hashable, Identifiable {
     }
 }
 
-/// A funnel chart with tapered trapezoid stages and conversion rate labels.
 @MainActor
 public struct PrismFunnelChart: View {
     @Environment(\.prismTheme) private var theme
@@ -27,7 +20,6 @@ public struct PrismFunnelChart: View {
     private let stages: [PrismFunnelStage]
     private let palette: [Color]
 
-    /// Creates a funnel chart from an array of stages.
     public init(
         stages: [PrismFunnelStage],
         palette: [Color]? = nil
@@ -36,7 +28,6 @@ public struct PrismFunnelChart: View {
         self.palette = palette ?? [.blue, .cyan, .teal, .green, .mint, .orange, .purple]
     }
 
-    /// The funnel chart view body with trapezoid stages and conversion labels.
     public var body: some View {
         GeometryReader { geo in
             let width = geo.size.width

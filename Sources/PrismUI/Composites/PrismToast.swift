@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Ephemeral notification that appears briefly and auto-dismisses.
 public struct PrismToast: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -9,7 +8,6 @@ public struct PrismToast: View {
     private let icon: String?
     private let style: Style
 
-    /// Creates a toast with message, optional icon, and visual style.
     public init(
         _ message: LocalizedStringKey,
         icon: String? = nil,
@@ -20,7 +18,6 @@ public struct PrismToast: View {
         self.style = style
     }
 
-    /// The toast view body with icon, message, and material background.
     public var body: some View {
         HStack(spacing: SpacingToken.sm.rawValue) {
             if let icon {
@@ -47,15 +44,10 @@ public struct PrismToast: View {
 
 extension PrismToast {
 
-    /// Visual style for the toast foreground color.
     public enum Style: Sendable {
-        /// Default neutral color.
         case neutral
-        /// Success green color.
         case success
-        /// Error red color.
         case error
-        /// Informational blue color.
         case info
 
         @MainActor
@@ -107,7 +99,6 @@ private struct PrismToastModifier: ViewModifier {
 
 extension View {
 
-    /// Shows an auto-dismissing toast notification.
     public func prismToast(
         isPresented: Binding<Bool>,
         _ message: LocalizedStringKey,

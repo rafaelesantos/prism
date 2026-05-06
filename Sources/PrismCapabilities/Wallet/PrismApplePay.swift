@@ -6,26 +6,18 @@
 
     // MARK: - Payment Item Type
 
-    /// Whether a payment line item amount is final or pending.
     public enum PrismPaymentItemType: Sendable {
-        /// The amount is finalized and will not change.
         case final_
-        /// The amount is not yet determined and may change.
         case pending
     }
 
     // MARK: - Payment Item
 
-    /// A single line item in a payment request.
     public struct PrismPaymentItem: Sendable {
-        /// The display label for this line item.
         public let label: String
-        /// The monetary amount.
         public let amount: Decimal
-        /// Whether the amount is final or pending.
         public let type: PrismPaymentItemType
 
-        /// Creates a new payment line item with the given label, amount, and type.
         public init(label: String, amount: Decimal, type: PrismPaymentItemType = .final_) {
             self.label = label
             self.amount = amount
@@ -35,34 +27,22 @@
 
     // MARK: - Payment Network
 
-    /// Supported payment card networks for Apple Pay.
     public enum PrismPaymentNetwork: Sendable, CaseIterable {
-        /// Visa card network.
         case visa
-        /// Mastercard card network.
         case mastercard
-        /// American Express card network.
         case amex
-        /// Discover card network.
         case discover
     }
 
     // MARK: - Payment Request
 
-    /// Configuration for an Apple Pay payment authorization request.
     public struct PrismPaymentRequest: Sendable {
-        /// The merchant identifier registered with Apple.
         public let merchantID: String
-        /// The ISO 3166 country code.
         public let countryCode: String
-        /// The ISO 4217 currency code.
         public let currencyCode: String
-        /// The line items to display on the payment sheet.
         public let items: [PrismPaymentItem]
-        /// The card networks accepted by the merchant.
         public let supportedNetworks: [PrismPaymentNetwork]
 
-        /// Creates a new payment request with the given merchant configuration and line items.
         public init(
             merchantID: String, countryCode: String, currencyCode: String, items: [PrismPaymentItem],
             supportedNetworks: [PrismPaymentNetwork]
@@ -77,16 +57,11 @@
 
     // MARK: - Payment Result
 
-    /// The result of an Apple Pay payment authorization.
     public struct PrismPaymentResult: Sendable {
-        /// The transaction identifier from the payment processor.
         public let transactionID: String?
-        /// The encrypted payment token data.
         public let token: Data?
-        /// Whether the payment was authorized successfully.
         public let success: Bool
 
-        /// Creates a new payment result with the given transaction details and success status.
         public init(transactionID: String? = nil, token: Data? = nil, success: Bool) {
             self.transactionID = transactionID
             self.token = token
@@ -96,25 +71,20 @@
 
     // MARK: - Apple Pay Client
 
-    /// Client that wraps PKPaymentAuthorizationController for Apple Pay transactions.
     @MainActor
     public final class PrismApplePayClient {
 
-        /// Creates a new Apple Pay client.
         public init() {}
 
-        /// Returns whether Apple Pay is available on this device.
         public func canMakePayments() -> Bool {
             PKPaymentAuthorizationController.canMakePayments()
         }
 
-        /// Returns whether the device can make payments with the specified networks.
         public func canMakePayments(networks: [PrismPaymentNetwork]) -> Bool {
             let pkNetworks = networks.map { $0.pkNetwork }
             return PKPaymentAuthorizationController.canMakePayments(usingNetworks: pkNetworks)
         }
 
-        /// Presents the Apple Pay payment sheet and returns the result.
         public func requestPayment(_ request: PrismPaymentRequest) async throws -> PrismPaymentResult {
             let pkRequest = PKPaymentRequest()
             pkRequest.merchantIdentifier = request.merchantID

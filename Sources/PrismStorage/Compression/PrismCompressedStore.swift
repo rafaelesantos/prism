@@ -1,6 +1,5 @@
 import Foundation
 
-/// Transparent compression wrapper — compresses values before delegating to an inner store.
 public final class PrismCompressedStore: PrismStorageProtocol, @unchecked Sendable {
     private let inner: PrismStorageProtocol
     private let algorithm: NSData.CompressionAlgorithm
@@ -82,7 +81,6 @@ public final class PrismCompressedStore: PrismStorageProtocol, @unchecked Sendab
     }
 }
 
-/// Async variant wrapping an async store.
 public actor PrismCompressedAsyncStore: PrismAsyncStorageProtocol {
     private let inner: PrismAsyncStorageProtocol
     private let algorithm: NSData.CompressionAlgorithm

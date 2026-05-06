@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Themed color picker with preset swatches and custom selection.
 public struct PrismColorWell: View {
     @Environment(\.prismTheme) private var theme
 
@@ -9,7 +8,6 @@ public struct PrismColorWell: View {
     private let presets: [Color]
     private let showCustomPicker: Bool
 
-    /// Creates a color well with optional label, preset swatches, and system picker.
     public init(
         _ label: LocalizedStringKey? = nil,
         selection: Binding<Color>,
@@ -22,7 +20,6 @@ public struct PrismColorWell: View {
         self.showCustomPicker = showCustomPicker
     }
 
-    /// The color well view body with swatch grid and optional custom picker.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.sm.rawValue) {
             if let label {
@@ -86,7 +83,6 @@ public struct PrismColorWell: View {
         color.description == selection.description
     }
 
-    /// Default preset color swatches for the color well.
     public static var defaultPresets: [Color] {
         [.red, .orange, .yellow, .green, .mint, .cyan, .blue, .indigo, .purple, .pink]
     }

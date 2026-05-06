@@ -6,7 +6,6 @@
 
         // MARK: - Badge Registration
 
-        /// Registers all cases of a PrismBadge enum, creating progress records for new badges.
         public func registerBadges<B: PrismBadge>(_ badgeType: B.Type) throws {
             for badge in B.allCases {
                 let id = badge.rawValue
@@ -27,10 +26,6 @@
 
         // MARK: - Unlock
 
-        /// Unlocks a badge manually.
-        ///
-        /// - Throws: `PrismGamificationError.badgeAlreadyUnlocked` if the badge is already unlocked.
-        /// - Returns: A snapshot of the updated badge progress.
         @discardableResult
         public func unlockBadge<B: PrismBadge>(_ badge: B) throws -> PrismBadgeSnapshot {
             let record = try fetchBadgeProgress(for: badge.rawValue)
@@ -49,17 +44,14 @@
 
         // MARK: - Query
 
-        /// Returns whether a badge has been unlocked.
         public func isBadgeUnlocked<B: PrismBadge>(_ badge: B) throws -> Bool {
             try fetchBadgeProgress(for: badge.rawValue).isUnlocked
         }
 
-        /// Returns progress snapshot for a badge.
         public func badgeProgress<B: PrismBadge>(for badge: B) throws -> PrismBadgeSnapshot {
             try fetchBadgeProgress(for: badge.rawValue).snapshot
         }
 
-        /// Returns all registered badge progress snapshots.
         public func allBadges() throws -> [PrismBadgeSnapshot] {
             let descriptor = FetchDescriptor<PrismBadgeProgress>(
                 sortBy: [SortDescriptor(\.createdAt)]
@@ -69,12 +61,6 @@
 
         // MARK: - Evaluate
 
-        /// Evaluates all badges of the given type and auto-unlocks those whose conditions are met.
-        ///
-        /// - Parameters:
-        ///   - badgeType: The badge enum type to evaluate.
-        ///   - currentPoints: The caller-provided total points for `.pointsReached` conditions.
-        /// - Returns: Snapshots of newly unlocked badges.
         @discardableResult
         public func evaluateBadges<B: PrismBadge>(
             _ badgeType: B.Type,

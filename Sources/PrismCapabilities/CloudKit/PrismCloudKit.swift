@@ -3,40 +3,25 @@
 
     // MARK: - Cloud Value
 
-    /// A typed value that can be stored in a CloudKit record field.
     public enum PrismCloudValue: Sendable {
-        /// A string value.
         case string(String)
-        /// An integer value.
         case int(Int)
-        /// A floating-point value.
         case double(Double)
-        /// A binary data value.
         case data(Data)
-        /// A date value.
         case date(Date)
-        /// A reference to another record by its identifier.
         case reference(String)
-        /// An array of string values.
         case stringArray([String])
     }
 
     // MARK: - Cloud Record
 
-    /// A lightweight representation of a CloudKit record.
     public struct PrismCloudRecord: Sendable {
-        /// The unique record identifier.
         public let id: String
-        /// The record type name.
         public let recordType: String
-        /// The field values keyed by field name.
         public let fields: [String: PrismCloudValue]
-        /// When the record was created.
         public let createdAt: Date?
-        /// When the record was last modified.
         public let modifiedAt: Date?
 
-        /// Creates a new cloud record with the given identifier, type, and fields.
         public init(
             id: String, recordType: String, fields: [String: PrismCloudValue], createdAt: Date? = nil,
             modifiedAt: Date? = nil
@@ -51,39 +36,27 @@
 
     // MARK: - Cloud Database
 
-    /// Which CloudKit database to target.
     public enum PrismCloudDatabase: Sendable {
-        /// The publicly accessible database visible to all users.
         case publicDB
-        /// The private database scoped to the current iCloud account.
         case privateDB
-        /// The shared database containing records shared by other users.
         case sharedDB
     }
 
     // MARK: - Account Status
 
-    /// The iCloud account status on this device.
     public enum PrismCloudAccountStatus: Sendable, CaseIterable {
-        /// An iCloud account is available and signed in.
         case available
-        /// No iCloud account is configured on the device.
         case noAccount
-        /// The iCloud account is restricted (e.g., managed device).
         case restricted
-        /// The account status could not be determined.
         case couldNotDetermine
-        /// The iCloud account is temporarily unavailable.
         case temporarilyUnavailable
     }
 
     // MARK: - CloudKit Client
 
-    /// Actor-isolated client for CloudKit record CRUD, queries, subscriptions, and account status.
     public actor PrismCloudKitClient {
         private let container: CKContainer
 
-        /// Creates a new CloudKit client targeting the specified container, or the default container if nil.
         public init(containerIdentifier: String? = nil) {
             if let id = containerIdentifier {
                 container = CKContainer(identifier: id)
@@ -92,7 +65,6 @@
             }
         }
 
-        /// Saves a record to the specified database and returns the saved record.
         public func save(record: PrismCloudRecord, database: PrismCloudDatabase) async throws -> PrismCloudRecord {
             let db = resolveDatabase(database)
             let ckRecord = toCKRecord(record)
@@ -100,7 +72,6 @@
             return fromCKRecord(saved)
         }
 
-        /// Fetches a single record by its identifier from the specified database.
         public func fetch(recordID: String, database: PrismCloudDatabase) async throws -> PrismCloudRecord? {
             let db = resolveDatabase(database)
             let id = CKRecord.ID(recordName: recordID)
@@ -108,14 +79,12 @@
             return fromCKRecord(record)
         }
 
-        /// Deletes a record by its identifier from the specified database.
         public func delete(recordID: String, database: PrismCloudDatabase) async throws {
             let db = resolveDatabase(database)
             let id = CKRecord.ID(recordName: recordID)
             try await db.deleteRecord(withID: id)
         }
 
-        /// Queries records of the given type using a predicate string.
         public func query(
             recordType: String, predicate: String = "TRUEPREDICATE", database: PrismCloudDatabase, limit: Int = 100
         ) async throws -> [PrismCloudRecord] {
@@ -127,7 +96,6 @@
             }.map(fromCKRecord)
         }
 
-        /// Creates a subscription for new records of the given type.
         public func subscribe(recordType: String, database: PrismCloudDatabase) async throws -> String {
             let db = resolveDatabase(database)
             let subscriptionID = "prism-\(recordType)-\(UUID().uuidString)"
@@ -144,7 +112,6 @@
             return subscriptionID
         }
 
-        /// Returns the current iCloud account status.
         public func accountStatus() async -> PrismCloudAccountStatus {
             do {
                 let status = try await container.accountStatus()

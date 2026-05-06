@@ -1,10 +1,8 @@
 import Foundation
 
-/// Exports audit log entries for compliance and debugging.
 public struct PrismAuditExporter: Sendable {
     public init() {}
 
-    /// Exports entries as JSON data.
     public func exportJSON(_ entries: [PrismAuditLogEntry]) throws -> Data {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -12,7 +10,6 @@ public struct PrismAuditExporter: Sendable {
         return try encoder.encode(entries)
     }
 
-    /// Exports entries as a JSON string.
     public func exportJSONString(_ entries: [PrismAuditLogEntry]) throws -> String {
         let data = try exportJSON(entries)
         guard let string = String(data: data, encoding: .utf8) else {
@@ -21,7 +18,6 @@ public struct PrismAuditExporter: Sendable {
         return string
     }
 
-    /// Exports a summary report.
     public func exportSummary(_ entries: [PrismAuditLogEntry]) -> PrismAuditSummary {
         var kindCounts: [PrismSecurityEventKind: Int] = [:]
         for entry in entries {
@@ -38,7 +34,6 @@ public struct PrismAuditExporter: Sendable {
     }
 }
 
-/// Aggregated audit log summary.
 public struct PrismAuditSummary: Sendable, Equatable {
     public let totalEntries: Int
     public let firstEntry: Date?

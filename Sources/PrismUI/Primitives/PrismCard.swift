@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Themed card container with elevation, radius, and optional interactivity.
 public struct PrismCard<Content: View>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -9,7 +8,6 @@ public struct PrismCard<Content: View>: View {
     private let elevation: ElevationToken
     private let content: Content
 
-    /// Creates a card with a surface color, corner radius, and elevation.
     public init(
         surface: ColorToken = .surface,
         radius: RadiusToken = .lg,
@@ -22,7 +20,6 @@ public struct PrismCard<Content: View>: View {
         self.content = content()
     }
 
-    /// The content and behavior of the card.
     public var body: some View {
         content
             .padding(SpacingToken.lg.rawValue)

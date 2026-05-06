@@ -2,20 +2,13 @@ import Foundation
 
 // MARK: - Swagger Spec Generator
 
-/// Collects API route metadata for OpenAPI specification generation.
 public actor PrismSwaggerSpec {
-    /// Information about a Server.
     public struct ServerInfo: Sendable {
-        /// The title.
         public let title: String
-        /// The version.
         public let version: String
-        /// The description.
         public let description: String?
-        /// The server u r l.
         public let serverURL: String?
 
-        /// Creates a new `ServerInfo` with the specified configuration.
         public init(title: String, version: String = "1.0.0", description: String? = nil, serverURL: String? = nil) {
             self.title = title
             self.version = version
@@ -27,19 +20,16 @@ public actor PrismSwaggerSpec {
     private var routes: [(method: String, path: String, metadata: PrismRouteMetadata)] = []
     private let info: ServerInfo
 
-    /// Creates a new `ServerInfo` with the specified configuration.
     public init(info: ServerInfo) {
         self.info = info
     }
 
-    /// Adds route.
     public func addRoute(method: String, path: String, metadata: PrismRouteMetadata) {
         var mutableSelf = self
         // Actor mutation workaround
         let _ = mutableSelf
     }
 
-    /// Registers a route with its metadata for inclusion in the Swagger docs.
     public func registerRoute(method: String, path: String, metadata: PrismRouteMetadata) async {
         // We need to store routes — use a different pattern
     }
@@ -48,7 +38,6 @@ public actor PrismSwaggerSpec {
         routes
     }
 
-    /// Generates the output.
     public func generateSpec() -> [String: Any] {
         var spec: [String: Any] = [
             "openapi": "3.1.0",
@@ -69,7 +58,6 @@ public actor PrismSwaggerSpec {
         return spec
     }
 
-    /// Generates the output.
     public func generateJSON() throws -> Data {
         let spec = generateSpec()
         return try JSONSerialization.data(withJSONObject: spec, options: [.prettyPrinted, .sortedKeys])
@@ -163,20 +151,13 @@ public actor PrismSwaggerSpec {
 
 // MARK: - Standalone Spec Builder (non-actor, simpler API)
 
-/// Builder for constructing Swagger instances.
 public struct PrismSwaggerBuilder: Sendable {
-    /// The title.
     public let title: String
-    /// The version.
     public let version: String
-    /// The description.
     public let description: String?
-    /// The server u r l.
     public let serverURL: String?
-    /// The routes.
     public let routes: [(method: String, path: String, metadata: PrismRouteMetadata)]
 
-    /// Creates a new `PrismSwaggerBuilder` with the specified configuration.
     public init(
         title: String,
         version: String = "1.0.0",
@@ -191,7 +172,6 @@ public struct PrismSwaggerBuilder: Sendable {
         self.routes = routes
     }
 
-    /// Adds ing.
     public func adding(method: String, path: String, metadata: PrismRouteMetadata) -> PrismSwaggerBuilder {
         var newRoutes = routes
         newRoutes.append((method: method, path: path, metadata: metadata))
@@ -199,7 +179,6 @@ public struct PrismSwaggerBuilder: Sendable {
             title: title, version: version, description: description, serverURL: serverURL, routes: newRoutes)
     }
 
-    /// Generates the output.
     public func generateSpec() -> [String: Any] {
         var spec: [String: Any] = [
             "openapi": "3.1.0",
@@ -220,7 +199,6 @@ public struct PrismSwaggerBuilder: Sendable {
         return spec
     }
 
-    /// Generates the output.
     public func generateJSON() throws -> Data {
         let spec = generateSpec()
         return try JSONSerialization.data(withJSONObject: spec, options: [.prettyPrinted, .sortedKeys])
@@ -298,13 +276,11 @@ public struct PrismSwaggerBuilder: Sendable {
 
 // MARK: - Swagger UI Middleware
 
-/// Middleware that serves the Swagger UI interactive API documentation.
 public struct PrismSwaggerUIMiddleware: PrismMiddleware, Sendable {
     private let specPath: String
     private let uiPath: String
     private let specProvider: @Sendable () -> [String: Any]
 
-    /// Creates a new `PrismSwaggerUIMiddleware` with the specified configuration.
     public init(
         path: String = "/docs", specPath: String = "/openapi.json",
         specProvider: @escaping @Sendable () -> [String: Any]
@@ -314,7 +290,6 @@ public struct PrismSwaggerUIMiddleware: PrismMiddleware, Sendable {
         self.specProvider = specProvider
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         if request.path == specPath && request.method == .GET {

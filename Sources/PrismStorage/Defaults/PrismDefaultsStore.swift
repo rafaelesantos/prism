@@ -1,6 +1,5 @@
 import Foundation
 
-/// Modern UserDefaults engine with Codable, observation, and suite support.
 public final class PrismDefaultsStore: PrismStorageProtocol, @unchecked Sendable {
     private let defaults: UserDefaults
     private let prefix: String

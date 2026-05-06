@@ -1,41 +1,12 @@
 import CryptoKit
 import Foundation
 
-/// Encrypt-then-sign envelope for secure data transmission.
-///
-/// Uses ephemeral ECDH for forward secrecy + AES-GCM for encryption + P256 ECDSA signing.
-///
-/// ```swift
-/// // Sender
-/// let envelope = try PrismSecureEnvelope.seal(
-///     data: secretData,
-///     recipientPublicKey: bobPublicKeyData,
-///     senderSigningKey: aliceSigningKey
-/// )
-///
-/// // Recipient
-/// let plaintext = try PrismSecureEnvelope.open(
-///     envelope,
-///     recipientPrivateKey: bobPrivateKey,
-///     senderVerifyKey: aliceVerifyKeyData
-/// )
-/// ```
 public struct PrismSecureEnvelope: Codable, Sendable, Equatable {
-    /// Ephemeral public key used for this envelope (forward secrecy).
     public let ephemeralPublicKey: Data
-    /// AES-GCM encrypted payload.
     public let ciphertext: Data
-    /// ECDSA signature over (ephemeralPublicKey + ciphertext).
     public let signature: Data
-    /// When the envelope was created.
     public let createdAt: Date
 
-    /// Seals data into a secure envelope.
-    /// - Parameters:
-    ///   - data: Plaintext data to encrypt.
-    ///   - recipientPublicKey: Recipient's P256 key agreement public key (raw).
-    ///   - senderSigningKey: Sender's P256 signing private key.
-    /// - Returns: Sealed envelope.
     public static func seal(
         data: Data,
         recipientPublicKey: Data,
@@ -70,12 +41,6 @@ public struct PrismSecureEnvelope: Codable, Sendable, Equatable {
         )
     }
 
-    /// Opens a secure envelope.
-    /// - Parameters:
-    ///   - envelope: The sealed envelope to open.
-    ///   - recipientPrivateKey: Recipient's P256 key agreement private key.
-    ///   - senderVerifyKey: Sender's P256 signing public key (raw) for verification.
-    /// - Returns: Decrypted plaintext data.
     public static func open(
         _ envelope: PrismSecureEnvelope,
         recipientPrivateKey: P256.KeyAgreement.PrivateKey,
@@ -104,7 +69,6 @@ public struct PrismSecureEnvelope: Codable, Sendable, Equatable {
         return try AES.GCM.open(sealedBox, using: symmetricKey)
     }
 
-    /// Seals a Codable value.
     public static func seal<T: Codable & Sendable>(
         _ value: T,
         recipientPublicKey: Data,
@@ -114,7 +78,6 @@ public struct PrismSecureEnvelope: Codable, Sendable, Equatable {
         return try seal(data: data, recipientPublicKey: recipientPublicKey, senderSigningKey: senderSigningKey)
     }
 
-    /// Opens and decodes a Codable value.
     public static func open<T: Codable & Sendable>(
         _ type: T.Type,
         from envelope: PrismSecureEnvelope,

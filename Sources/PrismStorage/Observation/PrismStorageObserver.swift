@@ -1,6 +1,5 @@
 import Foundation
 
-/// Observable storage wrapper that emits events on mutations.
 public final class PrismStorageObserver: PrismStorageProtocol, @unchecked Sendable {
     private let inner: PrismStorageProtocol
     private let lock = NSLock()
@@ -72,7 +71,6 @@ public final class PrismStorageObserver: PrismStorageProtocol, @unchecked Sendab
     }
 }
 
-/// Async variant for actor-based stores.
 public actor PrismAsyncStorageObserver: PrismAsyncStorageProtocol {
     private let inner: PrismAsyncStorageProtocol
     private var continuations: [UUID: AsyncStream<PrismStorageEvent>.Continuation] = [:]

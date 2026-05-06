@@ -1,17 +1,8 @@
 import SwiftUI
 
-/// Exports PrismUI design tokens to JSON or Figma-compatible format.
-///
-/// Use this to keep design tools in sync with the code-defined token system.
-///
-/// ```swift
-/// let json = PrismTokenExport.toJSON(theme: DefaultTheme())
-/// // Save to file or send to Figma plugin
-/// ```
 @MainActor
 public enum PrismTokenExport {
 
-    /// Exports all tokens as a JSON dictionary.
     public static func toJSON(theme: some PrismTheme) -> [String: Any] {
         var result: [String: Any] = [:]
 
@@ -25,7 +16,6 @@ public enum PrismTokenExport {
         return result
     }
 
-    /// Exports tokens as JSON data.
     public static func toJSONData(theme: some PrismTheme) -> Data? {
         try? JSONSerialization.data(
             withJSONObject: toJSON(theme: theme),
@@ -33,7 +23,6 @@ public enum PrismTokenExport {
         )
     }
 
-    /// Exports tokens as a JSON string.
     public static func toJSONString(theme: some PrismTheme) -> String? {
         guard let data = toJSONData(theme: theme) else { return nil }
         return String(data: data, encoding: .utf8)
@@ -119,7 +108,6 @@ public enum PrismTokenExport {
 
 extension PrismTokenExport {
 
-    /// Exports in Figma Tokens plugin format (Design Tokens Community Group spec).
     public static func toFigmaTokens(theme: some PrismTheme) -> [String: Any] {
         var tokens: [String: Any] = [:]
 

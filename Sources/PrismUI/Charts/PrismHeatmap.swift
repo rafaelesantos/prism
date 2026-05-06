@@ -1,15 +1,10 @@
 import SwiftUI
 
-/// A single cell in a heatmap grid.
 public struct PrismHeatmapCell: Sendable, Hashable {
-    /// Row index of the cell.
     public let row: Int
-    /// Column index of the cell.
     public let column: Int
-    /// Numeric value driving the cell color.
     public let value: Double
 
-    /// Creates a heatmap cell at a given position.
     public init(row: Int, column: Int, value: Double) {
         self.row = row
         self.column = column
@@ -17,7 +12,6 @@ public struct PrismHeatmapCell: Sendable, Hashable {
     }
 }
 
-/// A heatmap chart that renders a colored grid from numeric data.
 @MainActor
 public struct PrismHeatmap: View {
     @Environment(\.prismTheme) private var theme
@@ -30,7 +24,6 @@ public struct PrismHeatmap: View {
     private let lowColor: Color?
     private let highColor: Color?
 
-    /// Creates a heatmap from a flat array of cells.
     public init(
         cells: [PrismHeatmapCell],
         rows: Int,
@@ -49,7 +42,6 @@ public struct PrismHeatmap: View {
         self.highColor = highColor
     }
 
-    /// Creates a heatmap from a 2D grid of doubles.
     public init(
         grid: [[Double]],
         rowLabels: [String]? = nil,
@@ -74,7 +66,6 @@ public struct PrismHeatmap: View {
         self.highColor = highColor
     }
 
-    /// The heatmap view body with color-interpolated grid cells.
     public var body: some View {
         let minValue = cells.map(\.value).min() ?? 0
         let maxValue = cells.map(\.value).max() ?? 1
@@ -120,7 +111,6 @@ public struct PrismHeatmap: View {
         }
     }
 
-    /// Linearly interpolates between two colors.
     private func interpolateColor(from: Color, to: Color, fraction: Double) -> Color {
         let f = min(max(fraction, 0), 1)
         let fromResolved = from.resolve(in: EnvironmentValues())

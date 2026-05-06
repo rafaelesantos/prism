@@ -7,16 +7,11 @@
 
 import Foundation
 
-/// Configuration for the RAG pipeline.
 public struct PrismRAGConfig: Sendable {
-    /// The number of characters per text chunk.
     public let chunkSize: Int
-    /// The number of overlapping characters between consecutive chunks.
     public let overlapSize: Int
-    /// The number of top results to retrieve during search.
     public let topK: Int
 
-    /// Creates a RAG configuration.
     public init(chunkSize: Int = 500, overlapSize: Int = 50, topK: Int = 3) {
         self.chunkSize = chunkSize
         self.overlapSize = overlapSize
@@ -24,12 +19,9 @@ public struct PrismRAGConfig: Sendable {
     }
 }
 
-/// Splits text into overlapping chunks for embedding ingestion.
 public struct PrismTextChunker: Sendable {
-    /// Creates a text chunker.
     public init() {}
 
-    /// Splits text into chunks of the given size with the specified overlap.
     public func chunk(_ text: String, size: Int, overlap: Int) -> [String] {
         guard !text.isEmpty, size > 0 else { return [] }
         let effectiveOverlap = min(max(overlap, 0), size - 1)
@@ -47,16 +39,11 @@ public struct PrismTextChunker: Sendable {
     }
 }
 
-/// The response from a RAG query.
 public struct PrismRAGResponse: Sendable {
-    /// The generated answer.
     public let answer: String
-    /// Source text chunks used to generate the answer.
     public let sources: [String]
-    /// A confidence score between 0 and 1.
     public let confidence: Double
 
-    /// Creates a RAG response.
     public init(answer: String, sources: [String], confidence: Double) {
         self.answer = answer
         self.sources = sources
@@ -64,19 +51,14 @@ public struct PrismRAGResponse: Sendable {
     }
 }
 
-/// A protocol for embedding text into dense vectors.
 public protocol PrismEmbeddingProvider: Sendable {
-    /// Embeds a single text string into a dense vector.
     func embed(_ text: String) async throws -> [Float]
 }
 
-/// A protocol for generating answers from a prompt and context.
 public protocol PrismGenerationProvider: Sendable {
-    /// Generates an answer given a question and context passages.
     func generate(question: String, context: [String]) async throws -> String
 }
 
-/// Orchestrates the RAG workflow: chunk, embed, store, retrieve, generate.
 public actor PrismRAGPipeline {
     private let config: PrismRAGConfig
     private let store: PrismEmbeddingStore
@@ -85,7 +67,6 @@ public actor PrismRAGPipeline {
     private let generationProvider: PrismGenerationProvider
     private var chunkTexts: [String: String] = [:]
 
-    /// Creates a RAG pipeline with the given configuration and providers.
     public init(
         config: PrismRAGConfig = PrismRAGConfig(),
         store: PrismEmbeddingStore = PrismEmbeddingStore(),
@@ -99,7 +80,6 @@ public actor PrismRAGPipeline {
         self.generationProvider = generationProvider
     }
 
-    /// Ingests documents by chunking, embedding, and storing them.
     public func ingest(documents: [String]) async throws {
         for document in documents {
             let chunks = chunker.chunk(document, size: config.chunkSize, overlap: config.overlapSize)
@@ -117,7 +97,6 @@ public actor PrismRAGPipeline {
         }
     }
 
-    /// Queries the pipeline with a question and returns a generated answer with sources.
     public func query(_ question: String) async throws -> PrismRAGResponse {
         let queryVector = try await embeddingProvider.embed(question)
         let results = await store.search(query: queryVector, topK: config.topK)

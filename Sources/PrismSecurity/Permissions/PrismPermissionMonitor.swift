@@ -1,17 +1,11 @@
 #if canImport(Combine)
     import Foundation
 
-    /// Monitors permission status changes and emits updates via AsyncStream.
     public actor PrismPermissionMonitor {
         private let client: PrismPermissionClient
         private let permissions: [PrismPermission]
         private let interval: TimeInterval
 
-        /// Creates a permission monitor.
-        /// - Parameters:
-        ///   - permissions: Permissions to monitor.
-        ///   - interval: Polling interval in seconds. Defaults to 2.0.
-        ///   - client: Permission client to use. Defaults to new instance.
         public init(
             permissions: [PrismPermission],
             interval: TimeInterval = 2.0,
@@ -22,7 +16,6 @@
             self.client = client
         }
 
-        /// Emits permission status changes as they occur.
         public func statusChanges() -> AsyncStream<PrismPermissionChange> {
             AsyncStream { continuation in
                 let task = Task { [weak self] in
@@ -61,7 +54,6 @@
         }
     }
 
-    /// Represents a change in permission status.
     public struct PrismPermissionChange: Sendable, Equatable {
         public let permission: PrismPermission
         public let oldStatus: PrismPermissionStatus

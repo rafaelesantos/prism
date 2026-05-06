@@ -1,30 +1,20 @@
 import SwiftUI
 
-/// Available component templates for code generation.
 public enum PrismComponentTemplate: String, Sendable, CaseIterable {
-    /// Button component template.
     case button
-    /// Card container template.
     case card
-    /// Form with validation template.
     case form
-    /// Scrollable list template.
     case list
-    /// Detail page template.
     case detail
-    /// Settings screen template.
     case settings
 }
 
-/// Generates SwiftUI source code from predefined PrismUI templates.
 public struct PrismComponentGenerator: Sendable {
 
-    /// Returns all available template types.
     public static func availableTemplates() -> [PrismComponentTemplate] {
         PrismComponentTemplate.allCases
     }
 
-    /// Generates Swift source code for a component using the given template and name.
     public static func generate(template: PrismComponentTemplate, name: String) -> String {
         switch template {
         case .button:
@@ -49,7 +39,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed button component.
         struct \(name): View {
             @Environment(\\.prismTheme) private var theme
 
@@ -77,7 +66,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed card component with elevation.
         struct \(name)<Content: View>: View {
             @Environment(\\.prismTheme) private var theme
 
@@ -110,7 +98,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed form component with validation support.
         struct \(name): View {
             @Environment(\\.prismTheme) private var theme
             @State private var text = ""
@@ -140,7 +127,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed list component.
         struct \(name): View {
             @Environment(\\.prismTheme) private var theme
 
@@ -167,7 +153,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed detail view component.
         struct \(name): View {
             @Environment(\\.prismTheme) private var theme
 
@@ -200,7 +185,6 @@ public struct PrismComponentGenerator: Sendable {
         import SwiftUI
         import PrismUI
 
-        /// A themed settings view component.
         struct \(name): View {
             @Environment(\\.prismTheme) private var theme
             @State private var toggleValue = false

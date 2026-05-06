@@ -1,32 +1,21 @@
 import Foundation
 
-/// RFC 7230 compliant HTTP/1.1 request parser.
 public struct PrismHTTPParser: Sendable {
 
-    /// Errors that can occur during HTTP parsing.
     public enum ParserError: Error, Sendable {
-        /// The data does not contain a complete HTTP request.
         case incompleteRequest
-        /// The request line is malformed.
         case invalidRequestLine
-        /// The HTTP method is not recognized.
         case invalidMethod
-        /// A header line is malformed.
         case invalidHeader
-        /// The request body exceeds the maximum allowed size.
         case bodyTooLarge
     }
 
-    /// Maximum allowed body size in bytes. Default 10 MB.
     public let maxBodySize: Int
 
-    /// Creates an HTTP parser with the given maximum body size.
     public init(maxBodySize: Int = 10_485_760) {
         self.maxBodySize = maxBodySize
     }
 
-    /// Attempts to parse a complete HTTP/1.1 request from raw data.
-    /// Returns the parsed request and the number of bytes consumed.
     public func parse(_ data: Data) throws -> (PrismHTTPRequest, Int) {
         guard let headerEnd = findHeaderEnd(in: data) else {
             throw ParserError.incompleteRequest

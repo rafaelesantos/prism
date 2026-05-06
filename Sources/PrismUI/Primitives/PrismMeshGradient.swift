@@ -1,14 +1,5 @@
 import SwiftUI
 
-/// Themed mesh gradient backgrounds using token colors.
-///
-/// Wraps SwiftUI `MeshGradient` with preset configurations
-/// aligned with PrismUI color tokens.
-///
-/// ```swift
-/// PrismMeshGradient(preset: .aurora)
-///     .ignoresSafeArea()
-/// ```
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct PrismMeshGradient: View {
     @Environment(\.prismTheme) private var theme
@@ -19,7 +10,6 @@ public struct PrismMeshGradient: View {
     private let points: [SIMD2<Float>]?
     private let colors: [Color]?
 
-    /// Creates a mesh gradient from a named preset.
     public init(preset: MeshPreset) {
         self.preset = preset
         self.width = 3
@@ -28,7 +18,6 @@ public struct PrismMeshGradient: View {
         self.colors = nil
     }
 
-    /// Creates a custom mesh gradient with explicit grid dimensions, points, and colors.
     public init(
         width: Int,
         height: Int,
@@ -42,7 +31,6 @@ public struct PrismMeshGradient: View {
         self.colors = colors
     }
 
-    /// The content and behavior of the mesh gradient.
     public var body: some View {
         if let points, let colors {
             MeshGradient(width: width, height: height, points: points, colors: colors)
@@ -86,17 +74,11 @@ public struct PrismMeshGradient: View {
         }
     }
 
-    /// Named mesh gradient presets using theme colors.
     public enum MeshPreset: Sendable {
-        /// Represents a cool aurora-inspired gradient.
         case aurora
-        /// Represents a warm sunset-inspired gradient.
         case sunset
-        /// Represents a deep ocean-inspired gradient.
         case ocean
-        /// Represents a subtle background-to-surface gradient.
         case subtle
-        /// Represents a user-defined custom gradient.
         case custom
 
         var points: [SIMD2<Float>] {

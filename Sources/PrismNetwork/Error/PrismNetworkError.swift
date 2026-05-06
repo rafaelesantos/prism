@@ -8,26 +8,16 @@
 import Foundation
 import PrismFoundation
 
-/// Type-safe network errors with HTTP status code mapping.
 public enum PrismNetworkError: PrismError {
-    /// The URL could not be constructed from the endpoint's components.
     case invalidURL
-    /// The server returned an unexpected or non-HTTP response.
     case invalidResponse
-    /// The device has no network connectivity or the host is unreachable.
     case noConnectivity
-    /// The server rejected the request (HTTP 400).
     case badRequest
-    /// The server encountered an internal error (HTTP 5xx, 408, or 429).
     case serverError
-    /// Authentication is required or the credentials are invalid (HTTP 401).
     case unauthorized
-    /// The authenticated user lacks permission for this resource (HTTP 403).
     case forbidden
-    /// No valid cached response is available for this request.
     case noCache
 
-    /// A localized human-readable description of the error.
     public var description: String {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLDescription)
@@ -41,7 +31,6 @@ public enum PrismNetworkError: PrismError {
         }
     }
 
-    /// A localized description suitable for presenting to the user.
     public var errorDescription: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLErrorDescription)
@@ -55,7 +44,6 @@ public enum PrismNetworkError: PrismError {
         }
     }
 
-    /// A localized explanation of why the error occurred.
     public var failureReason: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLFailureReason)
@@ -69,7 +57,6 @@ public enum PrismNetworkError: PrismError {
         }
     }
 
-    /// A localized suggestion for how to recover from this error.
     public var recoverySuggestion: String? {
         switch self {
         case .invalidURL: return .localized(for: .invalidURLRecoverySuggestion)
@@ -85,10 +72,6 @@ public enum PrismNetworkError: PrismError {
 }
 
 extension PrismNetworkError {
-    /// Maps an HTTP status code to the corresponding ``PrismNetworkError``.
-    ///
-    /// - Parameter statusCode: The HTTP status code from the response.
-    /// - Returns: A ``PrismNetworkError`` matching the status code.
     static func from(statusCode: Int) -> Self {
         switch statusCode {
         case 400:
@@ -104,10 +87,6 @@ extension PrismNetworkError {
         }
     }
 
-    /// Maps a generic `Error` (including `URLError`) to a ``PrismNetworkError``.
-    ///
-    /// - Parameter error: The underlying error to convert.
-    /// - Returns: A ``PrismNetworkError`` matching the error's nature.
     static func from(error: Error) -> Self {
         if let networkError = error as? Self {
             return networkError

@@ -1,23 +1,12 @@
 import SwiftUI
 
-/// Multi-device preview matrix for testing component layout across screen sizes.
-///
-/// ```swift
-/// #Preview {
-///     PrismDevicePreview {
-///         PrismButton("Tap me", variant: .filled) {}
-///     }
-/// }
-/// ```
 public struct PrismDevicePreview<Content: View>: View {
     private let content: Content
 
-    /// Creates a device preview matrix with the given content.
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
-    /// The view body.
     public var body: some View {
         ScrollView {
             VStack(spacing: SpacingToken.xl.rawValue) {
@@ -46,24 +35,13 @@ public struct PrismDevicePreview<Content: View>: View {
     }
 }
 
-/// Locale/RTL preview matrix for testing localization.
-///
-/// ```swift
-/// #Preview {
-///     PrismLocalePreview {
-///         PrismButton("Save", variant: .filled) {}
-///     }
-/// }
-/// ```
 public struct PrismLocalePreview<Content: View>: View {
     private let content: Content
 
-    /// Creates a locale preview matrix with the given content.
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
-    /// The view body.
     public var body: some View {
         ScrollView {
             VStack(spacing: SpacingToken.xl.rawValue) {

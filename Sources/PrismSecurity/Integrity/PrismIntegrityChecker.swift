@@ -4,11 +4,9 @@ import Foundation
     import Darwin
 #endif
 
-/// Detects jailbreak, debugger, simulator, and reverse engineering indicators.
 public struct PrismIntegrityChecker: Sendable {
     public init() {}
 
-    /// Runs all integrity checks and returns any violations found.
     public func checkAll() -> [PrismIntegrityViolation] {
         var violations: [PrismIntegrityViolation] = []
 
@@ -28,14 +26,12 @@ public struct PrismIntegrityChecker: Sendable {
         return violations
     }
 
-    /// Whether the environment passes all integrity checks.
     public var isSecure: Bool {
         checkAll().isEmpty
     }
 
     // MARK: - Jailbreak Detection
 
-    /// Checks for common jailbreak indicators.
     public func isJailbroken() -> Bool {
         #if targetEnvironment(simulator)
             return false
@@ -103,7 +99,6 @@ public struct PrismIntegrityChecker: Sendable {
 
     // MARK: - Debugger Detection
 
-    /// Checks if a debugger is currently attached via sysctl.
     public func isDebuggerAttached() -> Bool {
         #if canImport(Darwin)
             var info = kinfo_proc()
@@ -119,7 +114,6 @@ public struct PrismIntegrityChecker: Sendable {
 
     // MARK: - Simulator Detection
 
-    /// Whether running in a simulator.
     public func isSimulator() -> Bool {
         #if targetEnvironment(simulator)
             return true
@@ -130,7 +124,6 @@ public struct PrismIntegrityChecker: Sendable {
 
     // MARK: - Reverse Engineering Tools
 
-    /// Checks for common reverse engineering tools.
     public func hasReverseEngineeringTools() -> Bool {
         let toolPaths = [
             "/usr/bin/frida-server",

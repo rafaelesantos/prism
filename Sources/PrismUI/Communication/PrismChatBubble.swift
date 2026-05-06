@@ -1,16 +1,11 @@
 import SwiftUI
 
-/// Visual style for chat bubble appearance.
 public enum PrismBubbleStyle: String, Sendable, CaseIterable {
-    /// Solid background fill using theme color.
     case filled
-    /// Transparent background with a border stroke.
     case outlined
-    /// Translucent material background for a frosted-glass look.
     case glass
 }
 
-/// A single chat message bubble with sender alignment, timestamp, and delivery status.
 @MainActor
 public struct PrismChatBubble: View {
     @Environment(\.prismTheme) private var theme
@@ -21,7 +16,6 @@ public struct PrismChatBubble: View {
     private let style: PrismBubbleStyle
     private let status: PrismMessageStatus?
 
-    /// Creates a chat bubble positioned by sender direction.
     public init(
         text: String,
         timestamp: Date = .now,
@@ -36,7 +30,6 @@ public struct PrismChatBubble: View {
         self.status = status
     }
 
-    /// The chat bubble view body with styled background and delivery status.
     public var body: some View {
         HStack {
             if isOutgoing { Spacer(minLength: 48) }

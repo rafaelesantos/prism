@@ -1,11 +1,5 @@
 import SwiftUI
 
-/// Convenience modifier that injects all Prism environment values in one call.
-///
-/// ```swift
-/// ContentView()
-///     .prismEnvironment(theme: DefaultTheme())
-/// ```
 private struct PrismEnvironmentModifier<T: PrismTheme>: ViewModifier {
     let theme: T
     let colorScheme: ColorScheme?
@@ -24,7 +18,6 @@ private struct PrismEnvironmentModifier<T: PrismTheme>: ViewModifier {
 
 extension View {
 
-    /// Injects theme and optional color scheme override.
     @ViewBuilder
     public func prismEnvironment<T: PrismTheme>(
         theme: T,

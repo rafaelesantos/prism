@@ -1,12 +1,10 @@
 import SwiftUI
 
-/// Contextual toolbar with themed action items.
 public struct PrismToolbar: ViewModifier {
     private let leading: [ToolbarItem]
     private let trailing: [ToolbarItem]
     private let title: LocalizedStringKey?
 
-    /// Creates a toolbar modifier with optional title and leading/trailing items.
     public init(
         title: LocalizedStringKey? = nil,
         leading: [ToolbarItem] = [],
@@ -17,7 +15,6 @@ public struct PrismToolbar: ViewModifier {
         self.trailing = trailing
     }
 
-    /// Applies the toolbar with title and action items to the wrapped content.
     public func body(content: Content) -> some View {
         content
             .toolbar {
@@ -63,13 +60,11 @@ public struct PrismToolbar: ViewModifier {
 
 extension PrismToolbar {
 
-    /// A single toolbar action with title, optional icon, and handler.
     public struct ToolbarItem: @unchecked Sendable {
         let title: LocalizedStringKey
         let icon: String?
         let action: @MainActor @Sendable () -> Void
 
-        /// Creates a toolbar item with a title, optional icon, and action handler.
         public init(
             _ title: LocalizedStringKey,
             icon: String? = nil,
@@ -84,7 +79,6 @@ extension PrismToolbar {
 
 extension View {
 
-    /// Applies a themed toolbar with leading and trailing items.
     public func prismToolbar(
         title: LocalizedStringKey? = nil,
         leading: [PrismToolbar.ToolbarItem] = [],

@@ -1,12 +1,6 @@
 #if canImport(SwiftUI)
     import SwiftUI
 
-    /// Property wrapper for UserDefaults-backed storage with Codable support.
-    ///
-    /// ```swift
-    /// @PrismDefault("username") var username: String = "Guest"
-    /// @PrismDefault("onboarded") var onboarded: Bool = false
-    /// ```
     @propertyWrapper
     public struct PrismDefault<Value: Codable & Sendable>: DynamicProperty {
         private let key: String

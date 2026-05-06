@@ -1,10 +1,5 @@
 import SwiftUI
 
-/// Themed share button using native ShareLink.
-///
-/// ```swift
-/// PrismShareButton("Share Photo", item: imageURL, preview: SharePreview("My Photo"))
-/// ```
 public struct PrismShareButton<Data: Transferable>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -12,7 +7,6 @@ public struct PrismShareButton<Data: Transferable>: View {
     private let item: Data
     private let preview: SharePreview<Never, Never>
 
-    /// Creates a share button with a title, transferable item, and share preview.
     public init(
         _ title: LocalizedStringKey = "Share",
         item: Data,
@@ -23,7 +17,6 @@ public struct PrismShareButton<Data: Transferable>: View {
         self.preview = preview
     }
 
-    /// The content and behavior of the share button.
     public var body: some View {
         ShareLink(item: item, preview: preview) {
             Label(title, systemImage: "square.and.arrow.up")
@@ -34,7 +27,6 @@ public struct PrismShareButton<Data: Transferable>: View {
 
 extension PrismShareButton where Data == String {
 
-    /// Creates a share button for a plain text string.
     public init(
         _ title: LocalizedStringKey = "Share",
         text: String
@@ -47,7 +39,6 @@ extension PrismShareButton where Data == String {
 
 extension PrismShareButton where Data == URL {
 
-    /// Creates a share button for a URL.
     public init(
         _ title: LocalizedStringKey = "Share",
         url: URL
@@ -60,7 +51,6 @@ extension PrismShareButton where Data == URL {
 
 // MARK: - Searchable
 
-/// Searchable modifier wrapper with themed styling.
 private struct PrismSearchableModifier: ViewModifier {
     @Binding var text: String
     let prompt: LocalizedStringKey
@@ -75,7 +65,6 @@ private struct PrismSearchableModifier: ViewModifier {
 
 extension View {
 
-    /// Adds a search field with themed styling and keyboard dismiss.
     public func prismSearchable(
         text: Binding<String>,
         prompt: LocalizedStringKey = "Search",

@@ -3,7 +3,6 @@
     import Network
     import PrismFoundation
 
-    /// A fully native HTTP/1.1 server built on Network.framework.
     public actor PrismHTTPServer {
         private let port: UInt16
         private let host: String
@@ -22,7 +21,6 @@
             private let tlsConfig: PrismTLSConfiguration?
         #endif
 
-        /// Creates an HTTP server bound to the given host and port.
         public init(
             host: String = "0.0.0.0",
             port: UInt16 = 8080,
@@ -37,46 +35,38 @@
 
         // MARK: - Route Registration
 
-        /// Registers a route with the given method and pattern.
         public func route(_ method: PrismHTTPMethod, _ pattern: String, handler: @escaping PrismRouteHandler) {
             routes.append(PrismRoute(method: method, pattern: pattern, handler: handler))
         }
 
-        /// Registers a GET route.
         public func get(_ pattern: String, handler: @escaping PrismRouteHandler) {
             route(.GET, pattern, handler: handler)
         }
 
-        /// Registers a POST route.
         public func post(_ pattern: String, handler: @escaping PrismRouteHandler) {
             route(.POST, pattern, handler: handler)
         }
 
-        /// Registers a PUT route.
         public func put(_ pattern: String, handler: @escaping PrismRouteHandler) {
             route(.PUT, pattern, handler: handler)
         }
 
-        /// Registers a PATCH route.
         public func patch(_ pattern: String, handler: @escaping PrismRouteHandler) {
             route(.PATCH, pattern, handler: handler)
         }
 
-        /// Registers a DELETE route.
         public func delete(_ pattern: String, handler: @escaping PrismRouteHandler) {
             route(.DELETE, pattern, handler: handler)
         }
 
         // MARK: - Middleware
 
-        /// Adds a middleware to the global middleware chain.
         public func use(_ middleware: any PrismMiddleware) {
             middlewares.append(middleware)
         }
 
         // MARK: - Route Groups
 
-        /// Creates a route group with a shared prefix and optional middleware.
         public func group(
             _ prefix: String, middlewares: [any PrismMiddleware] = [], configure: (PrismRouteGroupBuilder) -> Void
         ) {
@@ -87,14 +77,12 @@
 
         // MARK: - WebSocket
 
-        /// Registers a WebSocket handler at the given path.
         public func webSocket(_ pattern: String, handler: any PrismWebSocketHandler) {
             webSocketHandlers[pattern] = handler
         }
 
         // MARK: - Server Lifecycle
 
-        /// Starts the HTTP server, binding to the configured host and port.
         public func start() async throws {
             guard !isRunning else { throw PrismHTTPError.serverAlreadyRunning }
 
@@ -140,7 +128,6 @@
             newListener.start(queue: .global(qos: .userInitiated))
         }
 
-        /// Stops the server and closes all connections.
         public func stop() {
             guard isRunning else { return }
             isRunning = false
@@ -350,7 +337,6 @@
 
     // MARK: - Route Group Builder
 
-    /// Builder for configuring routes within a group.
     public final class PrismRouteGroupBuilder: Sendable {
         private let prefix: String
         private let groupMiddlewares: [any PrismMiddleware]
@@ -364,32 +350,26 @@
             self._subgroups = LockedBox([])
         }
 
-        /// Registers a GET route within this group.
         public func get(_ pattern: String, handler: @escaping PrismRouteHandler) {
             _routes.mutate { $0.append(PrismRoute(method: .GET, pattern: pattern, handler: handler)) }
         }
 
-        /// Registers a POST route within this group.
         public func post(_ pattern: String, handler: @escaping PrismRouteHandler) {
             _routes.mutate { $0.append(PrismRoute(method: .POST, pattern: pattern, handler: handler)) }
         }
 
-        /// Registers a PUT route within this group.
         public func put(_ pattern: String, handler: @escaping PrismRouteHandler) {
             _routes.mutate { $0.append(PrismRoute(method: .PUT, pattern: pattern, handler: handler)) }
         }
 
-        /// Registers a PATCH route within this group.
         public func patch(_ pattern: String, handler: @escaping PrismRouteHandler) {
             _routes.mutate { $0.append(PrismRoute(method: .PATCH, pattern: pattern, handler: handler)) }
         }
 
-        /// Registers a DELETE route within this group.
         public func delete(_ pattern: String, handler: @escaping PrismRouteHandler) {
             _routes.mutate { $0.append(PrismRoute(method: .DELETE, pattern: pattern, handler: handler)) }
         }
 
-        /// Creates a nested sub-group with an additional prefix and optional middleware.
         public func group(
             _ subPrefix: String, middlewares: [any PrismMiddleware] = [], configure: (PrismRouteGroupBuilder) -> Void
         ) {
@@ -404,7 +384,6 @@
         }
     }
 
-    /// Thread-safe mutable box for use in Sendable contexts.
     private final class LockedBox<T>: @unchecked Sendable {
         private var _value: T
         private let lock = NSLock()

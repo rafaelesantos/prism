@@ -1,32 +1,22 @@
 import Foundation
 
-/// Lifetime of a registered service.
 public enum PrismServiceLifetime: Sendable {
-    /// A single shared instance for the container's lifetime.
     case singleton
-    /// A new instance is created for each resolution.
     case transient
-    /// A single instance per request scope.
     case scoped
 }
 
-/// Errors during service resolution.
 public enum PrismServiceError: Error, Sendable {
-    /// No service was registered for the requested type.
     case notRegistered(String)
-    /// The service factory returned an incompatible type.
     case resolutionFailed(String)
 }
 
-/// Dependency injection container.
 public actor PrismContainer {
     private var registrations: [String: ServiceRegistration] = [:]
     private var singletons: [String: Any] = [:]
 
-    /// Creates an empty dependency injection container.
     public init() {}
 
-    /// Registers a service factory with a given lifetime.
     public func register<T>(
         _ type: T.Type,
         lifetime: PrismServiceLifetime = .singleton,
@@ -36,7 +26,6 @@ public actor PrismContainer {
         registrations[key] = ServiceRegistration(lifetime: lifetime, factory: factory)
     }
 
-    /// Resolves a service by type.
     public func resolve<T>(_ type: T.Type) async throws -> T {
         let key = String(describing: type)
         guard let registration = registrations[key] else {
@@ -63,13 +52,11 @@ public actor PrismContainer {
         }
     }
 
-    /// Creates a child scope for request-scoped services.
     public func createScope() -> PrismScope {
         PrismScope(registrations: registrations)
     }
 }
 
-/// A scoped child container for request-lifetime services.
 public actor PrismScope {
     private let registrations: [String: ServiceRegistration]
     private var scopedInstances: [String: Any] = [:]
@@ -78,7 +65,6 @@ public actor PrismScope {
         self.registrations = registrations
     }
 
-    /// Resolves a scoped or transient service.
     public func resolve<T>(_ type: T.Type) async throws -> T {
         let key = String(describing: type)
         guard let registration = registrations[key] else {
@@ -113,9 +99,7 @@ struct ServiceRegistration: Sendable {
     let factory: @Sendable () async throws -> Any
 }
 
-/// Convenience for resolving services in route handlers.
 extension PrismContainer {
-    /// Creates a scoped resolution block.
     public func scoped<T: Sendable>(_ block: (PrismScope) async throws -> T) async throws -> T {
         let scope = createScope()
         return try await block(scope)

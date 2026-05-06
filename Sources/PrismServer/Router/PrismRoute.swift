@@ -1,20 +1,13 @@
 import Foundation
 
-/// A handler that processes an HTTP request and returns a response.
 public typealias PrismRouteHandler = @Sendable (PrismHTTPRequest) async throws -> PrismHTTPResponse
 
-/// A single route definition binding an HTTP method and path pattern to a handler.
 public struct PrismRoute: Sendable {
-    /// The HTTP method this route handles.
     public let method: PrismHTTPMethod
-    /// The path pattern with optional parameters (e.g. "/users/:id").
     public let pattern: String
-    /// The path segments split for matching.
     let segments: [RouteSegment]
-    /// The handler function.
     public let handler: PrismRouteHandler
 
-    /// Creates a new `PrismRoute` with the specified configuration.
     public init(method: PrismHTTPMethod, pattern: String, handler: @escaping PrismRouteHandler) {
         self.method = method
         self.pattern = pattern
@@ -22,8 +15,6 @@ public struct PrismRoute: Sendable {
         self.handler = handler
     }
 
-    /// Attempts to match a request path against this route's pattern.
-    /// Returns extracted parameters on success.
     func match(path: String) -> [String: String]? {
         let requestSegments = path.split(separator: "/", omittingEmptySubsequences: true).map(String.init)
 
@@ -53,7 +44,6 @@ public struct PrismRoute: Sendable {
     }
 }
 
-/// A parsed route path segment.
 enum RouteSegment: Sendable {
     case literal(String)
     case parameter(String)

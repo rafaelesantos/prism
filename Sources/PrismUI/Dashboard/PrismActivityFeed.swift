@@ -1,21 +1,13 @@
 import SwiftUI
 
-/// A single activity entry in a feed.
 public struct PrismActivity: Sendable, Identifiable {
-    /// Unique identifier.
     public let id: UUID
-    /// User who performed the action.
     public let user: String
-    /// Action description (e.g. "commented on").
     public let action: String
-    /// Target of the action (e.g. "Issue #42").
     public let target: String
-    /// When the activity happened.
     public let timestamp: Date
-    /// Optional SF Symbol name.
     public let icon: String?
 
-    /// Creates an activity entry with user, action, target, and timestamp.
     public init(
         id: UUID = UUID(),
         user: String,
@@ -33,14 +25,12 @@ public struct PrismActivity: Sendable, Identifiable {
     }
 }
 
-/// Chronological feed of activities with avatars and relative timestamps.
 public struct PrismActivityFeed: View {
     @Environment(\.prismTheme) private var theme
 
     private let activities: [PrismActivity]
     private let groupByDate: Bool
 
-    /// Creates an activity feed with optional date grouping.
     public init(
         activities: [PrismActivity],
         groupByDate: Bool = false
@@ -49,7 +39,6 @@ public struct PrismActivityFeed: View {
         self.groupByDate = groupByDate
     }
 
-    /// The activity feed view body with flat or date-grouped layout.
     public var body: some View {
         if groupByDate {
             groupedContent
@@ -141,16 +130,11 @@ public struct PrismActivityFeed: View {
     }
 }
 
-/// Groups activities by calendar date for sectioned display.
 public struct PrismActivityGroup: Sendable, Identifiable {
-    /// Unique identifier for this activity group.
     public let id = UUID()
-    /// Section title (e.g. "Today", "Yesterday", or a formatted date).
     public let title: String
-    /// Activities in this date group.
     public let activities: [PrismActivity]
 
-    /// Groups an array of activities by calendar date.
     public static func group(_ activities: [PrismActivity]) -> [PrismActivityGroup] {
         let calendar = Calendar.current
         let grouped = Dictionary(grouping: activities) { activity in

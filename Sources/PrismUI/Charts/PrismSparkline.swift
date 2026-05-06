@@ -1,16 +1,11 @@
 import SwiftUI
 
-/// Display style for a sparkline chart.
 public enum PrismSparklineStyle: String, Sendable, CaseIterable {
-    /// A thin line connecting data points.
     case line
-    /// A filled area below the line.
     case area
-    /// Vertical bars for each data point.
     case bar
 }
 
-/// An inline mini chart for displaying trends in compact spaces.
 @MainActor
 public struct PrismSparkline: View {
     @Environment(\.prismTheme) private var theme
@@ -21,7 +16,6 @@ public struct PrismSparkline: View {
     private let trendColoring: Bool
     private let overrideColor: Color?
 
-    /// Creates a sparkline from an array of values.
     public init(
         data: [Double],
         style: PrismSparklineStyle = .line,
@@ -49,7 +43,6 @@ public struct PrismSparkline: View {
         return theme.color(.interactive)
     }
 
-    /// The sparkline view body rendering the selected chart style.
     public var body: some View {
         GeometryReader { geo in
             let rect = geo.frame(in: .local)

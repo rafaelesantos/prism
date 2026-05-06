@@ -1,14 +1,5 @@
 import SwiftUI
 
-/// Card that expands to reveal additional content on tap.
-///
-/// ```swift
-/// PrismExpandableCard {
-///     Text("Summary")
-/// } expanded: {
-///     Text("Full details here...")
-/// }
-/// ```
 @MainActor
 public struct PrismExpandableCard<Header: View, Detail: View>: View {
     @Environment(\.prismTheme) private var theme
@@ -20,7 +11,6 @@ public struct PrismExpandableCard<Header: View, Detail: View>: View {
     private let header: Header
     private let detail: Detail
 
-    /// Creates an expandable card with a header and collapsible detail section.
     public init(
         surface: ColorToken = .surface,
         radius: RadiusToken = .lg,
@@ -35,7 +25,6 @@ public struct PrismExpandableCard<Header: View, Detail: View>: View {
         self.detail = detail()
     }
 
-    /// The content and behavior of the expandable card.
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {

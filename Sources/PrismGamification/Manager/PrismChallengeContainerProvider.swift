@@ -2,13 +2,7 @@
     import Foundation
     import SwiftData
 
-    /// Creates a SwiftData ModelContainer configured for CloudKit sync.
     public enum PrismChallengeContainerProvider {
-        /// Creates a ModelContainer for gamification models.
-        ///
-        /// - Parameters:
-        ///   - cloudKitContainerIdentifier: CKContainer identifier for CloudKit sync. Pass `nil` for local-only.
-        ///   - inMemory: Use in-memory store (for testing).
         public static func makeContainer(
             cloudKitContainerIdentifier: String? = nil,
             inMemory: Bool = false

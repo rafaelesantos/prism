@@ -1,10 +1,6 @@
 import SwiftUI
 import os
 
-/// Runtime accessibility audit that warns about missing labels in DEBUG builds.
-///
-/// Attach to any view hierarchy to get console warnings for views
-/// that are missing accessibility labels.
 public struct PrismAccessibilityAudit: ViewModifier {
     private static let logger = Logger(
         subsystem: "com.prism.ui",
@@ -13,12 +9,10 @@ public struct PrismAccessibilityAudit: ViewModifier {
 
     private let context: String
 
-    /// Creates an accessibility audit modifier with an optional context label.
     public init(context: String = "") {
         self.context = context
     }
 
-    /// Wraps content and logs accessibility audit warnings in DEBUG builds.
     public func body(content: Content) -> some View {
         #if DEBUG
             content.onAppear {
@@ -32,7 +26,6 @@ public struct PrismAccessibilityAudit: ViewModifier {
 
 extension View {
 
-    /// Enables accessibility audit logging in DEBUG builds.
     public func prismAccessibilityAudit(_ context: String = "") -> some View {
         modifier(PrismAccessibilityAudit(context: context))
     }

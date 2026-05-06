@@ -1,19 +1,11 @@
 import CryptoKit
 import Foundation
 
-/// Key derivation functions for deriving encryption keys from passwords or other keys.
 public struct PrismKeyDerivation: Sendable {
     public init() {}
 
     // MARK: - HKDF
 
-    /// Derives a symmetric key using HKDF (HMAC-based Key Derivation Function).
-    /// - Parameters:
-    ///   - inputKey: Input keying material.
-    ///   - salt: Optional salt value.
-    ///   - info: Optional context and application-specific information.
-    ///   - outputByteCount: Desired output key size in bytes. Defaults to 32 (256-bit).
-    /// - Returns: Derived symmetric key.
     public func deriveKey(
         from inputKey: SymmetricKey,
         salt: Data? = nil,
@@ -29,7 +21,6 @@ public struct PrismKeyDerivation: Sendable {
         )
     }
 
-    /// Derives a symmetric key from a shared secret (e.g., from key agreement).
     public func deriveKey(
         from sharedSecret: Data,
         salt: Data? = nil,
@@ -42,12 +33,6 @@ public struct PrismKeyDerivation: Sendable {
 
     // MARK: - Password-Based
 
-    /// Derives a symmetric key from a password using PBKDF2-like construction via HKDF.
-    /// - Parameters:
-    ///   - password: User password.
-    ///   - salt: Random salt. Generate with `generateSalt()`.
-    ///   - outputByteCount: Desired key size. Defaults to 32.
-    /// - Returns: Derived symmetric key.
     public func deriveKey(
         fromPassword password: String,
         salt: Data,
@@ -63,9 +48,6 @@ public struct PrismKeyDerivation: Sendable {
         )
     }
 
-    /// Generates a random salt for key derivation.
-    /// - Parameter byteCount: Salt size in bytes. Defaults to 32.
-    /// - Returns: Random salt data.
     public func generateSalt(byteCount: Int = 32) -> Data {
         var bytes = [UInt8](repeating: 0, count: byteCount)
         _ = SecRandomCopyBytes(kSecRandomDefault, byteCount, &bytes)

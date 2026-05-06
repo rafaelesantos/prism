@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Cross-platform hover effect that works on macOS, visionOS, and iPadOS with pointer.
 private struct PrismHoverModifier: ViewModifier {
     @Environment(\.prismTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -35,11 +34,6 @@ private struct PrismHoverModifier: ViewModifier {
 
 extension View {
 
-    /// Adds platform-appropriate hover effects.
-    ///
-    /// - macOS/visionOS: responds to pointer hover
-    /// - visionOS: also applies `.hoverEffect(.highlight)` for gaze interaction
-    /// - iOS: no-op (no pointer by default)
     public func prismHover(
         scale: CGFloat = 1.02,
         highlight: ColorToken? = .interactive

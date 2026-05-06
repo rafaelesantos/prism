@@ -4,16 +4,13 @@
 
     // MARK: - Camera Client
 
-    /// Observable client for managing AVFoundation camera sessions, photo/video capture, and barcode scanning.
     @MainActor @Observable
     public final class PrismCameraClient {
 
         // MARK: - Public Properties
 
-        /// The current camera authorization status.
         public private(set) var permissionStatus: PrismCameraPermission = .notDetermined
 
-        /// Barcodes detected in the current scanning session.
         public private(set) var detectedBarcodes: [PrismBarcodeResult] = []
 
         // MARK: - Private Properties
@@ -29,14 +26,12 @@
 
         // MARK: - Init
 
-        /// Creates a new camera client and queries the current authorization status.
         public init() {
             updatePermissionStatus()
         }
 
         // MARK: - Permission
 
-        /// Requests camera access from the user and returns the resulting permission status.
         public func requestPermission() async -> PrismCameraPermission {
             await AVCaptureDevice.requestAccess(for: .video)
             updatePermissionStatus()
@@ -45,7 +40,6 @@
 
         // MARK: - Session Management
 
-        /// Starts a camera capture session with the specified position and mode.
         public func startSession(position: PrismCameraPosition, mode: PrismCaptureMode) async throws {
             let session = AVCaptureSession()
             session.beginConfiguration()
@@ -87,7 +81,6 @@
             currentMode = mode
         }
 
-        /// Stops the current capture session and releases resources.
         public func stopSession() {
             captureSession?.stopRunning()
             captureSession = nil
@@ -101,7 +94,6 @@
 
         // MARK: - Photo Capture
 
-        /// Captures a photo with the specified settings.
         public func capturePhoto(settings: PrismPhotoSettings) async throws -> PrismCapturedPhoto {
             guard let photoOutput else {
                 throw CameraError.outputNotConfigured
@@ -121,7 +113,6 @@
 
         // MARK: - Video Recording
 
-        /// Starts recording video to a temporary file.
         public func startRecording() async throws {
             guard let movieOutput else {
                 throw CameraError.outputNotConfigured
@@ -132,7 +123,6 @@
             movieOutput.startRecording(to: url, recordingDelegate: delegate)
         }
 
-        /// Stops the current video recording and returns the file URL.
         public func stopRecording() async throws -> URL? {
             guard let movieOutput, movieOutput.isRecording else {
                 return nil
@@ -148,7 +138,6 @@
 
         // MARK: - Camera Switching
 
-        /// Switches the camera to the specified position while maintaining the current session.
         public func switchCamera(to position: PrismCameraPosition) async throws {
             guard let session = captureSession else {
                 throw CameraError.sessionNotRunning
@@ -178,7 +167,6 @@
 
         // MARK: - Barcode Scanning
 
-        /// Starts barcode scanning for the specified symbologies.
         public func startBarcodeScanning(symbologies: [PrismBarcodeSymbology]) {
             guard let session = captureSession else { return }
 
@@ -197,7 +185,6 @@
             }
         }
 
-        /// Stops barcode scanning and clears detected results.
         public func stopBarcodeScanning() {
             if let metadataOutput, let session = captureSession {
                 session.removeOutput(metadataOutput)
@@ -209,7 +196,6 @@
 
         // MARK: - Zoom & Torch
 
-        /// Sets the zoom factor on the current camera device.
         public func setZoom(factor: CGFloat) {
             #if !os(macOS)
                 guard let device = currentInput?.device else { return }
@@ -223,7 +209,6 @@
             #endif
         }
 
-        /// Enables or disables the torch (flashlight) on the current camera device.
         public func setTorch(enabled: Bool) throws {
             guard let device = currentInput?.device, device.hasTorch else {
                 throw CameraError.torchUnavailable

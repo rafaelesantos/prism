@@ -1,11 +1,8 @@
 import Foundation
 
-/// Recursive descent parser for GraphQL query strings.
 public struct PrismGraphQLParser: Sendable {
-    /// Creates a new `PrismGraphQLParser` with the specified configuration.
     public init() {}
 
-    /// Parses the input and returns the result.
     public func parse(_ source: String) throws -> PrismGraphQLDocument {
         var tokenizer = Tokenizer(source: source)
         let tokens = try tokenizer.tokenize()

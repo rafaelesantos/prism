@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Animated countdown timer with circular progress indicator.
 public struct PrismCountdownTimer: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -13,7 +12,6 @@ public struct PrismCountdownTimer: View {
     @State private var timer: Timer?
     @State private var isRunning = false
 
-    /// Creates a countdown timer with configurable duration and completion handler.
     public init(
         seconds: TimeInterval,
         autoStart: Bool = true,
@@ -27,7 +25,6 @@ public struct PrismCountdownTimer: View {
         self._isRunning = State(initialValue: autoStart)
     }
 
-    /// The countdown timer view body with circular progress and formatted time.
     public var body: some View {
         VStack(spacing: SpacingToken.sm.rawValue) {
             ZStack {
@@ -108,7 +105,6 @@ public struct PrismCountdownTimer: View {
 
     // MARK: - Public Controls
 
-    /// Returns a copy of this timer configured to auto-start.
     public func start() -> PrismCountdownTimer {
         var copy = self
         copy._isRunning = State(initialValue: true)

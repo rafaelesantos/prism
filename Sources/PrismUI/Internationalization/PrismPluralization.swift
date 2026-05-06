@@ -1,31 +1,20 @@
 import SwiftUI
 
-/// CLDR plural categories for locale-aware pluralization.
 public enum PrismPluralCategory: String, Sendable, CaseIterable {
-    /// Zero quantity (e.g., Arabic "no items").
     case zero
-    /// Singular (e.g., English "1 item").
     case one
-    /// Dual (e.g., Arabic "2 items").
     case two
-    /// Few (e.g., Russian 2-4).
     case few
-    /// Many (e.g., Russian 5-20).
     case many
-    /// General/default form.
     case other
 }
 
-/// Locale-aware plural rule resolver following CLDR plural rules.
 public struct PrismPluralRule: Sendable {
 
-    /// Shared instance with built-in rules for English, Arabic, Russian, and Japanese.
     public static let shared = PrismPluralRule()
 
-    /// Creates a plural rule resolver instance.
     public init() {}
 
-    /// Returns the plural category for a given count and locale.
     public func category(for count: Int, locale: Locale) -> PrismPluralCategory {
         let language = locale.language.languageCode?.identifier ?? "en"
 
@@ -80,14 +69,12 @@ public struct PrismPluralRule: Sendable {
     }
 }
 
-/// A view that displays pluralized text based on count and locale.
 public struct PrismPluralizedText: View {
     @Environment(\.locale) private var locale
     private let count: Int
     private let forms: [PrismPluralCategory: String]
     private let rule: PrismPluralRule
 
-    /// Creates a pluralized text view with the given count and form dictionary.
     public init(
         count: Int,
         forms: [PrismPluralCategory: String],
@@ -98,7 +85,6 @@ public struct PrismPluralizedText: View {
         self.rule = rule
     }
 
-    /// The view body displaying the resolved pluralized text.
     public var body: some View {
         Text(resolvedText)
     }

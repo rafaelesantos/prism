@@ -1,17 +1,11 @@
 import Foundation
 
-/// A parsed XML node.
 public struct PrismXMLNode: Sendable {
-    /// The element tag name.
     public let name: String
-    /// The element's XML attributes.
     public let attributes: [String: String]
-    /// The text content of this node.
     public var text: String?
-    /// The child nodes nested within this element.
     public var children: [PrismXMLNode]
 
-    /// Creates an XML node with the given tag name, attributes, text, and children.
     public init(name: String, attributes: [String: String] = [:], text: String? = nil, children: [PrismXMLNode] = []) {
         self.name = name
         self.attributes = attributes
@@ -19,20 +13,16 @@ public struct PrismXMLNode: Sendable {
         self.children = children
     }
 
-    /// Finds the first child with the given name.
     public func child(_ name: String) -> PrismXMLNode? {
         children.first { $0.name == name }
     }
 
-    /// Finds all children with the given name.
     public func childrenNamed(_ name: String) -> [PrismXMLNode] {
         children.filter { $0.name == name }
     }
 }
 
-/// Simple XML parser using Foundation's XMLParser.
 public enum PrismXMLParserUtil {
-    /// Parses raw XML data into a tree of nodes.
     public static func parse(_ data: Data) -> PrismXMLNode? {
         let parser = XMLParser(data: data)
         let delegate = XMLParserDelegateImpl()
@@ -76,9 +66,7 @@ private final class XMLParserDelegateImpl: NSObject, XMLParserDelegate, @uncheck
     }
 }
 
-/// Parses URL-encoded form data with nested keys.
 public enum PrismNestedFormParser {
-    /// Parses `user[name]=John&user[age]=30` into nested dictionaries.
     public static func parse(_ body: String) -> [String: Any] {
         var result: [String: Any] = [:]
         let pairs = body.split(separator: "&", omittingEmptySubsequences: true)
@@ -143,12 +131,9 @@ public enum PrismNestedFormParser {
     }
 }
 
-/// Middleware that auto-detects and parses request bodies.
 public struct PrismBodyParserMiddleware: PrismMiddleware, Sendable {
-    /// Creates a new body parser middleware.
     public init() {}
 
-    /// Detects the content type and annotates the request with the parsed body type.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         var req = request
@@ -169,13 +154,11 @@ public struct PrismBodyParserMiddleware: PrismMiddleware, Sendable {
 }
 
 extension PrismHTTPRequest {
-    /// Parses body as XML.
     public var xmlBody: PrismXMLNode? {
         guard let body else { return nil }
         return PrismXMLParserUtil.parse(body)
     }
 
-    /// Parses body as nested URL-encoded form data.
     public var nestedFormData: [String: Any] {
         guard let body, let str = String(data: body, encoding: .utf8) else { return [:] }
         return PrismNestedFormParser.parse(str)

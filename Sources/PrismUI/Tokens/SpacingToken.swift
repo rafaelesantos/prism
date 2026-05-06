@@ -1,9 +1,5 @@
 import SwiftUI
 
-/// Spacing scale based on a 4pt base grid.
-///
-/// Use semantic names instead of raw CGFloat values
-/// to maintain consistent rhythm across all layouts.
 public enum SpacingToken: CGFloat, Sendable, CaseIterable {
     case none = 0
     case xxs = 2

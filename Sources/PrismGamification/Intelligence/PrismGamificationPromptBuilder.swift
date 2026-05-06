@@ -1,12 +1,9 @@
 import Foundation
 
-/// Builds prompts for AI-generated gamification messages.
 public struct PrismGamificationPromptBuilder: Sendable {
 
-    /// Creates a prompt builder.
     public init() {}
 
-    /// Builds a prompt for the given message kind and context.
     public func prompt(
         for kind: PrismGamificationMessageKind,
         context: PrismGamificationContext
@@ -29,7 +26,6 @@ public struct PrismGamificationPromptBuilder: Sendable {
         }
     }
 
-    /// System instructions for gamification message generation.
     public var systemInstructions: String {
         """
         You are a gamification coach inside a mobile app. \

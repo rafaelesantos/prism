@@ -1,15 +1,5 @@
 import SwiftUI
 
-/// Paged onboarding walkthrough with progress indicator.
-///
-/// ```swift
-/// PrismOnboarding(pages: [
-///     .init(icon: "star", title: "Welcome", message: "Get started"),
-///     .init(icon: "heart", title: "Favorites", message: "Save items"),
-/// ]) {
-///     // completed
-/// }
-/// ```
 public struct PrismOnboarding: View {
     @Environment(\.prismTheme) private var theme
     @State private var currentPage = 0
@@ -17,7 +7,6 @@ public struct PrismOnboarding: View {
     private let pages: [Page]
     private let onComplete: () -> Void
 
-    /// Creates an onboarding flow with the given pages and completion handler.
     public init(
         pages: [Page],
         onComplete: @escaping () -> Void
@@ -26,7 +15,6 @@ public struct PrismOnboarding: View {
         self.onComplete = onComplete
     }
 
-    /// The onboarding view body with paged tab view and progress indicators.
     public var body: some View {
         VStack(spacing: 0) {
             TabView(selection: $currentPage) {
@@ -110,16 +98,11 @@ public struct PrismOnboarding: View {
         .padding(.bottom, SpacingToken.xxl.rawValue)
     }
 
-    /// A single page in the onboarding flow.
     public struct Page: @unchecked Sendable {
-        /// SF Symbol name for the page illustration.
         public let icon: String
-        /// Page headline.
         public let title: LocalizedStringKey
-        /// Page description text.
         public let message: LocalizedStringKey
 
-        /// Creates an onboarding page with icon, title, and message.
         public init(icon: String, title: LocalizedStringKey, message: LocalizedStringKey) {
             self.icon = icon
             self.title = title

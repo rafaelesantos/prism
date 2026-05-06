@@ -1,12 +1,5 @@
 import SwiftUI
 
-/// Gesture-driven interactive animations with spring-back behavior.
-///
-/// ```swift
-/// PrismDraggable {
-///     PrismCard { Text("Drag me") }
-/// }
-/// ```
 @MainActor
 public struct PrismDraggable<Content: View>: View {
     @GestureState private var dragOffset: CGSize = .zero
@@ -17,7 +10,6 @@ public struct PrismDraggable<Content: View>: View {
     private let spring: PrismSpringConfig
     private let content: Content
 
-    /// Creates a draggable wrapper with configurable spring-back, axis lock, and spring preset.
     public init(
         springBack: Bool = true,
         axis: Axis.Set = [.horizontal, .vertical],
@@ -30,7 +22,6 @@ public struct PrismDraggable<Content: View>: View {
         self.content = content()
     }
 
-    /// The draggable view body with gesture-driven offset and spring animation.
     public var body: some View {
         content
             .offset(
@@ -59,7 +50,6 @@ public struct PrismDraggable<Content: View>: View {
     }
 }
 
-/// Pinch-to-scale with spring reset.
 @MainActor
 public struct PrismPinchable<Content: View>: View {
     @State private var currentScale: CGFloat = 1.0
@@ -70,7 +60,6 @@ public struct PrismPinchable<Content: View>: View {
     private let spring: PrismSpringConfig
     private let content: Content
 
-    /// Creates a pinchable wrapper with configurable scale limits and spring preset.
     public init(
         minScale: CGFloat = 0.5,
         maxScale: CGFloat = 3.0,
@@ -83,7 +72,6 @@ public struct PrismPinchable<Content: View>: View {
         self.content = content()
     }
 
-    /// The pinchable view body with magnification gesture and spring animation.
     public var body: some View {
         content
             .scaleEffect(currentScale)
@@ -105,7 +93,6 @@ public struct PrismPinchable<Content: View>: View {
     }
 }
 
-/// Rotation gesture with spring-back.
 @MainActor
 public struct PrismRotatable<Content: View>: View {
     @State private var currentAngle: Angle = .zero
@@ -115,7 +102,6 @@ public struct PrismRotatable<Content: View>: View {
     private let spring: PrismSpringConfig
     private let content: Content
 
-    /// Creates a rotatable wrapper with optional axis snapping and spring preset.
     public init(
         snapsToAxis: Bool = false,
         spring: PrismSpringConfig = .gentle,
@@ -126,7 +112,6 @@ public struct PrismRotatable<Content: View>: View {
         self.content = content()
     }
 
-    /// The rotatable view body with rotation gesture and optional axis snapping.
     public var body: some View {
         content
             .rotationEffect(currentAngle)

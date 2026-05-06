@@ -1,26 +1,16 @@
 import SwiftUI
 
-/// Pre-built animation presets using MotionToken values.
 public enum PrismAnimationPreset: Sendable {
-    /// Represents a spring bounce scale effect.
     case bounce
-    /// Represents a rotational wiggle effect.
     case wiggle
-    /// Represents a pulsing opacity effect.
     case pulse
-    /// Represents a horizontal shake effect.
     case shake
-    /// Represents a fade-in opacity transition.
     case fadeIn
-    /// Represents an upward slide with fade.
     case slideUp
-    /// Represents a scale-in with fade transition.
     case scaleIn
-    /// Represents a spring-driven scale-in with fade.
     case springIn
 }
 
-/// Trigger modifier that runs a preset animation on value change.
 private struct PrismAnimationTriggerModifier: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -99,7 +89,6 @@ private struct AnimationEffect: ViewModifier, @preconcurrency Animatable {
     }
 }
 
-/// Continuous animation modifier.
 private struct PrismContinuousAnimationModifier: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isAnimating = false
@@ -122,7 +111,6 @@ private struct PrismContinuousAnimationModifier: ViewModifier {
 
 extension View {
 
-    /// Triggers a preset animation when the condition changes to true.
     public func prismAnimate(
         _ preset: PrismAnimationPreset,
         trigger: Bool
@@ -130,7 +118,6 @@ extension View {
         modifier(PrismAnimationTriggerModifier(preset: preset, isActive: trigger))
     }
 
-    /// Applies a continuous looping animation. Respects Reduce Motion.
     public func prismPulse(_ preset: PrismAnimationPreset = .pulse) -> some View {
         modifier(PrismContinuousAnimationModifier(preset: preset))
     }

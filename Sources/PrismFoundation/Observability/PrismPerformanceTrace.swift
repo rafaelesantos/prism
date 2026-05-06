@@ -7,24 +7,15 @@
 
 import Foundation
 
-/// A single span within a performance trace, supporting hierarchical children.
 public struct PrismTraceSpan: Sendable {
-    /// Unique identifier for this span.
     public let id: UUID
-    /// Human-readable name describing the traced operation.
     public let name: String
-    /// The time this span started.
     public let startTime: Date
-    /// The time this span ended, nil if still active.
     public var endTime: Date?
-    /// The wall-clock duration of this span, nil if still active.
     public var duration: Duration?
-    /// Arbitrary key-value metadata attached to this span.
     public let metadata: [String: String]
-    /// Nested child spans within this parent.
     public var children: [PrismTraceSpan]
 
-    /// Creates a new trace span.
     public init(
         id: UUID = UUID(),
         name: String,
@@ -44,17 +35,12 @@ public struct PrismTraceSpan: Sendable {
     }
 }
 
-/// Thread-safe performance tracer for measuring operation durations.
 public actor PrismPerformanceTracer {
-    /// Spans that have been started but not yet ended.
     public private(set) var activeSpans: [PrismTraceSpan] = []
-    /// Spans that have been completed with an end time and duration.
     public private(set) var completedSpans: [PrismTraceSpan] = []
 
-    /// Creates a new performance tracer.
     public init() {}
 
-    /// Begins a new span and returns its identifier for later completion.
     @discardableResult
     public func beginSpan(name: String, metadata: [String: String] = [:]) -> UUID {
         let span = PrismTraceSpan(name: name, metadata: metadata)
@@ -62,7 +48,6 @@ public actor PrismPerformanceTracer {
         return span.id
     }
 
-    /// Ends the span with the given identifier, moving it to completed spans.
     public func endSpan(id: UUID) {
         guard let index = activeSpans.firstIndex(where: { $0.id == id }) else { return }
         var span = activeSpans.remove(at: index)
@@ -73,7 +58,6 @@ public actor PrismPerformanceTracer {
         completedSpans.append(span)
     }
 
-    /// Measures the duration of an async operation, automatically creating and completing a span.
     public func measure<T: Sendable>(name: String, _ operation: @Sendable () async throws -> T) async rethrows -> T {
         let spanID = beginSpan(name: name)
         let result = try await operation()

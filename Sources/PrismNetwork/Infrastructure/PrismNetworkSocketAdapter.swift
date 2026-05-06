@@ -32,7 +32,6 @@ enum PrismNetworkSocketConnectionState: Sendable {
     case other(String)
 }
 
-/// Thread-safe: wraps `NWConnection` which serializes operations on its internal queue.
 final class PrismNetworkNWConnection: @unchecked Sendable, PrismNetworkSocketConnection {
     private let connection: NWConnection
 
@@ -111,7 +110,6 @@ final class PrismNetworkNWConnection: @unchecked Sendable, PrismNetworkSocketCon
     }
 }
 
-/// A thread-safe WebSocket adapter with command and stream support.
 public actor PrismNetworkSocketAdapter: PrismNetworkSocketClient {
     private let connectionFactory:
         @Sendable (
@@ -124,7 +122,6 @@ public actor PrismNetworkSocketAdapter: PrismNetworkSocketClient {
     private var connection: (any PrismNetworkSocketConnection)?
     private var receiveBuffer = Data()
 
-    /// Creates a new WebSocket adapter using the default `NWConnection` transport.
     public init() {
         self.init(
             connectionFactory: { host, port, parameters in
@@ -156,11 +153,6 @@ public actor PrismNetworkSocketAdapter: PrismNetworkSocketClient {
         self.queueFactory = queueFactory
     }
 
-    /// Opens a WebSocket connection and returns an async stream of newline-delimited data frames.
-    ///
-    /// - Parameter endpoint: The WebSocket endpoint to connect to.
-    /// - Returns: An `AsyncStream` that yields complete data frames as they arrive.
-    /// - Throws: ``PrismNetworkError`` if the connection cannot be established.
     public func connect(
         to endpoint: any PrismNetworkSocketEndpoint
     ) async throws -> AsyncStream<Data> {
@@ -332,12 +324,6 @@ public actor PrismNetworkSocketAdapter: PrismNetworkSocketClient {
         }
     }
 
-    /// Sends a command message over the active WebSocket connection.
-    ///
-    /// A trailing newline is appended automatically if not already present.
-    ///
-    /// - Parameter command: The command whose message will be sent.
-    /// - Throws: ``PrismNetworkError/noConnectivity`` if no connection is active.
     public func send(command: PrismNetworkSocketCommand) async throws {
         let logger = PrismNetworkLogger()
         guard let connection else {

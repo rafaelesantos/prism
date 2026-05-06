@@ -1,14 +1,6 @@
 import Foundation
 
-/// Automatically detects and redacts PII from strings.
-///
-/// ```swift
-/// let redactor = PrismRedactor()
-/// redactor.redact("Contact john@example.com or 555-123-4567")
-/// // "Contact j***@***.com or ***-***-4567"
-/// ```
 public struct PrismRedactor: Sendable {
-    /// Redaction style.
     public enum Style: String, Sendable, Hashable {
         case mask
         case remove
@@ -21,7 +13,6 @@ public struct PrismRedactor: Sendable {
         self.style = style
     }
 
-    /// Redacts all detected PII patterns in a string.
     public func redact(_ string: String) -> String {
         var result = string
         result = redactEmails(in: result)
@@ -32,7 +23,6 @@ public struct PrismRedactor: Sendable {
         return result
     }
 
-    /// Redacts a specific value based on its type.
     public func redactValue(_ value: String, type: PrismPIIType) -> String {
         switch style {
         case .mask:
@@ -119,7 +109,6 @@ public struct PrismRedactor: Sendable {
     }
 }
 
-/// Types of personally identifiable information.
 public enum PrismPIIType: String, Sendable, Hashable, CaseIterable {
     case email
     case phone

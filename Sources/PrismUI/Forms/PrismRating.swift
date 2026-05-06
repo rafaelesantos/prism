@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Star rating input with configurable max stars and half-star support.
 public struct PrismRating: View {
     @Environment(\.prismTheme) private var theme
 
@@ -9,7 +8,6 @@ public struct PrismRating: View {
     private let allowHalf: Bool
     private let starSize: CGFloat
 
-    /// Creates a star rating with configurable max stars, half-star support, and size.
     public init(
         value: Binding<Double>,
         maxStars: Int = 5,
@@ -22,7 +20,6 @@ public struct PrismRating: View {
         self.starSize = starSize
     }
 
-    /// The star rating view body with tappable filled/empty stars.
     public var body: some View {
         HStack(spacing: SpacingToken.xs.rawValue) {
             ForEach(1...maxStars, id: \.self) { star in

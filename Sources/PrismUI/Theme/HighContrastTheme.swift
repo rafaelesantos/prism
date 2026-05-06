@@ -1,20 +1,9 @@
 import SwiftUI
 
-/// High-contrast theme for enhanced readability and accessibility.
-///
-/// Maximizes contrast ratios beyond WCAG AAA standards. Uses pure black
-/// and white for backgrounds/text, bolder borders, and saturated feedback colors.
-///
-/// ```swift
-/// ContentView()
-///     .prismTheme(HighContrastTheme())
-/// ```
 public struct HighContrastTheme: PrismTheme, Sendable {
 
-    /// Creates a high-contrast theme instance.
     public init() {}
 
-    /// Resolves a color token to a concrete color using the high-contrast palette.
     public func color(_ token: ColorToken) -> Color {
         switch token {
         case .brand: .accentColor

@@ -7,7 +7,6 @@ private struct PrismThemeKey: @preconcurrency EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    /// The current Prism theme propagated through the environment.
     public var prismTheme: any PrismTheme {
         get { self[PrismThemeKey.self] }
         set { self[PrismThemeKey.self] = newValue }
@@ -18,7 +17,6 @@ extension EnvironmentValues {
 
 extension View {
 
-    /// Injects a Prism theme into the view hierarchy.
     public func prismTheme(_ theme: some PrismTheme) -> some View {
         environment(\.prismTheme, theme)
     }

@@ -1,12 +1,8 @@
 import SwiftUI
 
-/// Test utility for automated accessibility assertions.
-///
-/// Provides helpers for verifying accessibility compliance in unit tests.
 @MainActor
 public enum PrismAccessibilityTest {
 
-    /// Verifies minimum tap target size (44×44pt per Apple HIG).
     public static func validateMinimumTapTarget(
         width: CGFloat,
         height: CGFloat
@@ -14,7 +10,6 @@ public enum PrismAccessibilityTest {
         width >= 44 && height >= 44
     }
 
-    /// Verifies contrast ratio meets WCAG AA (4.5:1 for normal text, 3:1 for large text).
     public static func validateContrastRatio(
         foreground: Color,
         background: Color,
@@ -24,7 +19,6 @@ public enum PrismAccessibilityTest {
         return isLargeText ? ratio >= 3.0 : ratio >= 4.5
     }
 
-    /// Calculates approximate contrast ratio between two colors.
     private static func contrastRatio(_ color1: Color, _ color2: Color) -> Double {
         let l1 = relativeLuminance(color1)
         let l2 = relativeLuminance(color2)

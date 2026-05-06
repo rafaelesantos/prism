@@ -2,11 +2,9 @@
     import Foundation
     import LocalAuthentication
 
-    /// Simplified biometric authentication using Face ID, Touch ID, or Optic ID.
     public struct PrismBiometricAuth: Sendable {
         public init() {}
 
-        /// Returns the biometric type available on this device.
         public func availableType() -> PrismBiometricType {
             let context = LAContext()
             var error: NSError?
@@ -22,23 +20,16 @@
             }
         }
 
-        /// Whether biometric authentication is available.
         public func isAvailable() -> Bool {
             availableType() != .none
         }
 
-        /// Whether the device can evaluate the given policy.
         public func canAuthenticate(policy: PrismBiometricPolicy = .biometricsOnly) -> Bool {
             let context = LAContext()
             var error: NSError?
             return context.canEvaluatePolicy(policy.laPolicy, error: &error)
         }
 
-        /// Authenticates the user with biometrics.
-        /// - Parameters:
-        ///   - reason: Localized reason displayed to the user.
-        ///   - policy: Authentication policy. Defaults to `.biometricsOnly`.
-        /// - Returns: `true` if authentication succeeded.
         @discardableResult
         public func authenticate(
             reason: String,
@@ -58,7 +49,6 @@
             }
         }
 
-        /// Authenticates and returns a result instead of throwing.
         public func authenticateResult(
             reason: String,
             policy: PrismBiometricPolicy = .biometricsOnly

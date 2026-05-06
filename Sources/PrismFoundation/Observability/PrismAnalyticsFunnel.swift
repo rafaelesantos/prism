@@ -7,16 +7,11 @@
 
 import Foundation
 
-/// A single step in an analytics funnel with its count and conversion rate from the previous step.
 public struct PrismFunnelStep: Sendable {
-    /// The display name of this funnel step.
     public let name: String
-    /// The number of unique users who reached this step.
     public let count: Int
-    /// The conversion rate from the previous step, nil for the first step.
     public let conversionRate: Double?
 
-    /// Creates a new funnel step.
     public init(name: String, count: Int, conversionRate: Double? = nil) {
         self.name = name
         self.count = count
@@ -24,15 +19,12 @@ public struct PrismFunnelStep: Sendable {
     }
 }
 
-/// Thread-safe analytics funnel that tracks user progression through defined steps.
 public actor PrismAnalyticsFunnel {
     private var stepNames: [String] = []
     private var stepUsers: [String: Set<String>] = [:]
 
-    /// Creates a new analytics funnel.
     public init() {}
 
-    /// Defines the ordered steps of this funnel, resetting any existing data.
     public func define(steps: [String]) {
         stepNames = steps
         stepUsers = [:]
@@ -41,13 +33,11 @@ public actor PrismAnalyticsFunnel {
         }
     }
 
-    /// Records a user reaching a specific funnel step.
     public func record(step: String, userId: String) {
         guard stepUsers[step] != nil else { return }
         stepUsers[step]?.insert(userId)
     }
 
-    /// Generates a report with conversion rates between consecutive steps.
     public func report() -> [PrismFunnelStep] {
         var result: [PrismFunnelStep] = []
         var previousCount: Int?
@@ -64,7 +54,6 @@ public actor PrismAnalyticsFunnel {
         return result
     }
 
-    /// Resets all funnel data, keeping step definitions.
     public func reset() {
         for key in stepUsers.keys {
             stepUsers[key] = []

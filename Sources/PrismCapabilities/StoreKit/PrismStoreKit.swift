@@ -3,34 +3,22 @@
 
     // MARK: - Product Type
 
-    /// Represents the type of an in-app purchase product.
     public enum PrismProductType: Sendable, CaseIterable {
-        /// A product that can be purchased multiple times.
         case consumable
-        /// A product that is purchased once and persists permanently.
         case nonConsumable
-        /// A subscription that renews automatically.
         case autoRenewable
-        /// A subscription that does not renew automatically.
         case nonRenewable
     }
 
     // MARK: - Product Info
 
-    /// Lightweight value describing a StoreKit product.
     public struct PrismProductInfo: Sendable {
-        /// The product identifier registered in App Store Connect.
         public let id: String
-        /// The localized display name.
         public let displayName: String
-        /// The localized product description.
         public let description: String
-        /// The decimal price in the user's storefront currency.
         public let price: Decimal
-        /// The product type classification.
         public let type: PrismProductType
 
-        /// Creates a new product info with the given identifier, name, price, and type.
         public init(id: String, displayName: String, description: String, price: Decimal, type: PrismProductType) {
             self.id = id
             self.displayName = displayName
@@ -42,22 +30,14 @@
 
     // MARK: - Transaction Info
 
-    /// Snapshot of a verified StoreKit transaction.
     public struct PrismTransactionInfo: Sendable {
-        /// The unique transaction identifier assigned by the App Store.
         public let id: UInt64
-        /// The product identifier associated with the transaction.
         public let productID: String
-        /// The date the purchase was made.
         public let purchaseDate: Date
-        /// The subscription expiration date, if applicable.
         public let expirationDate: Date?
-        /// Whether the subscription was upgraded to a higher-tier plan.
         public let isUpgraded: Bool
-        /// The date the transaction was revoked, if applicable.
         public let revocationDate: Date?
 
-        /// Creates a new transaction info with the given identifier and purchase details.
         public init(
             id: UInt64, productID: String, purchaseDate: Date, expirationDate: Date? = nil, isUpgraded: Bool = false,
             revocationDate: Date? = nil
@@ -73,33 +53,23 @@
 
     // MARK: - Subscription Status
 
-    /// Represents the current state of an auto-renewable subscription.
     public enum PrismSubscriptionStatus: Sendable, CaseIterable {
-        /// The subscription is active and in good standing.
         case subscribed
-        /// The subscription has expired.
         case expired
-        /// The subscription was revoked by the App Store or the user.
         case revoked
-        /// The subscription is in a billing retry period after a failed renewal.
         case inBillingRetry
-        /// The subscription is in a grace period after a billing issue.
         case inGracePeriod
     }
 
     // MARK: - StoreKit Client
 
-    /// Observable client that wraps StoreKit 2 APIs for products, purchases, and subscriptions.
     @MainActor @Observable
     public final class PrismStoreKitClient {
-        /// The list of available products fetched from the App Store.
         public private(set) var products: [PrismProductInfo] = []
-        /// The set of product identifiers the user has purchased.
         public private(set) var purchasedProductIDs: Set<String> = []
 
         nonisolated(unsafe) private var transactionListener: Task<Void, Never>?
 
-        /// Creates a new StoreKit client.
         public init() {}
 
         deinit {
@@ -107,7 +77,6 @@
             listener?.cancel()
         }
 
-        /// Fetches products from the App Store for the given identifiers.
         public func fetchProducts(ids: Set<String>) async throws {
             let storeProducts = try await Product.products(for: ids)
             products = storeProducts.map { product in
@@ -129,7 +98,6 @@
             }
         }
 
-        /// Initiates a purchase for the given product identifier.
         public func purchase(productID: String) async throws -> PrismTransactionInfo? {
             guard let product = try await Product.products(for: [productID]).first else {
                 return nil
@@ -155,7 +123,6 @@
             }
         }
 
-        /// Restores previously completed purchases by scanning current entitlements.
         public func restorePurchases() async {
             for await result in Transaction.currentEntitlements {
                 if let transaction = try? checkVerified(result) {
@@ -164,7 +131,6 @@
             }
         }
 
-        /// Returns the subscription status for the given subscription group identifier.
         public func subscriptionStatus(for groupID: String) async -> PrismSubscriptionStatus {
             guard let statuses = try? await Product.SubscriptionInfo.status(for: groupID),
                 let status = statuses.first
@@ -181,7 +147,6 @@
             }
         }
 
-        /// Starts a background listener for transaction updates (renewals, revocations, etc.).
         public func startTransactionListener() {
             transactionListener = Task.detached { [weak self] in
                 for await result in Transaction.updates {

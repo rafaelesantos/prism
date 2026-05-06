@@ -1,35 +1,21 @@
 import SwiftUI
 
-/// Delivery status of a chat message.
 public enum PrismMessageStatus: String, Sendable, CaseIterable {
-    /// Message is being transmitted.
     case sending
-    /// Message reached the server.
     case sent
-    /// Message reached the recipient device.
     case delivered
-    /// Message was opened by the recipient.
     case read
-    /// Message failed to send.
     case failed
 }
 
-/// A single chat message with sender, content, and metadata.
 public struct PrismMessage: Identifiable, Sendable, Equatable {
-    /// Unique identifier for this message.
     public let id: UUID
-    /// The text content of the message.
     public let text: String
-    /// Display name of the sender.
     public let sender: String
-    /// When the message was created.
     public let timestamp: Date
-    /// Whether the current user sent this message.
     public let isOutgoing: Bool
-    /// Current delivery status.
     public let status: PrismMessageStatus
 
-    /// Creates a message with all required fields.
     public init(
         id: UUID = UUID(),
         text: String,
@@ -47,18 +33,12 @@ public struct PrismMessage: Identifiable, Sendable, Equatable {
     }
 }
 
-/// Groups consecutive messages from the same sender for visual compactness.
 public struct PrismMessageGroup: Identifiable, Sendable {
-    /// Stable identifier derived from the first message.
     public var id: UUID { messages.first?.id ?? UUID() }
-    /// The sender shared by all messages in this group.
     public let sender: String
-    /// Whether these messages are outgoing.
     public let isOutgoing: Bool
-    /// Ordered messages in this group.
     public let messages: [PrismMessage]
 
-    /// Creates a message group from consecutive same-sender messages.
     public init(sender: String, isOutgoing: Bool, messages: [PrismMessage]) {
         self.sender = sender
         self.isOutgoing = isOutgoing
@@ -66,7 +46,6 @@ public struct PrismMessageGroup: Identifiable, Sendable {
     }
 }
 
-/// A scrollable message list with date separators and auto-scroll to the latest message.
 @MainActor
 public struct PrismMessageList: View {
     @Environment(\.prismTheme) private var theme
@@ -74,13 +53,11 @@ public struct PrismMessageList: View {
     private let messages: [PrismMessage]
     private let bubbleStyle: PrismBubbleStyle
 
-    /// Creates a message list that renders bubbles for each message.
     public init(messages: [PrismMessage], bubbleStyle: PrismBubbleStyle = .filled) {
         self.messages = messages
         self.bubbleStyle = bubbleStyle
     }
 
-    /// The message list view body with date separators and auto-scroll.
     public var body: some View {
         ScrollViewReader { proxy in
             ScrollView {

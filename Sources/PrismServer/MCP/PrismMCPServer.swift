@@ -1,24 +1,16 @@
 import Foundation
 
-/// Sendable wrapper for JSON dictionary values crossing actor boundaries.
 public struct PrismJSONObject: @unchecked Sendable {
-    /// The raw.
     public let raw: [String: Any]
-    /// Creates a new `PrismJSONObject` with the specified configuration.
     public init(_ raw: [String: Any]) { self.raw = raw }
 
-    /// Returns the raw value for the given key.
     public subscript(key: String) -> Any? { raw[key] }
 
-    /// Returns the string value for the given key, if present.
     public func string(_ key: String) -> String? { raw[key] as? String }
-    /// Returns the dictionary value for the given key, if present.
     public func dict(_ key: String) -> [String: Any]? { raw[key] as? [String: Any] }
-    /// Returns the string dictionary value for the given key, if present.
     public func stringDict(_ key: String) -> [String: String]? { raw[key] as? [String: String] }
 }
 
-/// Actor-based MCP server that handles JSON-RPC 2.0 requests.
 public actor PrismMCPServer {
     private let serverName: String
     private let serverVersion: String
@@ -28,7 +20,6 @@ public actor PrismMCPServer {
     private var prompts: [String: RegisteredPrompt] = [:]
     private var initialized = false
 
-    /// Creates a new `PrismMCPServer` with the specified configuration.
     public init(name: String = "PrismMCPServer", version: String = "1.0.0") {
         self.serverName = name
         self.serverVersion = version
@@ -36,7 +27,6 @@ public actor PrismMCPServer {
 
     // MARK: - Registration
 
-    /// Registers a tool with a handler.
     public func registerTool(
         _ name: String,
         description: String,
@@ -47,7 +37,6 @@ public actor PrismMCPServer {
         tools[name] = RegisteredTool(tool: tool, handler: handler)
     }
 
-    /// Registers a resource with a handler.
     public func registerResource(
         _ resource: PrismMCPResource,
         handler: @escaping @Sendable () async throws -> String
@@ -55,7 +44,6 @@ public actor PrismMCPServer {
         resources[resource.uri] = RegisteredResource(resource: resource, handler: handler)
     }
 
-    /// Registers a prompt template with a handler.
     public func registerPrompt(
         _ prompt: PrismMCPPrompt,
         handler: @escaping @Sendable ([String: String]) async throws -> [PrismMCPMessage]
@@ -65,7 +53,6 @@ public actor PrismMCPServer {
 
     // MARK: - JSON-RPC Dispatch
 
-    /// Handles a JSON-RPC 2.0 request as Data, returns response as Data.
     public func handleRequestData(_ requestData: Data) async -> Data {
         guard let json = try? JSONSerialization.jsonObject(with: requestData) as? [String: Any] else {
             let errorResp: [String: Any] = [

@@ -1,16 +1,13 @@
 import Compression
 import Foundation
 
-/// Gzip/deflate compression middleware using Apple's built-in compression.
 public struct PrismCompressionMiddleware: PrismMiddleware {
     private let minimumSize: Int
 
-    /// Creates a new `PrismCompressionMiddleware` with the specified configuration.
     public init(minimumSize: Int = 1024) {
         self.minimumSize = minimumSize
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         var response = try await next(request)

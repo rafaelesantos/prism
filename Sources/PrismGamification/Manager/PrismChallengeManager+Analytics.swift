@@ -5,7 +5,6 @@
     extension PrismChallengeManager {
         // MARK: - Record
 
-        /// Records a gamification analytics event.
         public func recordAnalyticsEvent(_ event: PrismGamificationAnalyticsEvent) throws {
             var duration: Double? = nil
             if case .challengeCompleted(_, _, let d) = event { duration = d }
@@ -21,7 +20,6 @@
 
         // MARK: - Aggregation
 
-        /// Returns aggregated analytics for a time period.
         public func analyticsSnapshot(from start: Date, to end: Date) throws -> PrismAnalyticsSnapshot {
             let descriptor = FetchDescriptor<PrismAnalyticsRecord>(
                 predicate: #Predicate { $0.timestamp >= start && $0.timestamp <= end }
@@ -56,7 +54,6 @@
 
         // MARK: - Query
 
-        /// Returns analytics events for a specific entity.
         public func analyticsEvents(for entityID: String, limit: Int = 100) throws -> [PrismAnalyticsRecordSnapshot] {
             var descriptor = FetchDescriptor<PrismAnalyticsRecord>(
                 predicate: #Predicate { $0.entityID == entityID },
@@ -68,7 +65,6 @@
 
         // MARK: - Cleanup
 
-        /// Clears analytics records before a date.
         public func clearAnalytics(before date: Date) throws {
             let descriptor = FetchDescriptor<PrismAnalyticsRecord>(
                 predicate: #Predicate { $0.timestamp < date }

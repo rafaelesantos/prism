@@ -74,8 +74,9 @@ struct PrismPinningPolicyTests {
 
     @Test("Pinning result equality")
     func resultEquality() {
-        let r1 = PrismPinningResult(host: "a.com", isValid: true, serverHash: "h1")
-        let r2 = PrismPinningResult(host: "a.com", isValid: true, serverHash: "h1")
+        let now = Date()
+        let r1 = PrismPinningResult(host: "a.com", isValid: true, serverHash: "h1", evaluatedAt: now)
+        let r2 = PrismPinningResult(host: "a.com", isValid: true, serverHash: "h1", evaluatedAt: now)
         #expect(r1 == r2)
     }
 }

@@ -1,6 +1,5 @@
 import Foundation
 
-/// Tier levels for badges, ordered from lowest to highest.
 public enum PrismBadgeTier: String, Codable, Sendable, CaseIterable, Comparable {
     case bronze
     case silver

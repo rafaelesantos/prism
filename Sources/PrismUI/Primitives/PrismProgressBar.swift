@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Determinate or indeterminate progress bar with label support.
 public struct PrismProgressBar: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -11,7 +10,6 @@ public struct PrismProgressBar: View {
 
     @State private var indeterminateOffset: CGFloat = -1
 
-    /// Determinate progress bar.
     public init(
         value: Double,
         total: Double = 1.0,
@@ -22,14 +20,12 @@ public struct PrismProgressBar: View {
         self.label = label
     }
 
-    /// Indeterminate progress bar.
     public init(label: LocalizedStringKey? = nil) {
         self.value = nil
         self.total = 1.0
         self.label = label
     }
 
-    /// The content and behavior of the progress bar.
     public var body: some View {
         VStack(alignment: .leading, spacing: SpacingToken.xs.rawValue) {
             if let label {

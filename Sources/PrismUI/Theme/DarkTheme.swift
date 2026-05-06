@@ -1,20 +1,9 @@
 import SwiftUI
 
-/// Dark-only theme that ignores the system appearance setting.
-///
-/// Forces dark surfaces and light content regardless of `colorScheme`.
-/// Useful for media apps, cinematic UIs, and always-dark sections.
-///
-/// ```swift
-/// ContentView()
-///     .prismTheme(DarkTheme())
-/// ```
 public struct DarkTheme: PrismTheme, Sendable {
 
-    /// Creates a dark theme instance.
     public init() {}
 
-    /// Resolves a color token to a concrete color using the dark palette.
     public func color(_ token: ColorToken) -> Color {
         switch token {
         case .brand: .accentColor

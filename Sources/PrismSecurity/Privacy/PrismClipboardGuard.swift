@@ -6,20 +6,11 @@
 
 import Foundation
 
-/// Automatically clears the clipboard after a timeout when sensitive data is copied.
-///
-/// ```swift
-/// let guard = PrismClipboardGuard(clearAfter: 30)
-/// guard.copySecurely("my-secret-token")
-/// // Clipboard auto-clears after 30 seconds
-/// ```
 public final class PrismClipboardGuard: @unchecked Sendable {
     private let clearAfter: TimeInterval
     private let lock = NSLock()
     private var clearTask: Task<Void, Never>?
 
-    /// Creates a clipboard guard.
-    /// - Parameter clearAfter: Seconds before clipboard auto-clears. Defaults to 30.
     public init(clearAfter: TimeInterval = 30) {
         self.clearAfter = clearAfter
     }
@@ -28,7 +19,6 @@ public final class PrismClipboardGuard: @unchecked Sendable {
         lock.withLock { clearTask?.cancel() }
     }
 
-    /// Copies a string to the clipboard and schedules auto-clear.
     public func copySecurely(_ string: String) {
         #if canImport(UIKit) && !os(watchOS)
             UIPasteboard.general.string = string
@@ -39,7 +29,6 @@ public final class PrismClipboardGuard: @unchecked Sendable {
         scheduleClear()
     }
 
-    /// Copies data to the clipboard and schedules auto-clear.
     public func copySecurely(_ data: Data) {
         #if canImport(UIKit) && !os(watchOS)
             UIPasteboard.general.setData(data, forPasteboardType: "public.data")
@@ -47,7 +36,6 @@ public final class PrismClipboardGuard: @unchecked Sendable {
         scheduleClear()
     }
 
-    /// Clears the clipboard immediately.
     public func clearNow() {
         lock.withLock { clearTask?.cancel() }
         #if canImport(UIKit) && !os(watchOS)
@@ -57,7 +45,6 @@ public final class PrismClipboardGuard: @unchecked Sendable {
         #endif
     }
 
-    /// Cancels any pending auto-clear.
     public func cancelClear() {
         lock.withLock { clearTask?.cancel() }
     }

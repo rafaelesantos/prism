@@ -1,18 +1,8 @@
 import SwiftUI
 
-/// AI-assisted theme generation from a single brand color.
-///
-/// Derives complementary, analogous, and triadic colors, then builds
-/// a complete `BrandTheme` automatically.
-///
-/// ```swift
-/// let theme = PrismAutoTheme.generate(from: .indigo)
-/// ContentView().prismTheme(theme)
-/// ```
 @MainActor
 public enum PrismAutoTheme {
 
-    /// Generates a complete BrandTheme from a single brand color.
     public static func generate(from brandColor: Color) -> BrandTheme {
         let resolved = brandColor.resolve(in: .init())
         let hsl = rgbToHSL(r: Double(resolved.red), g: Double(resolved.green), b: Double(resolved.blue))
@@ -23,7 +13,6 @@ public enum PrismAutoTheme {
         return BrandTheme(primary: brandColor, secondary: secondary, accent: accent)
     }
 
-    /// Generates a theme using analogous color harmony.
     public static func analogous(from brandColor: Color) -> BrandTheme {
         let resolved = brandColor.resolve(in: .init())
         let hsl = rgbToHSL(r: Double(resolved.red), g: Double(resolved.green), b: Double(resolved.blue))
@@ -34,7 +23,6 @@ public enum PrismAutoTheme {
         return BrandTheme(primary: brandColor, secondary: secondary, accent: accent)
     }
 
-    /// Generates a theme using triadic color harmony.
     public static func triadic(from brandColor: Color) -> BrandTheme {
         let resolved = brandColor.resolve(in: .init())
         let hsl = rgbToHSL(r: Double(resolved.red), g: Double(resolved.green), b: Double(resolved.blue))
@@ -45,7 +33,6 @@ public enum PrismAutoTheme {
         return BrandTheme(primary: brandColor, secondary: secondary, accent: accent)
     }
 
-    /// Generates a theme using split-complementary harmony.
     public static func splitComplementary(from brandColor: Color) -> BrandTheme {
         let resolved = brandColor.resolve(in: .init())
         let hsl = rgbToHSL(r: Double(resolved.red), g: Double(resolved.green), b: Double(resolved.blue))
@@ -56,7 +43,6 @@ public enum PrismAutoTheme {
         return BrandTheme(primary: brandColor, secondary: secondary, accent: accent)
     }
 
-    /// Available color harmony strategies.
     public enum Harmony: String, CaseIterable, Sendable {
         case complementary
         case analogous
@@ -64,7 +50,6 @@ public enum PrismAutoTheme {
         case splitComplementary
     }
 
-    /// Generates a theme using the specified harmony.
     public static func generate(from brandColor: Color, harmony: Harmony) -> BrandTheme {
         switch harmony {
         case .complementary: generate(from: brandColor)

@@ -3,7 +3,6 @@
     import Network
     import CryptoKit
 
-    /// WebSocket frame opcodes as defined in RFC 6455.
     public enum PrismWebSocketOpcode: UInt8, Sendable {
         case continuation = 0x0
         case text = 0x1
@@ -13,33 +12,25 @@
         case pong = 0xA
     }
 
-    /// A parsed WebSocket frame.
     public struct PrismWebSocketFrame: Sendable {
-        /// The fin.
         public let fin: Bool
-        /// The opcode.
         public let opcode: PrismWebSocketOpcode
-        /// The payload.
         public let payload: Data
 
-        /// Creates a new `PrismWebSocketFrame` with the specified configuration.
         public init(fin: Bool = true, opcode: PrismWebSocketOpcode, payload: Data) {
             self.fin = fin
             self.opcode = opcode
             self.payload = payload
         }
 
-        /// Creates a text frame.
         public static func text(_ string: String) -> PrismWebSocketFrame {
             PrismWebSocketFrame(opcode: .text, payload: Data(string.utf8))
         }
 
-        /// Creates a binary frame.
         public static func binary(_ data: Data) -> PrismWebSocketFrame {
             PrismWebSocketFrame(opcode: .binary, payload: data)
         }
 
-        /// Creates a close frame.
         public static func close(code: UInt16 = 1000) -> PrismWebSocketFrame {
             var data = Data()
             data.append(UInt8(code >> 8))
@@ -47,17 +38,14 @@
             return PrismWebSocketFrame(opcode: .close, payload: data)
         }
 
-        /// Creates a ping frame.
         public static func ping(_ data: Data = Data()) -> PrismWebSocketFrame {
             PrismWebSocketFrame(opcode: .ping, payload: data)
         }
 
-        /// Creates a pong frame.
         public static func pong(_ data: Data = Data()) -> PrismWebSocketFrame {
             PrismWebSocketFrame(opcode: .pong, payload: data)
         }
 
-        /// Serializes this frame to wire format (server → client, no masking).
         public func serialize() -> Data {
             var frame = Data()
 
@@ -83,13 +71,10 @@
         }
     }
 
-    /// Parser for incoming WebSocket frames.
     public struct PrismWebSocketParser: Sendable {
 
-        /// Creates a new `PrismWebSocketParser` with the specified configuration.
         public init() {}
 
-        /// Attempts to parse a WebSocket frame from data. Returns the frame and bytes consumed.
         public func parse(_ data: Data) -> (PrismWebSocketFrame, Int)? {
             guard data.count >= 2 else { return nil }
 
@@ -145,11 +130,9 @@
         }
     }
 
-    /// Handles the WebSocket upgrade handshake.
     public struct PrismWebSocketUpgrade: Sendable {
         private static let webSocketGUID = "258EAFA5-E914-47DA-95CA-5AB5DC11D732"
 
-        /// Checks whether a request is a valid WebSocket upgrade request.
         public static func isUpgradeRequest(_ request: PrismHTTPRequest) -> Bool {
             let upgrade = request.headers.value(for: "Upgrade")?.lowercased()
             let connection = request.headers.value(for: "Connection")?.lowercased()
@@ -157,7 +140,6 @@
             return upgrade == "websocket" && connection?.contains("upgrade") == true && key != nil
         }
 
-        /// Generates the 101 Switching Protocols response for a WebSocket upgrade.
         public static func upgradeResponse(for request: PrismHTTPRequest) -> PrismHTTPResponse? {
             guard let key = request.headers.value(for: "Sec-WebSocket-Key") else { return nil }
 
@@ -187,48 +169,39 @@
         }
     }
 
-    /// A WebSocket message (text or binary).
     public enum PrismWebSocketMessage: Sendable {
         case text(String)
         case binary(Data)
     }
 
-    /// Handler protocol for WebSocket connections.
     public protocol PrismWebSocketHandler: Sendable {
         func onConnect(connection: PrismWebSocketConnection) async
         func onMessage(connection: PrismWebSocketConnection, message: PrismWebSocketMessage) async
         func onDisconnect(connection: PrismWebSocketConnection) async
     }
 
-    /// Represents a live WebSocket connection for sending frames.
     public actor PrismWebSocketConnection {
         private let sendFrame: @Sendable (PrismWebSocketFrame) async -> Void
-        /// A unique identifier for this connection.
         public nonisolated let id: String
 
-        /// Creates a new `PrismWebSocketConnection` with the specified configuration.
         public init(id: String = UUID().uuidString, sendFrame: @escaping @Sendable (PrismWebSocketFrame) async -> Void)
         {
             self.id = id
             self.sendFrame = sendFrame
         }
 
-        /// Sends a text message.
         public func send(_ text: String) async {
             await sendFrame(.text(text))
         }
 
-        /// Sends binary data.
         public func send(_ data: Data) async {
             await sendFrame(.binary(data))
         }
 
-        /// Sends a close frame.
         public func close(code: UInt16 = 1000) async {
             await sendFrame(.close(code: code))
         }
 
-        /// Sends a ping frame.
         public func ping() async {
             await sendFrame(.ping())
         }

@@ -1,22 +1,5 @@
 import SwiftUI
 
-/// Generic model-aware list that handles empty/loading states.
-///
-/// Works with any collection (SwiftData @Query results, arrays, etc.)
-/// and provides themed empty states and row presentation.
-///
-/// ```swift
-/// @Query var tasks: [Task]
-///
-/// PrismModelList(
-///     tasks,
-///     emptyIcon: "checkmark.circle",
-///     emptyTitle: "All done!",
-///     emptyMessage: "No pending tasks"
-/// ) { task in
-///     PrismRow(LocalizedStringKey(task.title), icon: "circle")
-/// }
-/// ```
 public struct PrismModelList<Data: RandomAccessCollection, ID: Hashable, RowContent: View>: View {
     @Environment(\.prismTheme) private var theme
 
@@ -27,7 +10,6 @@ public struct PrismModelList<Data: RandomAccessCollection, ID: Hashable, RowCont
     private let emptyMessage: LocalizedStringKey?
     private let rowContent: (Data.Element) -> RowContent
 
-    /// Creates a model list with an explicit identity key path.
     public init(
         _ data: Data,
         id: KeyPath<Data.Element, ID>,
@@ -44,7 +26,6 @@ public struct PrismModelList<Data: RandomAccessCollection, ID: Hashable, RowCont
         self.rowContent = rowContent
     }
 
-    /// The view body.
     public var body: some View {
         if data.isEmpty {
             PrismEmptyState(
@@ -65,7 +46,6 @@ public struct PrismModelList<Data: RandomAccessCollection, ID: Hashable, RowCont
 
 extension PrismModelList where Data.Element: Identifiable, ID == Data.Element.ID {
 
-    /// Creates a model list using the element's `Identifiable` conformance.
     public init(
         _ data: Data,
         emptyIcon: String = "tray",
@@ -82,18 +62,15 @@ extension PrismModelList where Data.Element: Identifiable, ID == Data.Element.ID
     }
 }
 
-/// Form-style list for model editing with themed sections.
 public struct PrismModelForm<Content: View>: View {
     @Environment(\.prismTheme) private var theme
 
     private let content: Content
 
-    /// Creates a model form with the given content.
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
-    /// The view body.
     public var body: some View {
         Form {
             content

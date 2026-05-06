@@ -1,27 +1,22 @@
 #if canImport(Network)
     import Foundation
 
-    /// Manages graceful server shutdown with connection draining.
     public actor PrismGracefulShutdown {
         private var shutdownHandlers: [@Sendable () async -> Void] = []
         private var isShuttingDown = false
         private let drainTimeout: Duration
         private var signalSources: [any Sendable] = []
 
-        /// Creates a graceful shutdown manager with the specified drain timeout.
         public init(drainTimeout: Duration = .seconds(30)) {
             self.drainTimeout = drainTimeout
         }
 
-        /// Registers a handler to be called during shutdown.
         public func onShutdown(_ handler: @escaping @Sendable () async -> Void) {
             shutdownHandlers.append(handler)
         }
 
-        /// Whether the server is in shutdown mode.
         public var shuttingDown: Bool { isShuttingDown }
 
-        /// Installs signal handlers for SIGTERM and SIGINT.
         public func installSignalHandlers(shutdown: @escaping @Sendable () async -> Void) {
             let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global())
             let intSource = DispatchSource.makeSignalSource(signal: SIGINT, queue: .global())
@@ -45,7 +40,6 @@
             signalSources.append(intSource as any Sendable)
         }
 
-        /// Performs graceful shutdown: runs all handlers, then calls the final shutdown closure.
         public func performShutdown(_ finalShutdown: @escaping @Sendable () async -> Void) async {
             guard !isShuttingDown else { return }
             isShuttingDown = true
@@ -58,16 +52,13 @@
         }
     }
 
-    /// Middleware that rejects new requests during shutdown.
     public struct PrismShutdownMiddleware: PrismMiddleware, Sendable {
         private let shutdown: PrismGracefulShutdown
 
-        /// Creates a shutdown middleware that monitors the given shutdown manager.
         public init(shutdown: PrismGracefulShutdown) {
             self.shutdown = shutdown
         }
 
-        /// Rejects incoming requests with 503 Service Unavailable when the server is shutting down.
         public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws
             -> PrismHTTPResponse
         {

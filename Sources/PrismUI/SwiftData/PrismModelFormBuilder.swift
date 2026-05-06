@@ -2,30 +2,19 @@
     import SwiftUI
     import SwiftData
 
-    /// Supported field types for model form generation.
     public enum FieldType: Sendable, Equatable {
-        /// Single-line text input.
         case text
-        /// Numeric input.
         case number
-        /// Boolean toggle.
         case toggle
-        /// Date picker.
         case date
-        /// Selection from a list of options.
         case picker([String])
     }
 
-    /// Describes a single field in a model form.
     public struct PrismFormField: Sendable {
-        /// Display label for the field.
         public let label: String
-        /// Key path string identifying the model property.
         public let keyPath: String
-        /// The type of input control to render.
         public let fieldType: FieldType
 
-        /// Creates a form field definition.
         public init(label: String, keyPath: String, fieldType: FieldType) {
             self.label = label
             self.keyPath = keyPath
@@ -33,7 +22,6 @@
         }
     }
 
-    /// Generates form views from an array of field definitions.
     @MainActor
     public struct PrismModelFormBuilder: View {
         @Environment(\.prismTheme) private var theme
@@ -51,7 +39,6 @@
         @State private var pickerValues: [String: String] = [:]
         @State private var validationErrors: [String: String] = [:]
 
-        /// Creates a form builder from field definitions.
         public init(
             title: String = "New Item",
             fields: [PrismFormField],
@@ -64,7 +51,6 @@
             self.onCancel = onCancel
         }
 
-        /// The view body.
         public var body: some View {
             NavigationStack {
                 PrismModelForm {

@@ -1,24 +1,12 @@
 import SwiftUI
 
-/// Preview helper that renders a component in multiple theme/appearance configurations.
-///
-/// Use in SwiftUI Previews to verify a component across states:
-/// ```swift
-/// #Preview {
-///     PrismPreviewCatalog {
-///         PrismButton("Tap me", variant: .filled) {}
-///     }
-/// }
-/// ```
 public struct PrismPreviewCatalog<Content: View>: View {
     private let content: Content
 
-    /// Creates a preview catalog with the given content.
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
-    /// The view body.
     public var body: some View {
         ScrollView {
             VStack(spacing: SpacingToken.xl.rawValue) {

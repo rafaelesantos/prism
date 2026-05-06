@@ -1,28 +1,17 @@
 import SwiftUI
 
-/// Formatting operations available in the rich text editor.
 public enum PrismTextFormatting: Sendable, Hashable {
-    /// Bold text.
     case bold
-    /// Italic text.
     case italic
-    /// Underlined text.
     case underline
-    /// Strikethrough text.
     case strikethrough
-    /// Monospaced code span.
     case code
-    /// Heading at the given level (1-6).
     case heading(Int)
-    /// Hyperlink to the given URL.
     case link(URL)
-    /// Unordered bullet list.
     case bulletList
-    /// Ordered numbered list.
     case numberedList
 }
 
-/// A rich text editor view backed by AttributedString with formatting support.
 @MainActor
 public struct PrismRichTextEditor: View {
     @Environment(\.prismTheme) private var theme
@@ -31,12 +20,10 @@ public struct PrismRichTextEditor: View {
     @State private var showLinkSheet = false
     @State private var linkURLString = ""
 
-    /// Creates a rich text editor bound to the given attributed string.
     public init(text: Binding<AttributedString>) {
         self._text = text
     }
 
-    /// The view body.
     public var body: some View {
         VStack(spacing: 0) {
             PrismFormattingToolbar(
@@ -160,19 +147,16 @@ public struct PrismRichTextEditor: View {
     }
 }
 
-/// A horizontal toolbar providing formatting buttons for rich text editing.
 @MainActor
 public struct PrismFormattingToolbar: View {
     @Environment(\.prismTheme) private var theme
 
     private let onFormat: @MainActor (PrismTextFormatting) -> Void
 
-    /// Creates a formatting toolbar that calls the given closure on button tap.
     public init(onFormat: @escaping @MainActor (PrismTextFormatting) -> Void) {
         self.onFormat = onFormat
     }
 
-    /// The view body.
     public var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: SpacingToken.xs.rawValue) {

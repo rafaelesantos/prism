@@ -67,9 +67,7 @@ secrets/
 CHANGELOG.md
 CLAUDE.md
 CONTRIBUTING.md
-Makefile
 SECURITY.md
-scripts/
 playground/
 landing/
 .template/

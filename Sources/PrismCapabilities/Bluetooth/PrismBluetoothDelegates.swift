@@ -5,7 +5,6 @@ import Foundation
 
     // MARK: - Bluetooth Errors
 
-    /// Errors that can occur during Bluetooth operations.
     package enum BluetoothError: Error, Sendable {
         case peripheralNotFound
         case notConnected
@@ -14,9 +13,6 @@ import Foundation
 
     // MARK: - Bluetooth Delegate
 
-    /// Internal delegate that bridges CoreBluetooth callbacks to the PrismBluetoothClient.
-    ///
-    /// Uses continuations to convert delegate-based APIs into async/await calls.
     package final class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, @unchecked Sendable
     {
         package weak var client: PrismBluetoothClient?

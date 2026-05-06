@@ -1,19 +1,12 @@
 import Foundation
 
-/// A single part extracted from a multipart stream with headers and body.
 public struct PrismStreamingPart: Sendable {
-    /// The name.
     public let name: String
-    /// The filename.
     public let filename: String?
-    /// The content type.
     public let contentType: String?
-    /// The headers.
     public let headers: [String: String]
-    /// The data.
     public let data: Data
 
-    /// Creates a new `PrismStreamingPart` with the specified configuration.
     public init(
         name: String, filename: String? = nil, contentType: String? = nil, headers: [String: String] = [:], data: Data
     ) {
@@ -25,36 +18,28 @@ public struct PrismStreamingPart: Sendable {
     }
 }
 
-/// Progress information for an ongoing multipart upload.
 public struct PrismMultipartProgress: Sendable {
-    /// The bytes processed.
     public let bytesProcessed: Int
-    /// The total bytes.
     public let totalBytes: Int?
-    /// The parts completed.
     public let partsCompleted: Int
 
-    /// The fraction.
     public var fraction: Double? {
         guard let total = totalBytes, total > 0 else { return nil }
         return Double(bytesProcessed) / Double(total)
     }
 }
 
-/// Parser that extracts parts from multipart-encoded data.
 public struct PrismMultipartStreamParser: Sendable {
     private let boundary: String
     private let maxPartSize: Int
     private let maxParts: Int
 
-    /// Creates a new `PrismMultipartStreamParser` with the specified configuration.
     public init(boundary: String, maxPartSize: Int = 10 * 1024 * 1024, maxParts: Int = 100) {
         self.boundary = boundary
         self.maxPartSize = maxPartSize
         self.maxParts = maxParts
     }
 
-    /// Extracts the boundary string from a Content-Type header value.
     public static func extractBoundary(from contentType: String) -> String? {
         let parts = contentType.split(separator: ";")
         for part in parts {
@@ -70,7 +55,6 @@ public struct PrismMultipartStreamParser: Sendable {
         return nil
     }
 
-    /// Parses the input and returns the result.
     public func parse(_ data: Data, onProgress: (@Sendable (PrismMultipartProgress) -> Void)? = nil) throws
         -> [PrismStreamingPart]
     {
@@ -156,7 +140,6 @@ public struct PrismMultipartStreamParser: Sendable {
         return parts
     }
 
-    /// Parses multipart data and returns an async stream of parts.
     public func parseAsync(_ data: Data) -> AsyncStream<PrismStreamingPart> {
         AsyncStream { continuation in
             do {
@@ -194,7 +177,6 @@ public struct PrismMultipartStreamParser: Sendable {
     }
 }
 
-/// Errors related to MultipartStream operations.
 public enum PrismMultipartStreamError: Error, Sendable {
     case partTooLarge(maxSize: Int)
     case tooManyParts(maxParts: Int)
@@ -202,18 +184,15 @@ public enum PrismMultipartStreamError: Error, Sendable {
     case malformedPart
 }
 
-/// Middleware that parses multipart request bodies into streaming parts.
 public struct PrismMultipartStreamMiddleware: PrismMiddleware {
     private let maxPartSize: Int
     private let maxParts: Int
 
-    /// Creates a new `PrismMultipartStreamMiddleware` with the specified configuration.
     public init(maxPartSize: Int = 10 * 1024 * 1024, maxParts: Int = 100) {
         self.maxPartSize = maxPartSize
         self.maxParts = maxParts
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         guard let contentType = request.contentType,

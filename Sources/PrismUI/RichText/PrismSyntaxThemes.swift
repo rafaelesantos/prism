@@ -1,23 +1,14 @@
 import SwiftUI
 
-/// Programming languages supported by the syntax highlighter.
 public enum PrismSyntaxLanguage: String, Sendable, CaseIterable {
-    /// Swift source code.
     case swift
-    /// JSON data.
     case json
-    /// HTML markup.
     case html
-    /// CSS stylesheets.
     case css
-    /// JavaScript source code.
     case javascript
-    /// Python source code.
     case python
-    /// Unformatted plain text.
     case plainText
 
-    /// File extension typically associated with this language.
     public var fileExtension: String {
         switch self {
         case .swift: "swift"

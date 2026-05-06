@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Interactive, selectable chip for filtering and multi-select scenarios.
 public struct PrismChip: View {
     @Environment(\.prismTheme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -10,7 +9,6 @@ public struct PrismChip: View {
     private let icon: String?
     private let onRemove: (() -> Void)?
 
-    /// Creates a selectable chip with a label, selection binding, and optional remove action.
     public init(
         _ label: LocalizedStringKey,
         isSelected: Binding<Bool>,
@@ -23,7 +21,6 @@ public struct PrismChip: View {
         self.onRemove = onRemove
     }
 
-    /// The content and behavior of the chip.
     public var body: some View {
         Button {
             isSelected.toggle()
@@ -77,13 +74,11 @@ public struct PrismChip: View {
 
 // MARK: - Chip Group
 
-/// Horizontal scrolling group of chips for filter scenarios.
 public struct PrismChipGroup<Data: RandomAccessCollection, ID: Hashable, Content: View>: View {
     private let data: Data
     private let id: KeyPath<Data.Element, ID>
     private let content: (Data.Element) -> Content
 
-    /// Creates a horizontally scrolling chip group from data with a key path and content builder.
     public init(
         _ data: Data,
         id: KeyPath<Data.Element, ID>,
@@ -94,7 +89,6 @@ public struct PrismChipGroup<Data: RandomAccessCollection, ID: Hashable, Content
         self.content = content
     }
 
-    /// The content and behavior of the chip group.
     public var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: SpacingToken.sm.rawValue) {

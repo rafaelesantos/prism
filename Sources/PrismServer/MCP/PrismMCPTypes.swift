@@ -1,15 +1,10 @@
 import Foundation
 
-/// An MCP tool that can be called by clients.
 public struct PrismMCPTool: Sendable {
-    /// The name.
     public let name: String
-    /// The description.
     public let description: String
-    /// The input schema.
     public let inputSchema: [String: any Sendable]
 
-    /// Creates a new `PrismMCPTool` with the specified configuration.
     public init(name: String, description: String, inputSchema: [String: any Sendable] = [:]) {
         self.name = name
         self.description = description
@@ -27,18 +22,12 @@ public struct PrismMCPTool: Sendable {
     }
 }
 
-/// An MCP resource exposed to clients.
 public struct PrismMCPResource: Sendable {
-    /// The uri.
     public let uri: String
-    /// The name.
     public let name: String
-    /// The description.
     public let description: String
-    /// The mime type.
     public let mimeType: String
 
-    /// Creates a new `PrismMCPResource` with the specified configuration.
     public init(uri: String, name: String, description: String, mimeType: String = "text/plain") {
         self.uri = uri
         self.name = name
@@ -56,16 +45,11 @@ public struct PrismMCPResource: Sendable {
     }
 }
 
-/// An MCP prompt template.
 public struct PrismMCPPrompt: Sendable {
-    /// The name.
     public let name: String
-    /// The description.
     public let description: String
-    /// The arguments.
     public let arguments: [PrismMCPPromptArgument]
 
-    /// Creates a new `PrismMCPPrompt` with the specified configuration.
     public init(name: String, description: String, arguments: [PrismMCPPromptArgument] = []) {
         self.name = name
         self.description = description
@@ -81,16 +65,11 @@ public struct PrismMCPPrompt: Sendable {
     }
 }
 
-/// An argument for an MCP prompt.
 public struct PrismMCPPromptArgument: Sendable {
-    /// The name.
     public let name: String
-    /// The description.
     public let description: String
-    /// The required.
     public let required: Bool
 
-    /// Creates a new `PrismMCPPromptArgument` with the specified configuration.
     public init(name: String, description: String, required: Bool = false) {
         self.name = name
         self.description = description
@@ -106,7 +85,6 @@ public struct PrismMCPPromptArgument: Sendable {
     }
 }
 
-/// Content returned by tools or in prompt messages.
 public enum PrismMCPContent: Sendable {
     case text(String)
     case image(data: String, mimeType: String)
@@ -130,25 +108,19 @@ public enum PrismMCPContent: Sendable {
     }
 }
 
-/// Result from calling an MCP tool.
 public struct PrismMCPToolResult: Sendable {
-    /// The content.
     public let content: [PrismMCPContent]
-    /// The is error.
     public let isError: Bool
 
-    /// Creates a new `PrismMCPToolResult` with the specified configuration.
     public init(content: [PrismMCPContent], isError: Bool = false) {
         self.content = content
         self.isError = isError
     }
 
-    /// Creates a successful tool result containing the given text.
     public static func text(_ text: String) -> PrismMCPToolResult {
         PrismMCPToolResult(content: [.text(text)])
     }
 
-    /// Creates an error tool result with the given message.
     public static func error(_ message: String) -> PrismMCPToolResult {
         PrismMCPToolResult(content: [.text(message)], isError: true)
     }
@@ -162,20 +134,15 @@ public struct PrismMCPToolResult: Sendable {
     }
 }
 
-/// Role in an MCP prompt message.
 public enum PrismMCPRole: String, Sendable {
     case user
     case assistant
 }
 
-/// A message in an MCP prompt response.
 public struct PrismMCPMessage: Sendable {
-    /// The role.
     public let role: PrismMCPRole
-    /// The content.
     public let content: PrismMCPContent
 
-    /// Creates a new `PrismMCPMessage` with the specified configuration.
     public init(role: PrismMCPRole, content: PrismMCPContent) {
         self.role = role
         self.content = content
@@ -189,7 +156,6 @@ public struct PrismMCPMessage: Sendable {
     }
 }
 
-/// MCP protocol errors.
 public enum PrismMCPError: Error, Sendable {
     case methodNotFound(String)
     case invalidParams(String)

@@ -1,13 +1,5 @@
 import SwiftUI
 
-/// Modifier that registers undo/redo operations for value changes.
-///
-/// ```swift
-/// @State private var text = ""
-///
-/// TextField("Name", text: $text)
-///     .prismUndoable($text, actionName: "Edit Name")
-/// ```
 private struct PrismUndoModifier<Value: Equatable>: ViewModifier {
     @Environment(\.undoManager) private var undoManager
     @Binding var value: Value
@@ -32,20 +24,16 @@ private struct PrismUndoModifier<Value: Equatable>: ViewModifier {
     }
 }
 
-/// Shared undo target for NSObject-based undo manager.
 private final class UndoTarget: NSObject, @unchecked Sendable {
     static let shared = UndoTarget()
 }
 
-/// Undo toolbar buttons for quick access.
 public struct PrismUndoButtons: View {
     @Environment(\.undoManager) private var undoManager
     @Environment(\.prismTheme) private var theme
 
-    /// Creates undo/redo toolbar buttons.
     public init() {}
 
-    /// The content and behavior of the undo buttons.
     public var body: some View {
         HStack(spacing: SpacingToken.sm.rawValue) {
             Button {
@@ -70,7 +58,6 @@ public struct PrismUndoButtons: View {
 
 extension View {
 
-    /// Registers undo/redo for changes to binding value.
     public func prismUndoable<Value: Equatable>(
         _ value: Binding<Value>,
         actionName: String = "Change"

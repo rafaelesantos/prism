@@ -1,7 +1,6 @@
 import Compression
 import Foundation
 
-/// Supported response body compression algorithms.
 public enum PrismCompressionAlgorithm: String, Sendable {
     case gzip
     case deflate
@@ -14,20 +13,13 @@ public enum PrismCompressionAlgorithm: String, Sendable {
     }
 }
 
-/// Configuration options for ResponseCompression.
 public struct PrismResponseCompressionConfig: Sendable {
-    /// The minimum size.
     public let minimumSize: Int
-    /// The preferred algorithm.
     public let preferredAlgorithm: PrismCompressionAlgorithm
-    /// The compressible types.
     public let compressibleTypes: Set<String>
-    /// The excluded paths.
     public let excludedPaths: [String]
-    /// The level.
     public let level: Int
 
-    /// Creates a new `PrismResponseCompressionConfig` with the specified configuration.
     public init(
         minimumSize: Int = 1024,
         preferredAlgorithm: PrismCompressionAlgorithm = .gzip,
@@ -42,7 +34,6 @@ public struct PrismResponseCompressionConfig: Sendable {
         self.level = level
     }
 
-    /// The default set of MIME types eligible for response compression.
     public static let defaultCompressibleTypes: Set<String> = [
         "text/html", "text/css", "text/plain", "text/xml", "text/csv",
         "application/json", "application/javascript", "application/xml",
@@ -51,16 +42,13 @@ public struct PrismResponseCompressionConfig: Sendable {
     ]
 }
 
-/// Middleware that compresses response bodies using gzip or deflate.
 public struct PrismResponseCompressionMiddleware: PrismMiddleware {
     private let config: PrismResponseCompressionConfig
 
-    /// Creates a new `PrismResponseCompressionMiddleware` with the specified configuration.
     public init(config: PrismResponseCompressionConfig = PrismResponseCompressionConfig()) {
         self.config = config
     }
 
-    /// Handles the request and returns a response.
     public func handle(_ request: PrismHTTPRequest, next: @escaping PrismRouteHandler) async throws -> PrismHTTPResponse
     {
         var response = try await next(request)

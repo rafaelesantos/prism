@@ -8,45 +8,12 @@
 import Foundation
 import PrismFoundation
 
-/// A generic adapter that converts any `Codable` struct into feature rows
-/// suitable for tabular classification and regression training.
-///
-/// `PrismCodableTrainingData` uses `Mirror` to extract properties from your
-/// data type and converts them into ``PrismIntelligenceFeatureRow`` dictionaries.
-///
-/// ```swift
-/// struct HouseData: Codable {
-///     var rooms: Int
-///     var area: Double
-///     var neighborhood: String
-///     var price: Double
-/// }
-///
-/// let data = [
-///     HouseData(rooms: 3, area: 120, neighborhood: "Centro", price: 450_000),
-///     HouseData(rooms: 2, area: 80, neighborhood: "Zona Sul", price: 320_000),
-/// ]
-///
-/// let training = PrismCodableTrainingData(data: data)
-/// let result = await training.trainRegressor(
-///     id: "house_price",
-///     name: "House Price Predictor",
-///     target: \.price
-/// )
-/// ```
 public struct PrismCodableTrainingData<T: Codable> {
     private let items: [T]
     private let testRatio: Double
     private let seed: UInt64
     private let trainer: PrismIntelligenceLocalTrainer
 
-    /// Creates a codable training data adapter.
-    ///
-    /// - Parameters:
-    ///   - data: The array of Codable items to use as training data.
-    ///   - testRatio: The fraction of data reserved for testing (0.0–1.0). Defaults to 0.2.
-    ///   - seed: A random seed for reproducible train/test splits. Defaults to 42.
-    ///   - trainer: The local trainer. Defaults to a new instance.
     public init(
         data: [T],
         testRatio: Double = 0.2,
@@ -59,15 +26,6 @@ public struct PrismCodableTrainingData<T: Codable> {
         self.trainer = trainer
     }
 
-    /// Trains a tabular classifier using the provided data.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the resulting model.
-    ///   - name: A display name for the resulting model.
-    ///   - target: A key path to the property used as the classification target.
-    ///   - features: Optional list of feature key paths. If `nil`, all properties except the target are used.
-    ///   - configuration: Optional training configuration overrides.
-    /// - Returns: A ``PrismIntelligenceResult`` indicating success or failure.
     public func trainClassifier<V>(
         id: String,
         name: String,
@@ -119,15 +77,6 @@ public struct PrismCodableTrainingData<T: Codable> {
         )
     }
 
-    /// Trains a tabular regressor using the provided data.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the resulting model.
-    ///   - name: A display name for the resulting model.
-    ///   - target: A key path to the property used as the regression target.
-    ///   - features: Optional list of feature key paths. If `nil`, all properties except the target are used.
-    ///   - configuration: Optional training configuration overrides.
-    /// - Returns: A ``PrismIntelligenceResult`` indicating success or failure.
     public func trainRegressor<V>(
         id: String,
         name: String,
@@ -179,16 +128,6 @@ public struct PrismCodableTrainingData<T: Codable> {
         )
     }
 
-    /// Trains a text classifier using the provided data.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the resulting model.
-    ///   - name: A display name for the resulting model.
-    ///   - text: A key path to the text property.
-    ///   - label: A key path to the label property.
-    ///   - locale: An optional locale for training language. Defaults to `PrismLocale.current`.
-    ///   - maxIterations: An optional maximum number of training iterations.
-    /// - Returns: A ``PrismIntelligenceResult`` indicating success or failure.
     public func trainTextClassifier(
         id: String,
         name: String,
@@ -219,16 +158,10 @@ public struct PrismCodableTrainingData<T: Codable> {
         )
     }
 
-    /// Extracts all items as feature rows for manual inspection or custom pipelines.
-    ///
-    /// - Returns: An array of feature rows extracted from the data.
     public func featureRows() -> [PrismIntelligenceFeatureRow] {
         items.compactMap { featureRow(from: $0) }
     }
 
-    /// Splits the data into training and test sets.
-    ///
-    /// - Returns: A tuple of (training items, test items).
     public func trainTestSplit() -> (train: [T], test: [T]) {
         splitArray(items)
     }

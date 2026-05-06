@@ -5,5 +5,4 @@
 //  Created by Rafael Escaleira on 12/04/25.
 //
 
-/// A marker protocol for store state.
 public protocol PrismState: Sendable {}

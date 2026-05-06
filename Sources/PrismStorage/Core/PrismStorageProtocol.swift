@@ -1,6 +1,5 @@
 import Foundation
 
-/// Universal storage interface — every engine conforms.
 public protocol PrismStorageProtocol: Sendable {
     func save<T: Codable & Sendable>(_ value: T, forKey key: String) throws
     func load<T: Codable & Sendable>(_ type: T.Type, forKey key: String) throws -> T?
@@ -10,7 +9,6 @@ public protocol PrismStorageProtocol: Sendable {
     func keys() throws -> [String]
 }
 
-/// Async variant for actor-based stores.
 public protocol PrismAsyncStorageProtocol: Sendable {
     func save<T: Codable & Sendable>(_ value: T, forKey key: String) async throws
     func load<T: Codable & Sendable>(_ type: T.Type, forKey key: String) async throws -> T?

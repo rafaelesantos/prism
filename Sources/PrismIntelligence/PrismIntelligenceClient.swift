@@ -8,25 +8,6 @@
 import Foundation
 import PrismFoundation
 
-/// A unified facade for intelligence: local, Apple, and remote.
-///
-/// `PrismIntelligenceClient` is the primary entry point for running predictions and
-/// generating text. Create a client with one of the factory methods, then call
-/// ``status()``, ``classify(text:)``, ``regress(features:)-5v8wn``, or ``generate(_:)-4kb7s``.
-///
-/// ```swift
-/// // Local text classification
-/// let client = try await PrismIntelligenceClient.local(modelID: "sentiment")
-/// let label = try await client.classify(text: "I love this product!")
-///
-/// // Apple Intelligence generation
-/// let apple = PrismIntelligenceClient.apple()
-/// let answer = try await apple.generate("Summarize quantum computing.")
-///
-/// // Remote provider generation
-/// let remote = PrismIntelligenceClient.remote(endpoint: url)
-/// let response = try await remote.generate("Hello, world!")
-/// ```
 public actor PrismIntelligenceClient {
     private enum Backend {
         case local(
@@ -45,7 +26,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Factory Methods
 
-    /// Creates a client backed by an on-device Core ML model.
     public static func local(
         model: PrismIntelligenceModel,
         fileManager: PrismFileManager = .init()
@@ -61,7 +41,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by an on-device model resolved from the catalog by identifier.
     public static func local(
         modelID: String,
         catalog: PrismIntelligenceCatalog = .init(),
@@ -77,7 +56,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by Apple Intelligence via the FoundationModels framework.
     public static func apple(
         configuration: PrismAppleIntelligenceConfiguration = .init()
     ) -> PrismIntelligenceClient {
@@ -93,7 +71,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by a remote language model endpoint.
     public static func remote(
         endpoint: URL,
         model: String? = nil,
@@ -116,7 +93,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by a remote language model with Bearer token authentication.
     public static func remote(
         endpoint: URL,
         token: String,
@@ -135,7 +111,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by a remote language model using a custom serializer.
     public static func remote(
         serializer: any PrismRemoteIntelligenceSerializer,
         transport: any PrismRemoteIntelligenceTransport = PrismURLSessionRemoteIntelligenceTransport()
@@ -153,7 +128,6 @@ public actor PrismIntelligenceClient {
         )
     }
 
-    /// Creates a client backed by a custom language-intelligence provider.
     public static func provider(
         _ provider: any PrismLanguageIntelligenceProvider
     ) -> PrismIntelligenceClient {
@@ -201,7 +175,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Status
 
-    /// Returns the current availability status and capabilities of the backend.
     public func status() async -> PrismIntelligenceStatus {
         switch backend {
         case .local(let model, let fileManager, _):
@@ -242,7 +215,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Execute
 
-    /// Executes an intelligence request and returns the corresponding response.
     public func execute(
         _ request: PrismIntelligenceRequest
     ) async throws -> PrismIntelligenceResponse {
@@ -268,7 +240,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Classification
 
-    /// Classifies free-form text into a label using the local model.
     public func classify(
         text: String
     ) async throws -> String {
@@ -282,7 +253,6 @@ public actor PrismIntelligenceClient {
         }
     }
 
-    /// Classifies a tabular feature row into label probabilities using the local model.
     public func classify(
         features: PrismIntelligenceFeatureRow
     ) async throws -> [String: Double] {
@@ -296,7 +266,6 @@ public actor PrismIntelligenceClient {
         }
     }
 
-    /// Classifies an untyped feature dictionary into label probabilities.
     public func classify(
         features: [String: Any]
     ) async throws -> [String: Double] {
@@ -311,7 +280,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Regression
 
-    /// Predicts a continuous value from a tabular feature row using the local model.
     public func regress(
         features: PrismIntelligenceFeatureRow
     ) async throws -> Double {
@@ -325,7 +293,6 @@ public actor PrismIntelligenceClient {
         }
     }
 
-    /// Predicts a continuous value from an untyped feature dictionary.
     public func regress(
         features: [String: Any]
     ) async throws -> Double {
@@ -340,7 +307,6 @@ public actor PrismIntelligenceClient {
 
     // MARK: - Generation
 
-    /// Generates text from a prompt string using the language backend.
     public func generate(
         _ prompt: String,
         systemPrompt: String? = nil,
@@ -361,7 +327,6 @@ public actor PrismIntelligenceClient {
         return response.content
     }
 
-    /// Generates a full language response from a structured request.
     public func generate(
         _ request: PrismLanguageIntelligenceRequest
     ) async throws -> PrismLanguageIntelligenceResponse {

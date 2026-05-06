@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Animated bouncing dots that signal another user is typing.
 @MainActor
 public struct PrismTypingIndicator: View {
     @Environment(\.prismTheme) private var theme
@@ -10,13 +9,11 @@ public struct PrismTypingIndicator: View {
 
     @State private var animating = false
 
-    /// Creates a typing indicator with configurable dot appearance.
     public init(dotSize: CGFloat = 8, color: Color? = nil) {
         self.dotSize = dotSize
         self.color = color
     }
 
-    /// The typing indicator view body with bouncing dot animation.
     public var body: some View {
         HStack(spacing: dotSize * 0.6) {
             ForEach(0..<3, id: \.self) { index in
@@ -42,7 +39,6 @@ public struct PrismTypingIndicator: View {
     }
 }
 
-/// A typing indicator wrapped inside a chat bubble for inline display.
 @MainActor
 public struct PrismTypingBubble: View {
     @Environment(\.prismTheme) private var theme
@@ -51,14 +47,12 @@ public struct PrismTypingBubble: View {
     private let dotSize: CGFloat
     private let color: Color?
 
-    /// Creates a typing bubble optionally showing the sender name.
     public init(sender: String? = nil, dotSize: CGFloat = 8, color: Color? = nil) {
         self.sender = sender
         self.dotSize = dotSize
         self.color = color
     }
 
-    /// The typing bubble view body with sender label and animated dots.
     public var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {

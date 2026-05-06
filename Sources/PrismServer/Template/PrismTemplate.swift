@@ -1,22 +1,12 @@
 import Foundation
 
-/// Lightweight template engine with variable interpolation, conditionals, and loops.
-///
-/// Syntax:
-/// - `{{ variable }}` — interpolation (HTML-escaped)
-/// - `{! variable !}` — raw interpolation (no escaping)
-/// - `{% if condition %}...{% endif %}` — conditional
-/// - `{% for item in items %}...{% endfor %}` — loop
-/// - `{% include "partial" %}` — partial inclusion
 public struct PrismTemplate: Sendable {
     private let source: String
 
-    /// Creates a new `PrismTemplate` with the specified configuration.
     public init(_ source: String) {
         self.source = source
     }
 
-    /// Renders the template with the given context.
     public func render(_ context: PrismTemplateContext) throws -> String {
         try renderString(source, context: context)
     }
@@ -156,27 +146,21 @@ public struct PrismTemplate: Sendable {
     }
 }
 
-/// Template rendering context with variables, arrays, and partials.
 public struct PrismTemplateContext: Sendable {
     private var values: [String: String] = [:]
     private var arrays: [String: [String]] = [:]
-    /// Named partial templates for inclusion.
     public var partials: [String: String] = [:]
 
-    /// Creates a new `PrismTemplateContext` with the specified configuration.
     public init() {}
 
-    /// Sets a string value for the given template variable key.
     public mutating func set(_ key: String, to value: String) {
         values[key] = value
     }
 
-    /// Sets an array of strings for the given template loop key.
     public mutating func set(_ key: String, to items: [String]) {
         arrays[key] = items
     }
 
-    /// Registers a named partial template for inclusion during rendering.
     public mutating func setPartial(_ name: String, content: String) {
         partials[name] = content
     }
@@ -201,7 +185,6 @@ public struct PrismTemplateContext: Sendable {
 }
 
 extension PrismHTTPResponse {
-    /// Creates an HTML response rendered from a template.
     public static func template(_ source: String, context: PrismTemplateContext, status: PrismHTTPStatus = .ok)
         -> PrismHTTPResponse
     {

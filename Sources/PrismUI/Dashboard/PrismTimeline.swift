@@ -1,13 +1,11 @@
 import SwiftUI
 
-/// Status of a timeline event.
 public enum PrismEventStatus: String, Sendable, CaseIterable {
     case completed
     case current
     case upcoming
     case failed
 
-    /// Semantic color for the event status.
     public var colorToken: ColorToken {
         switch self {
         case .completed: .success
@@ -17,7 +15,6 @@ public enum PrismEventStatus: String, Sendable, CaseIterable {
         }
     }
 
-    /// SF Symbol for the event status dot.
     public var systemImage: String {
         switch self {
         case .completed: "checkmark.circle.fill"
@@ -28,22 +25,14 @@ public enum PrismEventStatus: String, Sendable, CaseIterable {
     }
 }
 
-/// A single event in a vertical timeline.
 public struct PrismTimelineEvent: Sendable, Identifiable {
-    /// Unique identifier.
     public let id: UUID
-    /// Event title.
     public let title: String
-    /// Optional longer description.
     public let description: String?
-    /// When the event occurred or is scheduled.
     public let date: Date
-    /// Current status of the event.
     public let status: PrismEventStatus
-    /// Optional SF Symbol name.
     public let icon: String?
 
-    /// Creates a timeline event with title, date, status, and optional description.
     public init(
         id: UUID = UUID(),
         title: String,
@@ -61,18 +50,15 @@ public struct PrismTimelineEvent: Sendable, Identifiable {
     }
 }
 
-/// Vertical timeline with a connecting line and status-colored dots.
 public struct PrismTimeline: View {
     @Environment(\.prismTheme) private var theme
 
     private let events: [PrismTimelineEvent]
 
-    /// Creates a timeline from an ordered array of events.
     public init(events: [PrismTimelineEvent]) {
         self.events = events
     }
 
-    /// The timeline view body with connecting line and status-colored dots.
     public var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             ForEach(Array(events.enumerated()), id: \.element.id) { index, event in

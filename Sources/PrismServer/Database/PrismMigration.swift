@@ -1,18 +1,12 @@
 #if canImport(SQLite3)
     import Foundation
 
-    /// A versioned database migration.
     public struct PrismMigration: Sendable {
-        /// Unique version identifier (use sequential integers or timestamps).
         public let version: Int
-        /// Human-readable name.
         public let name: String
-        /// SQL statements to apply the migration.
         public let up: String
-        /// SQL statements to revert the migration.
         public let down: String
 
-        /// Creates a migration with the given version, name, and SQL statements.
         public init(version: Int, name: String, up: String, down: String = "") {
             self.version = version
             self.name = name
@@ -21,18 +15,15 @@
         }
     }
 
-    /// Runs versioned migrations on a PrismDatabase.
     public struct PrismMigrator: Sendable {
         private let db: PrismDatabase
         private let migrations: [PrismMigration]
 
-        /// Creates a migrator for the given database and set of migrations.
         public init(database: PrismDatabase, migrations: [PrismMigration]) {
             self.db = database
             self.migrations = migrations.sorted { $0.version < $1.version }
         }
 
-        /// Applies all pending migrations.
         public func migrate() async throws {
             try await createMigrationsTable()
             let applied = try await appliedVersions()
@@ -51,7 +42,6 @@
             }
         }
 
-        /// Reverts the last applied migration.
         public func rollback() async throws {
             let applied = try await appliedVersions()
             guard let lastVersion = applied.max(),

@@ -3,23 +3,16 @@ import SwiftUI
 #if canImport(TipKit)
     import TipKit
 
-    /// Themed TipKit integration.
-    ///
-    /// ```swift
-    /// PrismTipView(MyFeatureTip())
-    /// ```
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     public struct PrismTipView<T: Tip>: View {
         @Environment(\.prismTheme) private var theme
 
         private let tip: T
 
-        /// Creates a themed tip view from the given TipKit tip.
         public init(_ tip: T) {
             self.tip = tip
         }
 
-        /// The tip view body with themed background and tint.
         public var body: some View {
             TipView(tip)
                 .tipBackground(theme.color(.surface))
@@ -42,7 +35,6 @@ import SwiftUI
 
     extension View {
 
-        /// Attaches a themed popover tip.
         @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
         public func prismPopoverTip<T: Tip>(
             _ tip: T,

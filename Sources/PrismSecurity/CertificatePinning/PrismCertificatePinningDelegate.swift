@@ -2,19 +2,6 @@ import CryptoKit
 import Foundation
 import Security
 
-/// URLSession delegate that enforces certificate pinning.
-///
-/// ```swift
-/// let validator = PrismPinningValidator(pins: [
-///     PrismCertificatePin(
-///         host: "api.example.com",
-///         publicKeyHash: "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-///         backupHashes: ["CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC="]
-///     )
-/// ])
-/// let delegate = PrismCertificatePinningDelegate(validator: validator)
-/// let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
-/// ```
 public final class PrismCertificatePinningDelegate: NSObject, URLSessionDelegate, Sendable {
     private let validator: PrismPinningValidator
     private let policy: PrismPinningPolicy
