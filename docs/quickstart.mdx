@@ -1,382 +1,431 @@
 ---
 title: "Quickstart"
-description: "Build a complete REST API with database, authentication, and validation in under 15 minutes."
+description: "Build your first Prism project — choose an iOS app with state management or a server API with database."
 icon: "rocket"
 ---
 
 # Quickstart
 
-Build a complete **bookmark manager API** from scratch. By the end you'll have:
+Pick your path. Both take under 15 minutes.
 
-- HTTP server with JSON endpoints
-- SQLite database with migrations
-- Input validation
-- CORS and logging middleware
-- Error handling
+<Tabs>
+  <Tab title="iOS App">
+    Build a **notes app** with PrismArchitecture (state management), PrismUI (components), and PrismStorage (persistence).
 
-All in pure Swift, zero dependencies.
+    <Info>
+      Requires Swift 6.3+, Xcode 16.4+, iOS 26+. See [Installation](/installation) for details.
+    </Info>
 
-<Info>
-  Requires Swift 6.3+. Run `swift --version` to check. See [Installation](/installation) for setup details.
-</Info>
+    ## Create Your Project
 
-## Create Your Project
+    <Steps>
+      <Step title="Initialize a Swift package">
+        ```bash
+        mkdir notes-app && cd notes-app
+        swift package init --type executable
+        ```
+      </Step>
+      <Step title="Add Prism to Package.swift">
+        ```swift title="Package.swift"
+        // swift-tools-version: 6.0
+        import PackageDescription
 
-<Steps>
-  <Step title="Initialize a Swift package">
+        let package = Package(
+            name: "notes-app",
+            platforms: [.iOS(.v17), .macOS(.v14)],
+            dependencies: [
+                .package(url: "https://github.com/byescaleira/prism.git", from: "4.4.0")
+            ],
+            targets: [
+                .executableTarget(
+                    name: "notes-app",
+                    dependencies: [
+                        .product(name: "Prism", package: "prism")
+                    ]
+                )
+            ]
+        )
+        ```
+
+        `import Prism` gives you [PrismUI](/ui/theme), [PrismArchitecture](/architecture/store), [PrismNetwork](/network/client), [PrismStorage](/storage/overview), and more.
+      </Step>
+      <Step title="Build">
+        ```bash
+        swift build
+        ```
+      </Step>
+    </Steps>
+
+    ## Define Your Feature
+
+    Prism uses the [reducer pattern](/architecture/reducer) — state is a struct, changes happen through actions, side effects return via `PrismEffect`.
+
+    ```swift title="NotesFeature.swift"
+    import Prism
+
+    struct Note: Identifiable, Codable, Sendable, Equatable {
+        let id: UUID
+        var title: String
+        var body: String
+        var createdAt: Date
+
+        init(title: String, body: String) {
+            self.id = UUID()
+            self.title = title
+            self.body = body
+            self.createdAt = .now
+        }
+    }
+
+    struct NotesFeature: PrismReducer {
+        struct State: Sendable, Equatable {
+            var notes: [Note] = []
+            var draft = ""
+        }
+
+        enum Action: Sendable {
+            case addNote
+            case updateDraft(String)
+            case deleteNote(UUID)
+            case loaded([Note])
+        }
+
+        let storage = PrismDefaultsStore(suite: "com.app.notes")
+
+        func reduce(into state: inout State, action: Action) -> PrismEffect<Action> {
+            switch action {
+            case .addNote:
+                guard !state.draft.isEmpty else { return .none }
+                let note = Note(title: state.draft, body: "")
+                state.notes.insert(note, at: 0)
+                state.draft = ""
+                return .run { [notes = state.notes] _ in
+                    try storage.save(notes, forKey: "notes")
+                }
+
+            case .updateDraft(let text):
+                state.draft = text
+                return .none
+
+            case .deleteNote(let id):
+                state.notes.removeAll { $0.id == id }
+                return .run { [notes = state.notes] _ in
+                    try storage.save(notes, forKey: "notes")
+                }
+
+            case .loaded(let notes):
+                state.notes = notes
+                return .none
+            }
+        }
+    }
+    ```
+
+    <Tip>
+      The [reducer](/architecture/reducer) is pure — all async work (storage, network) happens in [effects](/architecture/advanced). This makes state changes predictable and testable.
+    </Tip>
+
+    ## Build the UI
+
+    PrismUI provides [ready-made components](/ui/components) with [design tokens](/ui/tokens) and [theming](/ui/theme).
+
+    ```swift title="NotesView.swift"
+    import Prism
+
+    struct NotesView: View {
+        let store: PrismStore<NotesFeature.State, NotesFeature.Action>
+
+        var body: some View {
+            NavigationStack {
+                VStack(spacing: 0) {
+                    // Input area
+                    HStack {
+                        PrismTextField("New note...", text: Binding(
+                            get: { store.state.draft },
+                            set: { store.send(.updateDraft($0)) }
+                        ))
+                        PrismButton("Add", variant: .filled) {
+                            store.send(.addNote)
+                        }
+                        .disabled(store.state.draft.isEmpty)
+                    }
+                    .padding()
+
+                    // Notes list
+                    List {
+                        ForEach(store.state.notes) { note in
+                            PrismListItem(note.title, subtitle: note.createdAt.formatted())
+                        }
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                store.send(.deleteNote(store.state.notes[index].id))
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Notes")
+            }
+        }
+    }
+    ```
+
+    ## Wire It Up
+
+    ```swift title="NotesApp.swift"
+    import Prism
+
+    @main
+    struct NotesApp: App {
+        let store = PrismStore(
+            initialState: NotesFeature.State(),
+            reducer: NotesFeature()
+        )
+
+        var body: some Scene {
+            WindowGroup {
+                NotesView(store: store)
+                    .prismTheme(.default)
+                    .task {
+                        let storage = PrismDefaultsStore(suite: "com.app.notes")
+                        if let notes: [Note] = try? storage.load(forKey: "notes") {
+                            store.send(.loaded(notes))
+                        }
+                    }
+            }
+        }
+    }
+    ```
+
+    ## Run It
+
     ```bash
-    mkdir bookmarks-api && cd bookmarks-api
-    swift package init --type executable
+    swift run
     ```
-  </Step>
-  <Step title="Add Prism to Package.swift">
-    ```swift title="Package.swift"
-    // swift-tools-version: 6.0
-    import PackageDescription
 
-    let package = Package(
-        name: "bookmarks-api",
-        platforms: [.macOS(.v14)],
-        dependencies: [
-            .package(url: "https://github.com/byescaleira/prism.git", from: "4.4.0")
-        ],
-        targets: [
-            .executableTarget(
-                name: "bookmarks-api",
-                dependencies: [
-                    .product(name: "PrismServer", package: "prism")
-                ]
-            )
-        ]
-    )
+    Or open in Xcode: `open Package.swift`
+
+    ## What You Used
+
+    | Module | What for |
+    |--------|----------|
+    | [PrismArchitecture](/architecture/store) | `PrismStore`, `PrismReducer`, `PrismEffect` |
+    | [PrismUI](/ui/components) | `PrismButton`, `PrismTextField`, `PrismListItem` |
+    | [PrismStorage](/storage/defaults-disk) | `PrismDefaultsStore` for persistence |
+
+    ## Next Steps — Client
+
+    <CardGroup cols={2}>
+      <Card title="Add Networking" icon="wifi" href="/network/client">
+        Sync notes to a remote API with type-safe endpoints and retry policies.
+      </Card>
+      <Card title="Middleware" icon="layer-group" href="/architecture/middleware">
+        Add logging, analytics, or undo/redo middleware to your store.
+      </Card>
+      <Card title="More Components" icon="palette" href="/ui/components">
+        Explore cards, chips, charts, forms, and 100+ more SwiftUI components.
+      </Card>
+      <Card title="Encrypted Storage" icon="lock" href="/storage/encryption-compression">
+        Wrap your store with AES-GCM encryption for sensitive data.
+      </Card>
+    </CardGroup>
+  </Tab>
+
+  <Tab title="Server API">
+    Build a **bookmark manager API** with PrismServer — routing, database, validation, and middleware.
+
+    <Info>
+      Requires Swift 6.3+, macOS 26+. See [Installation](/installation) for details.
+    </Info>
+
+    ## Create Your Project
+
+    <Steps>
+      <Step title="Initialize a Swift package">
+        ```bash
+        mkdir bookmarks-api && cd bookmarks-api
+        swift package init --type executable
+        ```
+      </Step>
+      <Step title="Add Prism to Package.swift">
+        ```swift title="Package.swift"
+        // swift-tools-version: 6.0
+        import PackageDescription
+
+        let package = Package(
+            name: "bookmarks-api",
+            platforms: [.macOS(.v14)],
+            dependencies: [
+                .package(url: "https://github.com/byescaleira/prism.git", from: "4.4.0")
+            ],
+            targets: [
+                .executableTarget(
+                    name: "bookmarks-api",
+                    dependencies: [
+                        .product(name: "PrismServer", package: "prism")
+                    ]
+                )
+            ]
+        )
+        ```
+      </Step>
+      <Step title="Build">
+        ```bash
+        swift build
+        ```
+      </Step>
+    </Steps>
+
+    ## Write Your Server
+
+    Replace `Sources/main.swift`:
+
+    ```swift title="Sources/main.swift"
+    import PrismServer
+    import Foundation
+
+    let server = PrismHTTPServer(port: 8080)
+    let db = try PrismDatabase(path: "bookmarks.db")
+
+    // Migrations
+    let migrator = PrismMigrator(database: db)
+    try await migrator.migrate([
+        PrismMigration(
+            name: "create_bookmarks",
+            up: """
+                CREATE TABLE bookmarks (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    tags TEXT DEFAULT '',
+                    created_at TEXT DEFAULT (datetime('now'))
+                )
+                """,
+            down: "DROP TABLE bookmarks"
+        )
+    ])
+
+    // Middleware
+    await server.use(PrismCORSMiddleware())
+    await server.use(PrismLoggingMiddleware())
+    await server.use(PrismErrorMiddleware(includeStackTrace: true))
+
+    // List
+    await server.get("/bookmarks") { request in
+        let rows = try await db.table("bookmarks")
+            .orderBy("created_at", ascending: false)
+            .get()
+        return .json(rows)
+    }
+
+    // Create with validation
+    await server.post("/bookmarks") { request in
+        let validation = request.validateJSON { v in
+            v.field("title", .required, .minLength(1), .maxLength(200))
+            v.field("url", .required, .url)
+        }
+        if let errorResponse = validation.errorResponse() { return errorResponse }
+
+        guard let body = request.body,
+              let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
+            return PrismHTTPResponse(status: .badRequest, body: .text("Invalid JSON"))
+        }
+
+        let title = json["title"] as? String ?? ""
+        let url = json["url"] as? String ?? ""
+        let tags = json["tags"] as? String ?? ""
+
+        let id = try await db.table("bookmarks").insert([
+            "title": .text(title),
+            "url": .text(url),
+            "tags": .text(tags)
+        ])
+        return .json(["id": id, "created": true], status: .created)
+    }
+
+    // Get one
+    await server.get("/bookmarks/:id") { request in
+        let id = request.parameters["id"]!
+        guard let row = try await db.table("bookmarks")
+            .where("id", .text(id))
+            .first() else {
+            throw PrismAppError.notFound("Bookmark not found")
+        }
+        return .json(row)
+    }
+
+    // Delete
+    await server.delete("/bookmarks/:id") { request in
+        let id = request.parameters["id"]!
+        let changes = try await db.table("bookmarks")
+            .where("id", .text(id))
+            .delete()
+        guard changes > 0 else {
+            throw PrismAppError.notFound("Bookmark not found")
+        }
+        return .json(["deleted": true])
+    }
+
+    print("Bookmarks API running on http://localhost:8080")
+    try await server.start()
+    try await Task.sleep(for: .seconds(.max))
     ```
-  </Step>
-  <Step title="Build to fetch dependencies">
+
+    <Tip>
+      Use `":memory:"` instead of `"bookmarks.db"` for an in-memory database during development. See [Database overview](/server/database/overview) for options.
+    </Tip>
+
+    ## Run It
+
     ```bash
-    swift build
+    swift run
     ```
-    First build takes a moment — subsequent builds are fast.
-  </Step>
-</Steps>
 
-## Write Your Server
+    ## Test with curl
 
-Replace `Sources/main.swift` with the following.
+    <CodeGroup>
+    ```bash title="Create"
+    curl -X POST http://localhost:8080/bookmarks \
+      -H "Content-Type: application/json" \
+      -d '{"title": "Swift.org", "url": "https://swift.org", "tags": "swift"}'
+    ```
 
-### 1. Server and Database
+    ```bash title="List"
+    curl http://localhost:8080/bookmarks
+    ```
 
-```swift title="Sources/main.swift"
-import PrismServer
-import Foundation
+    ```bash title="Get One"
+    curl http://localhost:8080/bookmarks/1
+    ```
 
-let server = PrismHTTPServer(port: 8080)
-let db = try PrismDatabase(path: "bookmarks.db")
+    ```bash title="Delete"
+    curl -X DELETE http://localhost:8080/bookmarks/1
+    ```
+    </CodeGroup>
 
-let migrator = PrismMigrator(database: db)
-try await migrator.migrate([
-    PrismMigration(
-        name: "create_bookmarks",
-        up: """
-            CREATE TABLE bookmarks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                url TEXT NOT NULL,
-                tags TEXT DEFAULT '',
-                created_at TEXT DEFAULT (datetime('now'))
-            )
-            """,
-        down: "DROP TABLE bookmarks"
-    )
-])
-```
+    ## What You Used
 
-<Tip>
-  Use `":memory:"` for an in-memory database during development. See [Database overview](/server/database/overview) for connection options.
-</Tip>
+    | Module | What for |
+    |--------|----------|
+    | [PrismServer](/server/core/server) | HTTP server, [routing](/server/core/routing), [request](/server/core/request)/[response](/server/core/response) |
+    | [Middleware](/server/middleware/cors) | [CORS](/server/middleware/cors), [logging](/server/middleware/logging), [error handling](/server/core/error-handling) |
+    | [Database](/server/database/overview) | SQLite, [query builder](/server/database/queries), [migrations](/server/database/migrations) |
+    | [Validation](/server/security/validation) | Request body validation rules |
 
-### 2. Middleware
+    ## Next Steps — Server
 
-```swift
-await server.use(PrismCORSMiddleware())
-await server.use(PrismLoggingMiddleware())
-await server.use(PrismErrorMiddleware(includeStackTrace: true))
-```
-
-Middleware runs on every request, in registration order. The logging middleware wraps everything after it, capturing total response time.
-
-For all available middleware, see the [Middleware reference](/server/middleware/cors).
-
-### 3. List Bookmarks
-
-```swift
-await server.get("/bookmarks") { request in
-    let rows = try await db.query("SELECT * FROM bookmarks ORDER BY created_at DESC")
-    let bookmarks = rows.map { row -> [String: String] in
-        [
-            "id": "\(row["id"]!)",
-            "title": "\(row["title"]!)",
-            "url": "\(row["url"]!)",
-            "tags": "\(row["tags"]!)",
-            "created_at": "\(row["created_at"]!)"
-        ]
-    }
-    return .json(bookmarks)
-}
-```
-
-Every route handler receives a [`PrismHTTPRequest`](/server/core/request) and returns a [`PrismHTTPResponse`](/server/core/response). The `.json()` factory serializes any `Encodable` value and sets the right headers.
-
-### 4. Create a Bookmark (with Validation)
-
-```swift
-await server.post("/bookmarks") { request in
-    let validation = request.validateJSON { v in
-        v.field("title", .required, .minLength(1), .maxLength(200))
-        v.field("url", .required, .url)
-    }
-
-    if let errorResponse = validation.errorResponse() {
-        return errorResponse
-    }
-
-    guard let body = request.body,
-          let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
-        return PrismHTTPResponse(status: .badRequest, body: .text("Invalid JSON"))
-    }
-
-    let title = json["title"] as? String ?? ""
-    let url = json["url"] as? String ?? ""
-    let tags = json["tags"] as? String ?? ""
-
-    try await db.execute(
-        "INSERT INTO bookmarks (title, url, tags) VALUES (?, ?, ?)",
-        parameters: [.text(title), .text(url), .text(tags)]
-    )
-
-    let id = await db.lastInsertID
-    return .json(["id": id, "created": true], status: .created)
-}
-```
-
-Validation rules compose naturally. `.required` ensures the field is present, `.url` checks for valid format. See [server validation](/server/security/validation) for all built-in rules.
-
-### 5. Get a Single Bookmark
-
-```swift
-await server.get("/bookmarks/:id") { request in
-    let id = request.parameters["id"]!
-
-    guard let row = try await db.queryFirst(
-        "SELECT * FROM bookmarks WHERE id = ?",
-        parameters: [.text(id)]
-    ) else {
-        throw PrismAppError.notFound("Bookmark not found")
-    }
-
-    return .json([
-        "id": "\(row["id"]!)",
-        "title": "\(row["title"]!)",
-        "url": "\(row["url"]!)",
-        "tags": "\(row["tags"]!)",
-        "created_at": "\(row["created_at"]!)"
-    ])
-}
-```
-
-Route parameters (`:id`) are extracted via `request.parameters`. `PrismAppError.notFound()` is caught by [`PrismErrorMiddleware`](/server/core/error-handling) and converted to a 404 JSON response.
-
-### 6. Delete a Bookmark
-
-```swift
-await server.delete("/bookmarks/:id") { request in
-    let id = request.parameters["id"]!
-    let changes = try await db.execute(
-        "DELETE FROM bookmarks WHERE id = ?",
-        parameters: [.text(id)]
-    )
-
-    guard changes > 0 else {
-        throw PrismAppError.notFound("Bookmark not found")
-    }
-
-    return .json(["deleted": true])
-}
-```
-
-### 7. Start the Server
-
-```swift
-print("Bookmarks API running on http://localhost:8080")
-try await server.start()
-try await Task.sleep(for: .seconds(.max))
-```
-
-## Run It
-
-```bash
-swift run
-```
-
-```
-Bookmarks API running on http://localhost:8080
-[server] PrismServer starting on 0.0.0.0:8080
-[server] Server ready on port 8080
-```
-
-## Test with curl
-
-<CodeGroup>
-```bash title="Create"
-curl -X POST http://localhost:8080/bookmarks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Swift.org", "url": "https://swift.org", "tags": "swift,programming"}'
-```
-
-```bash title="List"
-curl http://localhost:8080/bookmarks
-```
-
-```bash title="Get One"
-curl http://localhost:8080/bookmarks/1
-```
-
-```bash title="Delete"
-curl -X DELETE http://localhost:8080/bookmarks/1
-```
-
-```bash title="Validation Error"
-curl -X POST http://localhost:8080/bookmarks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "", "url": "not-a-url"}'
-```
-</CodeGroup>
-
-Validation error returns structured feedback:
-
-```json
-{
-  "errors": {
-    "title": ["is required"],
-    "url": ["must be a valid URL"]
-  }
-}
-```
-
-## The Complete File
-
-<Accordion title="Full main.swift">
-```swift title="Sources/main.swift"
-import PrismServer
-import Foundation
-
-let server = PrismHTTPServer(port: 8080)
-let db = try PrismDatabase(path: "bookmarks.db")
-
-let migrator = PrismMigrator(database: db)
-try await migrator.migrate([
-    PrismMigration(
-        name: "create_bookmarks",
-        up: """
-            CREATE TABLE bookmarks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                url TEXT NOT NULL,
-                tags TEXT DEFAULT '',
-                created_at TEXT DEFAULT (datetime('now'))
-            )
-            """,
-        down: "DROP TABLE bookmarks"
-    )
-])
-
-await server.use(PrismCORSMiddleware())
-await server.use(PrismLoggingMiddleware())
-await server.use(PrismErrorMiddleware(includeStackTrace: true))
-
-await server.get("/bookmarks") { request in
-    let rows = try await db.query("SELECT * FROM bookmarks ORDER BY created_at DESC")
-    let bookmarks = rows.map { row -> [String: String] in
-        [
-            "id": "\(row["id"]!)",
-            "title": "\(row["title"]!)",
-            "url": "\(row["url"]!)",
-            "tags": "\(row["tags"]!)",
-            "created_at": "\(row["created_at"]!)"
-        ]
-    }
-    return .json(bookmarks)
-}
-
-await server.post("/bookmarks") { request in
-    let validation = request.validateJSON { v in
-        v.field("title", .required, .minLength(1), .maxLength(200))
-        v.field("url", .required, .url)
-    }
-    if let errorResponse = validation.errorResponse() { return errorResponse }
-
-    guard let body = request.body,
-          let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
-        return PrismHTTPResponse(status: .badRequest, body: .text("Invalid JSON"))
-    }
-
-    let title = json["title"] as? String ?? ""
-    let url = json["url"] as? String ?? ""
-    let tags = json["tags"] as? String ?? ""
-
-    try await db.execute(
-        "INSERT INTO bookmarks (title, url, tags) VALUES (?, ?, ?)",
-        parameters: [.text(title), .text(url), .text(tags)]
-    )
-    let id = await db.lastInsertID
-    return .json(["id": id, "created": true], status: .created)
-}
-
-await server.get("/bookmarks/:id") { request in
-    let id = request.parameters["id"]!
-    guard let row = try await db.queryFirst(
-        "SELECT * FROM bookmarks WHERE id = ?",
-        parameters: [.text(id)]
-    ) else {
-        throw PrismAppError.notFound("Bookmark not found")
-    }
-    return .json([
-        "id": "\(row["id"]!)",
-        "title": "\(row["title"]!)",
-        "url": "\(row["url"]!)",
-        "tags": "\(row["tags"]!)",
-        "created_at": "\(row["created_at"]!)"
-    ])
-}
-
-await server.delete("/bookmarks/:id") { request in
-    let id = request.parameters["id"]!
-    let changes = try await db.execute(
-        "DELETE FROM bookmarks WHERE id = ?",
-        parameters: [.text(id)]
-    )
-    guard changes > 0 else { throw PrismAppError.notFound("Bookmark not found") }
-    return .json(["deleted": true])
-}
-
-print("Bookmarks API running on http://localhost:8080")
-try await server.start()
-try await Task.sleep(for: .seconds(.max))
-```
-</Accordion>
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Add Authentication" icon="lock" href="/server/middleware/auth">
-    Protect endpoints with bearer tokens and session cookies.
-  </Card>
-  <Card title="Add WebSockets" icon="signal-stream" href="/server/realtime/websocket">
-    Build real-time features like live notifications.
-  </Card>
-  <Card title="Add GraphQL" icon="diagram-project" href="/server/graphql/schema">
-    Expose bookmarks through a GraphQL endpoint alongside REST.
-  </Card>
-  <Card title="Query Builder" icon="database" href="/server/database/queries">
-    Replace raw SQL with the fluent query builder.
-  </Card>
-</CardGroup>
+    <CardGroup cols={2}>
+      <Card title="Add Authentication" icon="lock" href="/server/middleware/auth">
+        Protect endpoints with bearer tokens and session cookies.
+      </Card>
+      <Card title="Add WebSockets" icon="signal-stream" href="/server/realtime/websocket">
+        Build real-time features with WebSocket rooms.
+      </Card>
+      <Card title="Add GraphQL" icon="diagram-project" href="/server/graphql/schema">
+        Expose data through a GraphQL endpoint alongside REST.
+      </Card>
+      <Card title="Query Builder" icon="database" href="/server/database/queries">
+        Go deeper with relationships, connection pools, and models.
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
