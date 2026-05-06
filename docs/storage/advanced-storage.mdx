@@ -1,0 +1,155 @@
+---
+title: "Advanced Storage"
+description: "Composite stores, batch operations, observation, and schema migrations"
+---
+
+## PrismCompositeStore
+
+Read-through / write-through chain of multiple stores. On load, tries each store in order and populates upstream caches on miss.
+
+```swift
+let memory = PrismMemoryStore(maxEntries: 200)
+let disk = PrismDiskStore(directory: .caches)
+
+// Wrap sync stores
+let memorySync = PrismDefaultsStore(suite: "fast")
+let diskSync = PrismDefaultsStore(suite: "slow")
+let composite = PrismCompositeStore(stores: [memorySync, diskSync])
+
+// Save writes to ALL stores
+try composite.save(config, forKey: "config")
+
+// Load checks stores in order
+// Miss on store[0] → found in store[1] → populates store[0]
+let config = try composite.load(Config.self, forKey: "config")
+```
+
+### Async Variant
+
+```swift
+let composite = PrismCompositeAsyncStore(stores: [memory, disk])
+let value = try await composite.load(Data.self, forKey: "cache-key")
+```
+
+## PrismBatchWriter
+
+Bulk operations with result tracking.
+
+```swift
+let writer = PrismBatchWriter(store: defaults)
+
+// Typed batch actions
+let actions: [PrismBatchAction<String>] = [
+    .save(key: "a", value: "1"),
+    .save(key: "b", value: "2"),
+    .delete(key: "old"),
+]
+let result = try writer.execute(actions)
+// result.total, .succeeded, .failed, .allSucceeded
+
+// Convenience methods
+let result = try writer.saveAll([
+    ("user1", user1),
+    ("user2", user2),
+])
+let result = try writer.deleteAll(["expired1", "expired2"])
+```
+
+### Async Variant
+
+```swift
+let asyncWriter = PrismAsyncBatchWriter(store: disk)
+let result = try await asyncWriter.saveAll(items)
+```
+
+## PrismStorageObserver
+
+Event-emitting wrapper. Wraps any `PrismStorageProtocol` and streams mutation events.
+
+```swift
+let observer = PrismStorageObserver(wrapping: defaults)
+
+// Subscribe to events
+Task {
+    for await event in observer.events() {
+        switch event {
+        case .saved(let key): print("Saved: \(key)")
+        case .deleted(let key): print("Deleted: \(key)")
+        case .cleared: print("Cleared all")
+        case .loaded(let key): print("Loaded: \(key)")
+        case .expired(let key): print("Expired: \(key)")
+        case .evicted(let key): print("Evicted: \(key)")
+        }
+    }
+}
+
+// Use observer as store — events emitted automatically
+try observer.save("value", forKey: "key")
+```
+
+### Async Variant
+
+```swift
+let asyncObserver = PrismAsyncStorageObserver(wrapping: disk)
+for await event in await asyncObserver.events() { ... }
+```
+
+## PrismStorageMigrator
+
+Versioned schema migrations with ordered step execution.
+
+```swift
+let migrator = PrismStorageMigrator(store: defaults)
+
+let steps = [
+    PrismMigrationStep(version: 1) { store in
+        // Rename keys
+        if let old = try store.load(String.self, forKey: "user_name") {
+            try store.save(old, forKey: "username")
+            try store.delete(forKey: "user_name")
+        }
+    },
+    PrismMigrationStep(version: 2) { store in
+        // Set new defaults
+        try store.save("system", forKey: "theme")
+    },
+    PrismMigrationStep(version: 3) { store in
+        // Data transformation
+        if let old = try store.load(Int.self, forKey: "age") {
+            try store.save(String(old), forKey: "age_string")
+        }
+    },
+]
+
+// Runs only pending migrations (skips already-applied)
+let currentVersion = try migrator.migrate(steps: steps)
+
+// Check if migration needed
+if migrator.needsMigration(latestVersion: 3) { ... }
+
+// Reset version tracking (for testing)
+try migrator.reset()
+```
+
+### Migration Safety
+
+- Steps run in ascending version order (regardless of array order)
+- Each step's version is persisted on success
+- Failure at any step throws `PrismStorageError.migrationFailed`
+- Version key stored as `_prism_schema_version` (configurable)
+
+## Error Handling
+
+All engines throw `PrismStorageError`:
+
+| Error | When |
+|-------|------|
+| `encodingFailed` | JSON encoding fails |
+| `decodingFailed` | JSON decoding fails |
+| `writeFailed` | File write fails |
+| `readFailed` | File read fails |
+| `quotaExceeded` | Disk store exceeds maxSize |
+| `encryptionFailed` | AES-GCM seal fails |
+| `decryptionFailed` | AES-GCM open fails (wrong key) |
+| `compressionFailed` | Compression fails |
+| `migrationFailed` | Migration step throws |

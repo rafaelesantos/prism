@@ -1,0 +1,72 @@
+---
+title: "Memory & Keychain"
+description: "PrismMemoryStore LRU cache with statistics and PrismKeychainStore for secure credential storage"
+---
+
+## PrismMemoryStore
+
+Actor-based in-memory LRU cache with per-entry TTL, automatic eviction, and hit/miss statistics.
+
+```swift
+let cache = PrismMemoryStore(
+    maxEntries: 1000,
+    defaultTTL: 600 // 10 min
+)
+
+// Standard CRUD
+try await cache.save(user, forKey: "user-42")
+let user = try await cache.load(User.self, forKey: "user-42")
+
+// Per-entry TTL
+try await cache.save(otp, forKey: "otp", ttl: 30) // 30 sec
+```
+
+### LRU Eviction
+
+When `maxEntries` is exceeded, least-recently-accessed entries are evicted first. Access (load) refreshes an entry's position.
+
+### Statistics
+
+```swift
+let stats = await cache.statistics()
+print("Hit rate: \(stats.hitRate)")  // 0.0–1.0
+print("Hits: \(stats.hits)")
+print("Misses: \(stats.misses)")
+print("Evictions: \(stats.evictions)")
+print("Expirations: \(stats.expirations)")
+
+let count = await cache.count()
+```
+
+## PrismKeychainStore
+
+Secure credential storage using the Security framework (SecItem APIs). Conforms to `PrismStorageProtocol`.
+
+```swift
+let keychain = PrismKeychainStore(
+    service: "com.myapp.auth",
+    accessGroup: "TEAM.com.myapp.shared" // optional
+)
+
+// Store credentials
+try keychain.save("Bearer abc123", forKey: "accessToken")
+try keychain.save(credentials, forKey: "oauth") // any Codable
+
+// Retrieve
+let token = try keychain.load(String.self, forKey: "accessToken")
+
+// Check existence
+if try keychain.exists(forKey: "accessToken") { ... }
+
+// Remove
+try keychain.delete(forKey: "accessToken")
+try keychain.clear() // remove all items for this service
+```
+
+### Security Notes
+
+- Data stored via `kSecClassGenericPassword`
+- Scoped by `service` identifier
+- `accessGroup` enables Keychain Sharing across apps
+- `keys()` uses `kSecMatchLimitAll` + `kSecReturnAttributes`
+- Thread-safe via `NSLock`

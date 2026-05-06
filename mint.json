@@ -28,11 +28,11 @@
   "tabs": [
     {
       "name": "Server",
-      "url": "docs/server"
+      "url": "docs/core"
     },
     {
       "name": "Client",
-      "url": "docs/client"
+      "url": "docs/foundation"
     }
   ],
   "anchors": [
@@ -129,6 +129,17 @@
       ]
     },
     {
+      "group": "Storage",
+      "pages": [
+        "docs/storage/overview",
+        "docs/storage/defaults-disk",
+        "docs/storage/memory-keychain",
+        "docs/storage/swiftdata",
+        "docs/storage/encryption-compression",
+        "docs/storage/advanced-storage"
+      ]
+    },
+    {
       "group": "Capabilities",
       "pages": [
         "docs/capabilities/auth",
@@ -148,108 +159,108 @@
     {
       "group": "Server — Core",
       "pages": [
-        "docs/server/server",
-        "docs/server/routing",
-        "docs/server/request",
-        "docs/server/response",
-        "docs/server/middleware",
-        "docs/server/error-handling"
+        "docs/core/server",
+        "docs/core/routing",
+        "docs/core/request",
+        "docs/core/response",
+        "docs/core/middleware",
+        "docs/core/error-handling"
       ]
     },
     {
       "group": "Server — Middleware",
       "pages": [
-        "docs/server/cors",
-        "docs/server/logging",
-        "docs/server/auth",
-        "docs/server/rate-limiting",
-        "docs/server/compression",
-        "docs/server/rate-limiting-v2",
-        "docs/server/hooks"
+        "docs/middleware/cors",
+        "docs/middleware/logging",
+        "docs/middleware/auth",
+        "docs/middleware/rate-limiting",
+        "docs/middleware/compression",
+        "docs/middleware/rate-limiting-v2",
+        "docs/middleware/hooks"
       ]
     },
     {
       "group": "Server — Database",
       "pages": [
-        "docs/server/database-overview",
-        "docs/server/queries",
-        "docs/server/models",
-        "docs/server/migrations",
-        "docs/server/connection-pool",
-        "docs/server/relationships"
+        "docs/database/overview",
+        "docs/database/queries",
+        "docs/database/models",
+        "docs/database/migrations",
+        "docs/database/connection-pool",
+        "docs/database/relationships"
       ]
     },
     {
       "group": "Server — Real-Time",
       "pages": [
-        "docs/server/websocket",
-        "docs/server/websocket-rooms",
-        "docs/server/sse",
-        "docs/server/events"
+        "docs/realtime/websocket",
+        "docs/realtime/websocket-rooms",
+        "docs/realtime/sse",
+        "docs/realtime/events"
       ]
     },
     {
       "group": "Server — Content",
       "pages": [
-        "docs/server/json",
-        "docs/server/multipart",
-        "docs/server/file-upload",
-        "docs/server/body-parser",
-        "docs/server/content-negotiation",
-        "docs/server/streaming",
-        "docs/server/templates"
+        "docs/content/json",
+        "docs/content/multipart",
+        "docs/content/file-upload",
+        "docs/content/body-parser",
+        "docs/content/content-negotiation",
+        "docs/content/streaming",
+        "docs/content/templates"
       ]
     },
     {
       "group": "Server — Security",
       "pages": [
-        "docs/server/tls",
-        "docs/server/sessions",
-        "docs/server/validation"
+        "docs/security/tls",
+        "docs/security/sessions",
+        "docs/security/validation"
       ]
     },
     {
       "group": "Server — GraphQL & MCP",
       "pages": [
-        "docs/server/graphql-schema",
-        "docs/server/graphql-queries",
-        "docs/server/graphql-mutations",
-        "docs/server/graphql-playground",
-        "docs/server/mcp-overview",
-        "docs/server/mcp-tools",
-        "docs/server/mcp-resources",
-        "docs/server/mcp-transports"
+        "docs/graphql/schema",
+        "docs/graphql/queries",
+        "docs/graphql/mutations",
+        "docs/graphql/playground",
+        "docs/mcp/overview",
+        "docs/mcp/tools",
+        "docs/mcp/resources",
+        "docs/mcp/transports"
       ]
     },
     {
       "group": "Server — Infrastructure",
       "pages": [
-        "docs/server/config",
-        "docs/server/health",
-        "docs/server/metrics",
-        "docs/server/cron",
-        "docs/server/background-tasks",
-        "docs/server/graceful-shutdown",
-        "docs/server/cluster"
+        "docs/infrastructure/config",
+        "docs/infrastructure/health",
+        "docs/infrastructure/metrics",
+        "docs/infrastructure/cron",
+        "docs/infrastructure/background-tasks",
+        "docs/infrastructure/graceful-shutdown",
+        "docs/infrastructure/cluster"
       ]
     },
     {
       "group": "Server — Advanced",
       "pages": [
-        "docs/server/dependency-injection",
-        "docs/server/tracing",
-        "docs/server/versioning",
-        "docs/server/http-client",
-        "docs/server/openapi",
-        "docs/server/cache"
+        "docs/advanced/dependency-injection",
+        "docs/advanced/tracing",
+        "docs/advanced/versioning",
+        "docs/advanced/http-client",
+        "docs/advanced/openapi",
+        "docs/advanced/cache"
       ]
     },
     {
       "group": "Server — Testing",
       "pages": [
-        "docs/server/test-client",
-        "docs/server/request-builder",
-        "docs/server/assertions"
+        "docs/testing/test-client",
+        "docs/testing/request-builder",
+        "docs/testing/assertions"
       ]
     }
   ],

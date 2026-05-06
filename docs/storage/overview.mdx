@@ -1,0 +1,65 @@
+---
+title: "PrismStorage"
+description: "Unified persistence layer — UserDefaults, Disk, Memory, SwiftData, Keychain, with encryption, compression, and composability"
+---
+
+## Overview
+
+PrismStorage provides a **single protocol** for all persistence needs. Every engine conforms to the same interface, making stores interchangeable and composable.
+
+```swift
+import Prism
+
+// Sync stores
+let defaults = PrismDefaultsStore()
+let keychain = PrismKeychainStore(service: "MyApp")
+
+// Async (actor-based) stores
+let disk = PrismDiskStore(directory: .caches)
+let memory = PrismMemoryStore(maxEntries: 500)
+```
+
+## Unified Protocol
+
+```swift
+public protocol PrismStorageProtocol: Sendable {
+    func save<T: Codable & Sendable>(_ value: T, forKey key: String) throws
+    func load<T: Codable & Sendable>(_ type: T.Type, forKey key: String) throws -> T?
+    func delete(forKey key: String) throws
+    func exists(forKey key: String) throws -> Bool
+    func clear() throws
+    func keys() throws -> [String]
+}
+```
+
+Actor-based stores conform to `PrismAsyncStorageProtocol` — same methods with `async throws`.
+
+## Architecture
+
+| Layer | Components |
+|-------|-----------|
+| **Engines** | DefaultsStore, DiskStore, MemoryStore, KeychainStore, ModelStore |
+| **Wrappers** | EncryptedStore, CompressedStore, CompositeStore, StorageObserver |
+| **Utilities** | BatchWriter, StorageMigrator, LiveQuery, Query Builder |
+
+## Quick Start
+
+```swift
+// Save and load any Codable
+let store = PrismDefaultsStore()
+try store.save(user, forKey: "currentUser")
+let user = try store.load(User.self, forKey: "currentUser")
+
+// Encrypted storage
+let encrypted = PrismEncryptedStore(wrapping: store, key: symmetricKey)
+try encrypted.save(secret, forKey: "token") // AES-GCM transparent
+
+// Multi-tier cache (memory → disk)
+let composite = PrismCompositeStore(stores: [memory, disk])
+let value = try composite.load(Config.self, forKey: "settings")
+// Cache miss on memory? Falls through to disk, populates memory
+```
+
+## Concurrency
+
+All stores are `Sendable`. Actor-based stores (`PrismDiskStore`, `PrismMemoryStore`, `PrismModelStore`) provide safe concurrent access. Sync stores use `NSLock` internally.

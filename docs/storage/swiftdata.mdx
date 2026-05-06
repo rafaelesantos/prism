@@ -1,0 +1,93 @@
+---
+title: "SwiftData"
+description: "PrismContainer, PrismModelStore, PrismQuery builder, and PrismLiveQuery for SwiftData integration"
+---
+
+## PrismContainer
+
+Factory for creating `ModelContainer` instances with sensible defaults.
+
+```swift
+// In-memory (testing)
+let container = try PrismContainer.inMemory(for: [User.self, Post.self])
+
+// Persistent
+let container = try PrismContainer.create(
+    for: [User.self, Post.self],
+    inMemory: false,
+    cloudKitContainerID: "iCloud.com.myapp" // optional
+)
+```
+
+## PrismModelStore
+
+`@ModelActor` providing generic CRUD for any `PersistentModel`. Runs on its own `ModelContext` — safe for background work.
+
+```swift
+let store = PrismModelStore<User>(modelContainer: container)
+
+// Insert
+await store.insert(User(name: "Alice", age: 30))
+
+// Batch insert
+let users = names.map { User(name: $0, age: 25) }
+await store.insertBatch(users)
+
+// Fetch
+let all = try await store.fetch()
+let adults = try await store.fetch(
+    predicate: #Predicate { $0.age >= 18 },
+    sortBy: [SortDescriptor(\.name)],
+    limit: 50
+)
+
+// Count & exists
+let count = try await store.count()
+let hasUsers = try await store.exists()
+
+// Delete
+await store.delete(user)
+try await store.deleteAll()
+
+// Transaction
+try await store.transaction { context in
+    context.insert(User(name: "Bob", age: 28))
+    context.insert(Post(title: "Hello", authorName: "Bob"))
+}
+```
+
+## PrismQuery
+
+Fluent query builder that produces a `FetchDescriptor`.
+
+```swift
+let query = PrismQuery<User>()
+    .where(#Predicate { $0.age >= 18 })
+    .sort(SortDescriptor(\.name))
+    .limit(20)
+    .offset(40)
+
+let descriptor = query.build()
+let results = try await store.fetch(descriptor)
+```
+
+## PrismLiveQuery
+
+Polling-based change detection. Emits count updates via `AsyncStream` — use to trigger UI re-fetches.
+
+```swift
+let live = PrismLiveQuery<User>(
+    container: container,
+    descriptor: FetchDescriptor<User>(),
+    interval: 2.0 // poll every 2s
+)
+
+for await count in live.countStream() {
+    print("Users changed: \(count) total")
+    // Re-fetch on main context
+}
+```
+
+<Note>
+`countStream()` yields `Int` (not `[T]`) to avoid Sendable violations with `PersistentModel`.
+</Note>

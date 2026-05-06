@@ -1,0 +1,81 @@
+---
+title: "UserDefaults & Disk"
+description: "PrismDefaultsStore for preferences and PrismDiskStore for file-based persistence with TTL and quotas"
+---
+
+## PrismDefaultsStore
+
+Type-safe UserDefaults wrapper with Codable support, key prefixing, and observation.
+
+```swift
+let store = PrismDefaultsStore(suite: "group.myapp", prefix: "app.")
+
+// Codable round-trip
+try store.save(settings, forKey: "settings")
+let settings = try store.load(AppSettings.self, forKey: "settings")
+
+// Type-safe keys
+let themeKey = PrismDefaultKey(name: "theme", defaultValue: "system")
+store.set(themeKey, value: "dark")
+let theme = store.get(themeKey) // "dark"
+```
+
+### Observation
+
+```swift
+let stream = store.observe(String.self, forKey: "theme")
+for await value in stream {
+    print("Theme changed: \(value)")
+}
+```
+
+### SwiftUI Property Wrapper
+
+```swift
+struct SettingsView: View {
+    @PrismDefault(key: "username", defaultValue: "Guest")
+    var username: String
+
+    var body: some View {
+        TextField("Name", text: $username) // Two-way binding
+    }
+}
+```
+
+## PrismDiskStore
+
+Actor-based file storage with atomic writes, TTL expiration, and disk quota enforcement.
+
+```swift
+let disk = PrismDiskStore(
+    directory: .applicationSupport,
+    subdirectory: "MyCache",
+    maxSize: 50_000_000, // 50 MB quota
+    defaultTTL: 3600     // 1 hour
+)
+
+// Basic CRUD
+try await disk.save(largePayload, forKey: "report-2024")
+let report = try await disk.load(Report.self, forKey: "report-2024")
+
+// TTL per item
+try await disk.save(token, forKey: "auth", ttl: 300) // 5 min
+
+// Maintenance
+try await disk.pruneExpired()
+let bytes = try await disk.totalSize()
+```
+
+### Directory Options
+
+| Case | Path |
+|------|------|
+| `.documents` | User documents |
+| `.caches` | System-managed cache |
+| `.applicationSupport` | Persistent app data |
+| `.temporary` | Temp directory |
+| `.custom(URL)` | Any path |
+
+### Quota Enforcement
+
+Exceeding `maxSize` throws `PrismStorageError.quotaExceeded(bytes)` on save. Check usage with `totalSize()`.

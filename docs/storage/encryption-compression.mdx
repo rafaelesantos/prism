@@ -1,0 +1,90 @@
+---
+title: "Encryption & Compression"
+description: "Transparent AES-GCM encryption and multi-algorithm compression wrappers for any store"
+---
+
+## PrismEncryptedStore
+
+Transparent encryption wrapper. Encrypts with AES-GCM before delegating to inner store. Decrypts on load.
+
+```swift
+import CryptoKit
+
+let key = SymmetricKey(size: .bits256)
+let defaults = PrismDefaultsStore()
+let secure = PrismEncryptedStore(wrapping: defaults, key: key)
+
+// Values encrypted at rest
+try secure.save("api-key-secret", forKey: "apiKey")
+let apiKey = try secure.load(String.self, forKey: "apiKey") // decrypted
+
+// Also accepts raw key data
+let secure2 = PrismEncryptedStore(wrapping: defaults, keyData: keyData)
+```
+
+### Async Variant
+
+```swift
+let disk = PrismDiskStore(directory: .applicationSupport)
+let secureDisk = PrismEncryptedAsyncStore(wrapping: disk, key: key)
+
+try await secureDisk.save(credentials, forKey: "creds")
+```
+
+### Security
+
+- **Algorithm**: AES-GCM (authenticated encryption)
+- **Nonce**: Auto-generated per encryption
+- **Format**: Combined nonce + ciphertext + tag
+- Wrong key → `PrismStorageError.decryptionFailed`
+
+## PrismCompressedStore
+
+Transparent compression wrapper. Compresses before save, decompresses on load.
+
+```swift
+let store = PrismCompressedStore(
+    wrapping: PrismDefaultsStore(),
+    algorithm: .lzfse // default
+)
+
+// Large payloads compressed transparently
+let bigPayload = Array(0..<10_000)
+try store.save(bigPayload, forKey: "data")
+let loaded = try store.load([Int].self, forKey: "data")
+```
+
+### Algorithms
+
+| Algorithm | Speed | Ratio | Use Case |
+|-----------|-------|-------|----------|
+| `.lzfse` | Fast | Good | Default — Apple optimized |
+| `.lz4` | Fastest | Lower | Real-time, low latency |
+| `.zlib` | Medium | Better | Cross-platform compatibility |
+| `.lzma` | Slow | Best | Archival, max compression |
+
+### Async Variant
+
+```swift
+let compressedDisk = PrismCompressedAsyncStore(
+    wrapping: PrismDiskStore(),
+    algorithm: .lzma
+)
+```
+
+## Combining Layers
+
+Stack encryption + compression for maximum efficiency:
+
+```swift
+let base = PrismDefaultsStore()
+let compressed = PrismCompressedStore(wrapping: base, algorithm: .lzfse)
+let secure = PrismEncryptedStore(wrapping: compressed, key: key)
+
+// Data flow: value → JSON → compress → encrypt → store
+try secure.save(sensitiveData, forKey: "payload")
+```
+
+<Tip>
+Compress **before** encrypting. Encrypted data has high entropy and compresses poorly.
+</Tip>
