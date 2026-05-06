@@ -3,7 +3,7 @@ import SwiftUI
 #if canImport(PhotosUI)
     import PhotosUI
 
-    public struct PrismPhotoPicker<Label: View>: View {
+    public struct PrismPhotoPicker<Label: View & Sendable>: View {
         @Environment(\.prismTheme) private var theme
 
         @Binding private var selection: PhotosPickerItem?
@@ -21,8 +21,9 @@ import SwiftUI
         }
 
         public var body: some View {
+            let content = label
             PhotosPicker(selection: $selection, matching: matching) {
-                label
+                content
             }
             .tint(theme.color(.interactive))
         }
@@ -42,7 +43,7 @@ import SwiftUI
         }
     }
 
-    public struct PrismMultiPhotoPicker<Label: View>: View {
+    public struct PrismMultiPhotoPicker<Label: View & Sendable>: View {
         @Environment(\.prismTheme) private var theme
 
         @Binding private var selection: [PhotosPickerItem]
@@ -63,12 +64,13 @@ import SwiftUI
         }
 
         public var body: some View {
+            let content = label
             PhotosPicker(
                 selection: $selection,
                 maxSelectionCount: maxCount > 0 ? maxCount : nil,
                 matching: matching
             ) {
-                label
+                content
             }
             .tint(theme.color(.interactive))
         }

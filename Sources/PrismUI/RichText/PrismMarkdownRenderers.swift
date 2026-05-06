@@ -55,16 +55,16 @@ extension PrismMarkdownView {
     }
 
     package func parseInlineElements(_ text: String) -> Text {
-        var result = Text("")
+        var fragments: [Text] = []
         var remaining = text[text.startIndex..<text.endIndex]
 
         while !remaining.isEmpty {
             // Bold + italic (***text***)
             if let range = remaining.range(of: #"\*\*\*(.+?)\*\*\*"#, options: .regularExpression) {
                 let before = String(remaining[remaining.startIndex..<range.lowerBound])
-                if !before.isEmpty { result = result + Text(before) }
+                if !before.isEmpty { fragments.append(Text(before)) }
                 let inner = String(remaining[range]).dropFirst(3).dropLast(3)
-                result = result + Text(String(inner)).bold().italic()
+                fragments.append(Text(String(inner)).bold().italic())
                 remaining = remaining[range.upperBound...]
                 continue
             }
@@ -72,9 +72,9 @@ extension PrismMarkdownView {
             // Bold (**text**)
             if let range = remaining.range(of: #"\*\*(.+?)\*\*"#, options: .regularExpression) {
                 let before = String(remaining[remaining.startIndex..<range.lowerBound])
-                if !before.isEmpty { result = result + Text(before) }
+                if !before.isEmpty { fragments.append(Text(before)) }
                 let inner = String(remaining[range]).dropFirst(2).dropLast(2)
-                result = result + Text(String(inner)).bold()
+                fragments.append(Text(String(inner)).bold())
                 remaining = remaining[range.upperBound...]
                 continue
             }
@@ -82,9 +82,9 @@ extension PrismMarkdownView {
             // Italic (*text*)
             if let range = remaining.range(of: #"\*(.+?)\*"#, options: .regularExpression) {
                 let before = String(remaining[remaining.startIndex..<range.lowerBound])
-                if !before.isEmpty { result = result + Text(before) }
+                if !before.isEmpty { fragments.append(Text(before)) }
                 let inner = String(remaining[range]).dropFirst(1).dropLast(1)
-                result = result + Text(String(inner)).italic()
+                fragments.append(Text(String(inner)).italic())
                 remaining = remaining[range.upperBound...]
                 continue
             }
@@ -92,13 +92,13 @@ extension PrismMarkdownView {
             // Inline code (`code`)
             if let range = remaining.range(of: #"`([^`]+)`"#, options: .regularExpression) {
                 let before = String(remaining[remaining.startIndex..<range.lowerBound])
-                if !before.isEmpty { result = result + Text(before) }
+                if !before.isEmpty { fragments.append(Text(before)) }
                 let inner = String(remaining[range]).dropFirst(1).dropLast(1)
-                result =
-                    result
-                    + Text(String(inner))
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.secondary)
+                fragments.append(
+                    Text(String(inner))
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.secondary)
+                )
                 remaining = remaining[range.upperBound...]
                 continue
             }
@@ -106,31 +106,29 @@ extension PrismMarkdownView {
             // Link [text](url)
             if let range = remaining.range(of: #"\[([^\]]+)\]\(([^)]+)\)"#, options: .regularExpression) {
                 let before = String(remaining[remaining.startIndex..<range.lowerBound])
-                if !before.isEmpty { result = result + Text(before) }
+                if !before.isEmpty { fragments.append(Text(before)) }
                 let matched = String(remaining[range])
                 let linkText = extractBracketContent(matched, open: "[", close: "]")
                 let linkURL = extractBracketContent(matched, open: "(", close: ")")
                 if let url = URL(string: linkURL) {
-                    result =
-                        result
-                        + Text(
-                            AttributedString(linkText, attributes: .init([.link: url]))
-                        )
-                        .foregroundColor(.accentColor)
-                        .underline()
+                    fragments.append(
+                        Text(AttributedString(linkText, attributes: .init([.link: url])))
+                            .foregroundColor(.accentColor)
+                            .underline()
+                    )
                 } else {
-                    result = result + Text(linkText).foregroundColor(.accentColor)
+                    fragments.append(Text(linkText).foregroundColor(.accentColor))
                 }
                 remaining = remaining[range.upperBound...]
                 continue
             }
 
             // No match — consume rest
-            result = result + Text(String(remaining))
+            fragments.append(Text(String(remaining)))
             break
         }
 
-        return result
+        return fragments.reduce(Text("")) { Text("\($0)\($1)") }
     }
 
     @ViewBuilder

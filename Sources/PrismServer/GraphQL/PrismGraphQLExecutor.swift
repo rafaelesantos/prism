@@ -221,7 +221,7 @@ public struct PrismGraphQLExecutor: Sendable {
                         if case .object(let typeName) = innerType,
                             let nestedType = schema.types[typeName]
                         {
-                            for (i, item) in arrValue.enumerated() {
+                            for (i, _) in arrValue.enumerated() {
                                 let itemPath = fieldPath + ["\(i)"]
                                 let nested = await resolveSelectionSet(
                                     selections: fieldSelection.selectionSet,

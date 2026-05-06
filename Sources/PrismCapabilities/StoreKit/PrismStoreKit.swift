@@ -68,13 +68,14 @@
         public private(set) var products: [PrismProductInfo] = []
         public private(set) var purchasedProductIDs: Set<String> = []
 
-        nonisolated(unsafe) private var transactionListener: Task<Void, Never>?
+        private var transactionListener: Task<Void, Never>?
 
         public init() {}
 
         deinit {
-            let listener = transactionListener
-            listener?.cancel()
+            MainActor.assumeIsolated {
+                transactionListener?.cancel()
+            }
         }
 
         public func fetchProducts(ids: Set<String>) async throws {
@@ -151,7 +152,7 @@
             transactionListener = Task.detached { [weak self] in
                 for await result in Transaction.updates {
                     if let transaction = try? self?.checkVerified(result) {
-                        await MainActor.run {
+                        _ = await MainActor.run {
                             self?.purchasedProductIDs.insert(transaction.productID)
                         }
                         await transaction.finish()

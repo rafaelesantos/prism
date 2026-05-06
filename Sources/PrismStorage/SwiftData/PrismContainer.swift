@@ -14,7 +14,7 @@
                 isStoredInMemoryOnly: inMemory
             )
 
-            if let cloudKitID = cloudKitContainerID {
+            if cloudKitContainerID != nil {
                 config = ModelConfiguration(
                     cloudKitDatabase: .automatic
                 )

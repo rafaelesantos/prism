@@ -53,7 +53,7 @@
 
         @Test("All TLS versions have valid nwVersion mapping")
         func allVersionsMap() {
-            let versions: [TLSVersion] = [.tlsv10, .tlsv11, .tlsv12, .tlsv13]
+            let versions: [TLSVersion] = [.tlsv12, .tlsv13]
             for version in versions {
                 _ = version.nwVersion
             }
@@ -67,16 +67,6 @@
         @Test("TLS 1.3 maps to correct protocol version")
         func tls13Mapping() {
             #expect(TLSVersion.tlsv13.nwVersion == .TLSv13)
-        }
-
-        @Test("TLS 1.0 version is accessible")
-        func tls10Mapping() {
-            _ = TLSVersion.tlsv10.nwVersion
-        }
-
-        @Test("TLS 1.1 version is accessible")
-        func tls11Mapping() {
-            _ = TLSVersion.tlsv11.nwVersion
         }
     }
 

@@ -34,7 +34,7 @@ public struct PrismProgressBar: View {
                         .font(TypographyToken.caption.font(weight: .medium))
                         .foregroundStyle(theme.color(.onBackgroundSecondary))
                     Spacer()
-                    if let value {
+                    if value != nil {
                         Text("\(Int(clampedProgress * 100))%")
                             .font(TypographyToken.caption.font(weight: .medium))
                             .foregroundStyle(theme.color(.onBackgroundSecondary))
@@ -45,7 +45,7 @@ public struct PrismProgressBar: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     trackShape
-                    if let value {
+                    if value != nil {
                         determinateFill(width: geometry.size.width)
                     } else {
                         indeterminateFill(width: geometry.size.width)

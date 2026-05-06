@@ -25,9 +25,7 @@ public actor PrismSwaggerSpec {
     }
 
     public func addRoute(method: String, path: String, metadata: PrismRouteMetadata) {
-        var mutableSelf = self
-        // Actor mutation workaround
-        let _ = mutableSelf
+        _ = (method, path, metadata)
     }
 
     public func registerRoute(method: String, path: String, metadata: PrismRouteMetadata) async {

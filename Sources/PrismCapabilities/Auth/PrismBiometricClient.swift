@@ -108,6 +108,13 @@
             case .biometryNotAvailable: .biometryNotAvailable
             case .biometryNotEnrolled: .biometryNotEnrolled
             case .biometryLockout: .biometryLockout
+            case .appCancel: .systemCancel
+            case .invalidContext: .authenticationFailed
+            case .notInteractive: .authenticationFailed
+            case .biometryNotPaired: .biometryNotAvailable
+            case .biometryDisconnected: .biometryNotAvailable
+            case .invalidDimensions: .authenticationFailed
+            case .companionNotAvailable: .biometryNotAvailable
             @unknown default: .authenticationFailed
             }
         }

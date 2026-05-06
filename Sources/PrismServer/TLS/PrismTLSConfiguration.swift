@@ -65,15 +65,11 @@
     }
 
     public enum TLSVersion: Sendable {
-        case tlsv10
-        case tlsv11
         case tlsv12
         case tlsv13
 
         var nwVersion: tls_protocol_version_t {
             switch self {
-            case .tlsv10: .TLSv10
-            case .tlsv11: .TLSv11
             case .tlsv12: .TLSv12
             case .tlsv13: .TLSv13
             }

@@ -211,28 +211,13 @@
         }
 
         public func showLeaderboard(id: String) {
-            let viewController = GKGameCenterViewController(
-                leaderboardID: id, playerScope: .global, timeScope: .allTime)
-            presentGameCenterViewController(viewController)
+            GKAccessPoint.shared.trigger(
+                leaderboardID: id, playerScope: .global, timeScope: .allTime
+            ) {}
         }
 
         public func showAchievements() {
-            let viewController = GKGameCenterViewController(state: .achievements)
-            presentGameCenterViewController(viewController)
-        }
-
-        // MARK: - Private
-
-        private func presentGameCenterViewController(_ viewController: GKGameCenterViewController) {
-            #if canImport(UIKit)
-                guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                    let rootVC = scene.windows.first?.rootViewController
-                else { return }
-                rootVC.present(viewController, animated: true)
-            #elseif canImport(AppKit)
-                guard let window = NSApplication.shared.mainWindow else { return }
-                window.contentViewController?.presentAsSheet(viewController)
-            #endif
+            GKAccessPoint.shared.trigger(state: .achievements) {}
         }
     }
 #endif

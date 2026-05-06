@@ -105,7 +105,7 @@ public struct PrismSSEMiddleware: PrismMiddleware, Sendable {
         let connection = await manager.addConnection()
 
         var body = Data()
-        for await event in await connection.stream {
+        for await event in connection.stream {
             body.append(Data(event.serialize().utf8))
         }
 

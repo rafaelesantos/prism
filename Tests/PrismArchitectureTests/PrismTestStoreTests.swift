@@ -13,6 +13,7 @@ struct PrismTestStoreTests {
 
         let immediateState = store.send(.increment)
         store.send(.startReducerEffect)
+        await Task.yield()
         let settled = await store.waitForEffects()
 
         #expect(immediateState.count == 1)

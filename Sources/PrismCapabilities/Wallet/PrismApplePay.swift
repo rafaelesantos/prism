@@ -92,7 +92,7 @@
             pkRequest.countryCode = request.countryCode
             pkRequest.currencyCode = request.currencyCode
             pkRequest.supportedNetworks = request.supportedNetworks.map { $0.pkNetwork }
-            pkRequest.merchantCapabilities = .capability3DS
+            pkRequest.merchantCapabilities = .threeDSecure
             pkRequest.paymentSummaryItems = request.items.map { item in
                 PKPaymentSummaryItem(
                     label: item.label,
@@ -128,10 +128,11 @@
         }
     }
 
-    private final class PaymentDelegate: NSObject, PKPaymentAuthorizationControllerDelegate, @unchecked Sendable {
-        private let completion: (PrismPaymentResult) -> Void
+    @MainActor
+    private final class PaymentDelegate: NSObject, @preconcurrency PKPaymentAuthorizationControllerDelegate {
+        private let completion: @Sendable (PrismPaymentResult) -> Void
 
-        init(completion: @escaping (PrismPaymentResult) -> Void) {
+        init(completion: @escaping @Sendable (PrismPaymentResult) -> Void) {
             self.completion = completion
         }
 

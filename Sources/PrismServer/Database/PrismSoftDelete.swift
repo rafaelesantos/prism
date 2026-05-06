@@ -19,17 +19,17 @@
 
     extension PrismDatabase {
         @discardableResult
-        public func softDelete<T: PrismSoftDeletable>(_ type: T.Type, id: PrismDatabaseValue) async throws -> Int {
+        public func softDelete<T: PrismSoftDeletable>(_ type: T.Type, id: PrismDatabaseValue) throws -> Int {
             let timestamp = ISO8601DateFormatter().string(from: Date.now)
-            return try await execute(
+            return try execute(
                 "UPDATE \(T.tableName) SET deleted_at = ? WHERE \(T.primaryKey) = ?",
                 parameters: [.text(timestamp), id]
             )
         }
 
         @discardableResult
-        public func restore<T: PrismSoftDeletable>(_ type: T.Type, id: PrismDatabaseValue) async throws -> Int {
-            try await execute(
+        public func restore<T: PrismSoftDeletable>(_ type: T.Type, id: PrismDatabaseValue) throws -> Int {
+            try execute(
                 "UPDATE \(T.tableName) SET deleted_at = NULL WHERE \(T.primaryKey) = ?",
                 parameters: [id]
             )

@@ -2,7 +2,7 @@
     import SwiftUI
 
     @propertyWrapper
-    public struct PrismDefault<Value: Codable & Sendable>: DynamicProperty {
+    public struct PrismDefault<Value: Codable & Sendable>: DynamicProperty, @unchecked Sendable {
         private let key: String
         private let defaultValue: Value
         private let store: PrismDefaultsStore

@@ -15,31 +15,31 @@
     }
 
     extension PrismDatabase {
-        public func all<T: PrismModel>(_ type: T.Type) async throws -> [T] {
-            let rows = try await query("SELECT * FROM \(T.tableName)")
+        public func all<T: PrismModel>(_ type: T.Type) throws -> [T] {
+            let rows = try query("SELECT * FROM \(T.tableName)")
             return try rows.map { try decodeRow($0, as: type) }
         }
 
-        public func find<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) async throws -> T? {
-            let rows = try await query(
+        public func find<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) throws -> T? {
+            let rows = try query(
                 "SELECT * FROM \(T.tableName) WHERE \(T.primaryKey) = ? LIMIT 1", parameters: [id])
             return try rows.first.map { try decodeRow($0, as: type) }
         }
 
         @discardableResult
-        public func insert<T: PrismModel>(_ model: T) async throws -> Int64 {
+        public func insert<T: PrismModel>(_ model: T) throws -> Int64 {
             let values = try encodeModel(model)
             let columns = values.keys.sorted()
             let placeholders = columns.map { _ in "?" }.joined(separator: ", ")
             let sql = "INSERT INTO \(T.tableName) (\(columns.joined(separator: ", "))) VALUES (\(placeholders))"
             let params = columns.map { values[$0]! }
-            try await execute(sql, parameters: params)
+            try execute(sql, parameters: params)
             return lastInsertID
         }
 
         @discardableResult
-        public func delete<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) async throws -> Int {
-            try await execute("DELETE FROM \(T.tableName) WHERE \(T.primaryKey) = ?", parameters: [id])
+        public func delete<T: PrismModel>(_ type: T.Type, id: PrismDatabaseValue) throws -> Int {
+            try execute("DELETE FROM \(T.tableName) WHERE \(T.primaryKey) = ?", parameters: [id])
         }
 
         // MARK: - Private

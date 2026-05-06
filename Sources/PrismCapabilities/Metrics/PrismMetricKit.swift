@@ -91,7 +91,7 @@
                         signal: crash.signal?.description,
                         terminationReason: crash.terminationReason,
                         callStackTree: String(
-                            data: (try? crash.callStackTree.jsonRepresentation()) ?? Data(), encoding: .utf8)
+                            data: crash.callStackTree.jsonRepresentation(), encoding: .utf8)
                     )
                 }
             }
