@@ -2,17 +2,40 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Prism",
   "logo": {
-    "dark": "/docs/logo/dark.svg",
-    "light": "/docs/logo/light.svg"
+    "dark": "/docs/logo/logo.svg",
+    "light": "/docs/logo/logo.svg"
   },
   "favicon": "/docs/favicon.svg",
   "colors": {
-    "primary": "#6366F1",
-    "light": "#818CF8",
-    "dark": "#4F46E5",
-    "anchors": {
-      "from": "#6366F1",
-      "to": "#A78BFA"
+    "primary": "#FF5C00",
+    "light": "#FF7A33",
+    "dark": "#CC4A00",
+    "background": {
+      "dark": "#0A0A0A",
+      "light": "#FAFAFA"
+    }
+  },
+  "font": {
+    "headings": {
+      "family": "JetBrains Mono",
+      "weight": 700
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": false
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": {
+      "theme": "vitesse-dark"
     }
   },
   "topbarLinks": [
