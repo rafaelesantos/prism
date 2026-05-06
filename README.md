@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/favicon.svg" alt="Prism" width="120">
+
 # Prism
 
 **The modular Swift SDK for Apple platforms and servers.**
