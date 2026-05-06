@@ -13,7 +13,7 @@ public struct PrismServerScaffold: Sendable {
             name: "\(name)",
             platforms: [.macOS(.v26)],
             dependencies: [
-                .package(url: "https://github.com/rafaelesantos/prism.git", from: "4.0.0")
+                .package(url: "https://github.com/byescaleira/prism.git", from: "4.0.0")
             ],
             targets: [
                 .executableTarget(

@@ -11,7 +11,7 @@ This guide walks through adopting PrismUI in an existing project — replacing h
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/rafaelesantos/prism.git", from: "1.0.0")
+    .package(url: "https://github.com/byescaleira/prism.git", from: "1.0.0")
 ]
 
 // Target

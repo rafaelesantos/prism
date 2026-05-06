@@ -13,7 +13,7 @@ Add Prism to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/rafaelesantos/prism.git", from: "1.0.0")
+    .package(url: "https://github.com/byescaleira/prism.git", from: "1.0.0")
 ]
 ```
 
