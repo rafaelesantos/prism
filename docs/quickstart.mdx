@@ -6,10 +6,10 @@ icon: "rocket"
 
 # Quickstart
 
-In this tutorial, you'll build a complete **bookmark manager API** from scratch. By the end, you'll have:
+Build a complete **bookmark manager API** from scratch. By the end you'll have:
 
-- A running HTTP server with JSON endpoints
-- A SQLite database with migrations
+- HTTP server with JSON endpoints
+- SQLite database with migrations
 - Input validation
 - CORS and logging middleware
 - Error handling
@@ -17,7 +17,7 @@ In this tutorial, you'll build a complete **bookmark manager API** from scratch.
 All in pure Swift, zero dependencies.
 
 <Info>
-  This guide assumes you have Swift 6.0+ installed. Run `swift --version` to check.
+  Requires Swift 6.3+. Run `swift --version` to check. See [Installation](/installation) for setup details.
 </Info>
 
 ## Create Your Project
@@ -30,8 +30,6 @@ All in pure Swift, zero dependencies.
     ```
   </Step>
   <Step title="Add Prism to Package.swift">
-    Replace the contents of `Package.swift`:
-
     ```swift title="Package.swift"
     // swift-tools-version: 6.0
     import PackageDescription
@@ -57,27 +55,23 @@ All in pure Swift, zero dependencies.
     ```bash
     swift build
     ```
-    This pulls Prism and compiles it. First build takes a moment — subsequent builds are fast.
+    First build takes a moment — subsequent builds are fast.
   </Step>
 </Steps>
 
 ## Write Your Server
 
-Replace `Sources/main.swift` with the following. We'll walk through each section.
+Replace `Sources/main.swift` with the following.
 
-### 1. Set Up the Server and Database
+### 1. Server and Database
 
 ```swift title="Sources/main.swift"
 import PrismServer
 import Foundation
 
-// Create server
 let server = PrismHTTPServer(port: 8080)
-
-// Open SQLite database (file-based for persistence)
 let db = try PrismDatabase(path: "bookmarks.db")
 
-// Run migrations
 let migrator = PrismMigrator(database: db)
 try await migrator.migrate([
     PrismMigration(
@@ -97,19 +91,20 @@ try await migrator.migrate([
 ```
 
 <Tip>
-  Use `":memory:"` instead of `"bookmarks.db"` for an in-memory database during development. It resets every restart — great for testing.
+  Use `":memory:"` for an in-memory database during development. See [Database overview](/server/database/overview) for connection options.
 </Tip>
 
-### 2. Add Middleware
+### 2. Middleware
 
 ```swift
-// Middleware runs on every request, in order
-await server.use(PrismCORSMiddleware())                    // Allow cross-origin requests
-await server.use(PrismLoggingMiddleware())                 // Log every request with timing
-await server.use(PrismErrorMiddleware(includeStackTrace: true))  // Catch errors globally
+await server.use(PrismCORSMiddleware())
+await server.use(PrismLoggingMiddleware())
+await server.use(PrismErrorMiddleware(includeStackTrace: true))
 ```
 
-Middleware is applied in the order you register it. The logging middleware wraps everything after it, so it captures the total response time including CORS processing.
+Middleware runs on every request, in registration order. The logging middleware wraps everything after it, capturing total response time.
+
+For all available middleware, see the [Middleware reference](/server/middleware/cors).
 
 ### 3. List Bookmarks
 
@@ -129,24 +124,21 @@ await server.get("/bookmarks") { request in
 }
 ```
 
-Every route handler receives a `PrismHTTPRequest` and returns a `PrismHTTPResponse`. The `.json()` factory serializes any `Encodable` value and sets the right headers.
+Every route handler receives a [`PrismHTTPRequest`](/server/core/request) and returns a [`PrismHTTPResponse`](/server/core/response). The `.json()` factory serializes any `Encodable` value and sets the right headers.
 
 ### 4. Create a Bookmark (with Validation)
 
 ```swift
 await server.post("/bookmarks") { request in
-    // Validate input
     let validation = request.validateJSON { v in
         v.field("title", .required, .minLength(1), .maxLength(200))
         v.field("url", .required, .url)
     }
 
-    // Return 422 with field-level errors if invalid
     if let errorResponse = validation.errorResponse() {
         return errorResponse
     }
 
-    // Parse body
     guard let body = request.body,
           let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
         return PrismHTTPResponse(status: .badRequest, body: .text("Invalid JSON"))
@@ -156,7 +148,6 @@ await server.post("/bookmarks") { request in
     let url = json["url"] as? String ?? ""
     let tags = json["tags"] as? String ?? ""
 
-    // Insert into database
     try await db.execute(
         "INSERT INTO bookmarks (title, url, tags) VALUES (?, ?, ?)",
         parameters: [.text(title), .text(url), .text(tags)]
@@ -167,9 +158,7 @@ await server.post("/bookmarks") { request in
 }
 ```
 
-<Note>
-  Validation rules compose naturally. `.required` ensures the field is present, `.url` checks for valid `http://` or `https://` format. If validation fails, `errorResponse()` returns a structured JSON error — you never need to format error messages manually.
-</Note>
+Validation rules compose naturally. `.required` ensures the field is present, `.url` checks for valid format. See [server validation](/server/security/validation) for all built-in rules.
 
 ### 5. Get a Single Bookmark
 
@@ -194,7 +183,7 @@ await server.get("/bookmarks/:id") { request in
 }
 ```
 
-Route parameters (`:id`) are extracted automatically and available in `request.parameters`. The `PrismAppError.notFound()` throw is caught by `PrismErrorMiddleware` and converted to a clean 404 JSON response.
+Route parameters (`:id`) are extracted via `request.parameters`. `PrismAppError.notFound()` is caught by [`PrismErrorMiddleware`](/server/core/error-handling) and converted to a 404 JSON response.
 
 ### 6. Delete a Bookmark
 
@@ -219,8 +208,6 @@ await server.delete("/bookmarks/:id") { request in
 ```swift
 print("Bookmarks API running on http://localhost:8080")
 try await server.start()
-
-// Keep the process alive
 try await Task.sleep(for: .seconds(.max))
 ```
 
@@ -229,8 +216,6 @@ try await Task.sleep(for: .seconds(.max))
 ```bash
 swift run
 ```
-
-You should see:
 
 ```
 Bookmarks API running on http://localhost:8080
@@ -241,21 +226,21 @@ Bookmarks API running on http://localhost:8080
 ## Test with curl
 
 <CodeGroup>
-```bash title="Create a Bookmark"
+```bash title="Create"
 curl -X POST http://localhost:8080/bookmarks \
   -H "Content-Type: application/json" \
   -d '{"title": "Swift.org", "url": "https://swift.org", "tags": "swift,programming"}'
 ```
 
-```bash title="List All Bookmarks"
+```bash title="List"
 curl http://localhost:8080/bookmarks
 ```
 
-```bash title="Get One Bookmark"
+```bash title="Get One"
 curl http://localhost:8080/bookmarks/1
 ```
 
-```bash title="Delete a Bookmark"
+```bash title="Delete"
 curl -X DELETE http://localhost:8080/bookmarks/1
 ```
 
@@ -266,7 +251,7 @@ curl -X POST http://localhost:8080/bookmarks \
 ```
 </CodeGroup>
 
-The validation error returns structured feedback:
+Validation error returns structured feedback:
 
 ```json
 {
@@ -279,7 +264,7 @@ The validation error returns structured feedback:
 
 ## The Complete File
 
-<Accordion title="Full main.swift (click to expand)">
+<Accordion title="Full main.swift">
 ```swift title="Sources/main.swift"
 import PrismServer
 import Foundation
@@ -381,19 +366,17 @@ try await Task.sleep(for: .seconds(.max))
 
 ## Next Steps
 
-You've built a working API. Here's where to go deeper:
-
 <CardGroup cols={2}>
   <Card title="Add Authentication" icon="lock" href="/server/middleware/auth">
-    Protect endpoints with bearer token authentication and session cookies.
+    Protect endpoints with bearer tokens and session cookies.
   </Card>
   <Card title="Add WebSockets" icon="signal-stream" href="/server/realtime/websocket">
-    Build real-time features like live notifications when bookmarks are added.
+    Build real-time features like live notifications.
   </Card>
-  <Card title="Add a GraphQL API" icon="diagram-project" href="/server/graphql/schema">
-    Expose your bookmarks through a GraphQL endpoint alongside your REST API.
+  <Card title="Add GraphQL" icon="diagram-project" href="/server/graphql/schema">
+    Expose bookmarks through a GraphQL endpoint alongside REST.
   </Card>
-  <Card title="Deploy with Docker" icon="docker" href="/installation#docker">
-    Package your API in a container for production deployment.
+  <Card title="Query Builder" icon="database" href="/server/database/queries">
+    Replace raw SQL with the fluent query builder.
   </Card>
 </CardGroup>
