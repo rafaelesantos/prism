@@ -63,7 +63,6 @@ secrets/
 # === Project meta (canonical source in .template/) ===
 .prism/
 .editorconfig
-.swift-format
 CHANGELOG.md
 CLAUDE.md
 CONTRIBUTING.md
