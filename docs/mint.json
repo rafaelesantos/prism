@@ -1,0 +1,289 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Prism",
+  "logo": {
+    "dark": "/logo/logo.svg",
+    "light": "/logo/logo.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#FF5C00",
+    "light": "#FF7A33",
+    "dark": "#CC4A00",
+    "background": {
+      "dark": "#0A0A0A",
+      "light": "#FAFAFA"
+    }
+  },
+  "font": {
+    "headings": {
+      "family": "JetBrains Mono",
+      "weight": 700
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": false
+  },
+  "background": {
+    "decoration": "grid"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": {
+      "theme": "vitesse-dark"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/byescaleira/prism"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "/introduction"
+  },
+  "tabs": [
+    {
+      "name": "Server",
+      "url": "server"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/byescaleira/prism"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "installation"
+      ]
+    },
+    {
+      "group": "Foundation",
+      "pages": [
+        "foundation/protocols",
+        "foundation/utilities",
+        "foundation/observability",
+        "foundation/resources"
+      ]
+    },
+    {
+      "group": "Network",
+      "pages": [
+        "network/client",
+        "network/endpoints",
+        "network/cache-retry",
+        "network/advanced-network",
+        "network/websocket-client"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "architecture/store",
+        "architecture/reducer",
+        "architecture/middleware",
+        "architecture/router",
+        "architecture/advanced"
+      ]
+    },
+    {
+      "group": "UI",
+      "pages": [
+        "ui/theme",
+        "ui/tokens",
+        "ui/components",
+        "ui/layout-navigation",
+        "ui/forms",
+        "ui/composites",
+        "ui/advanced-ui"
+      ]
+    },
+    {
+      "group": "Intelligence",
+      "pages": [
+        "intelligence/overview",
+        "intelligence/training",
+        "intelligence/apple-intelligence",
+        "intelligence/nlp-rag"
+      ]
+    },
+    {
+      "group": "Gamification",
+      "pages": [
+        "gamification/overview",
+        "gamification/challenges",
+        "gamification/streaks-badges",
+        "gamification/leaderboards",
+        "gamification/analytics",
+        "gamification/ai-messages"
+      ]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "security/overview",
+        "security/permissions-biometrics",
+        "security/encryption-keychain",
+        "security/cert-pinning-integrity",
+        "security/secure-transport",
+        "security/audit-token-privacy"
+      ]
+    },
+    {
+      "group": "Storage",
+      "pages": [
+        "storage/overview",
+        "storage/defaults-disk",
+        "storage/memory-keychain",
+        "storage/swiftdata",
+        "storage/encryption-compression",
+        "storage/advanced-storage"
+      ]
+    },
+    {
+      "group": "Capabilities",
+      "pages": [
+        "capabilities/auth",
+        "capabilities/location",
+        "capabilities/media",
+        "capabilities/health",
+        "capabilities/platform",
+        "capabilities/connectivity"
+      ]
+    },
+    {
+      "group": "Video",
+      "pages": [
+        "video/overview"
+      ]
+    },
+    {
+      "group": "Core",
+      "pages": [
+        "server/core/server",
+        "server/core/routing",
+        "server/core/request",
+        "server/core/response",
+        "server/core/middleware",
+        "server/core/error-handling"
+      ]
+    },
+    {
+      "group": "Middleware",
+      "pages": [
+        "server/middleware/cors",
+        "server/middleware/logging",
+        "server/middleware/auth",
+        "server/middleware/rate-limiting",
+        "server/middleware/compression",
+        "server/middleware/rate-limiting-v2",
+        "server/middleware/hooks"
+      ]
+    },
+    {
+      "group": "Database",
+      "pages": [
+        "server/database/overview",
+        "server/database/queries",
+        "server/database/models",
+        "server/database/migrations",
+        "server/database/connection-pool",
+        "server/database/relationships"
+      ]
+    },
+    {
+      "group": "Real-Time",
+      "pages": [
+        "server/realtime/websocket",
+        "server/realtime/websocket-rooms",
+        "server/realtime/sse",
+        "server/realtime/events"
+      ]
+    },
+    {
+      "group": "Content",
+      "pages": [
+        "server/content/json",
+        "server/content/multipart",
+        "server/content/file-upload",
+        "server/content/body-parser",
+        "server/content/content-negotiation",
+        "server/content/streaming",
+        "server/content/templates"
+      ]
+    },
+    {
+      "group": "Server Security",
+      "pages": [
+        "server/security/tls",
+        "server/security/sessions",
+        "server/security/validation"
+      ]
+    },
+    {
+      "group": "GraphQL",
+      "pages": [
+        "server/graphql/schema",
+        "server/graphql/queries",
+        "server/graphql/mutations",
+        "server/graphql/playground"
+      ]
+    },
+    {
+      "group": "MCP",
+      "pages": [
+        "server/mcp/overview",
+        "server/mcp/tools",
+        "server/mcp/resources",
+        "server/mcp/transports"
+      ]
+    },
+    {
+      "group": "Infrastructure",
+      "pages": [
+        "server/infrastructure/config",
+        "server/infrastructure/health",
+        "server/infrastructure/metrics",
+        "server/infrastructure/cron",
+        "server/infrastructure/background-tasks",
+        "server/infrastructure/graceful-shutdown",
+        "server/infrastructure/cluster"
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "server/advanced/dependency-injection",
+        "server/advanced/tracing",
+        "server/advanced/versioning",
+        "server/advanced/http-client",
+        "server/advanced/openapi",
+        "server/advanced/cache"
+      ]
+    },
+    {
+      "group": "Testing",
+      "pages": [
+        "server/testing/test-client",
+        "server/testing/request-builder",
+        "server/testing/assertions"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/byescaleira/prism"
+  }
+}
