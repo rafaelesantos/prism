@@ -1,5 +1,5 @@
 {
-  "theme": "maple",
+  "theme": "mint",
   "name": "Prism",
   "colors": {
     "primary": "#FF5C00",
@@ -28,8 +28,8 @@
   },
   "background": {
     "color": {
-      "light": "#F2f2f2",
-      "dark": "#2c2c2c"
+      "light": "#ffffff",
+      "dark": "#000000"
     }
   },
   "navigation": {
