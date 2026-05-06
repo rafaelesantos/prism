@@ -8,7 +8,7 @@ Modular Swift SDK for Apple platforms and servers
 ![License](https://img.shields.io/github/license/byescaleira/prism)
 ![CI](https://img.shields.io/github/actions/workflow/status/byescaleira/prism/ci.yml?label=CI)
 ![Release](https://img.shields.io/github/v/release/byescaleira/prism)
-![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/byescaleira/prism/main/coverage-badge.json)
 
 ---
 

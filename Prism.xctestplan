@@ -1,0 +1,47 @@
+{
+  "configurations" : [
+    {
+      "id" : "9A1B2C3D-4E5F-6A7B-8C9D-0E1F2A3B4C5D",
+      "name" : "Default",
+      "options" : {
+        "codeCoverage" : true,
+        "codeCoverageTargets" : [
+          { "containerPath" : "container:", "identifier" : "PrismFoundation", "name" : "PrismFoundation" },
+          { "containerPath" : "container:", "identifier" : "PrismNetwork", "name" : "PrismNetwork" },
+          { "containerPath" : "container:", "identifier" : "PrismArchitecture", "name" : "PrismArchitecture" },
+          { "containerPath" : "container:", "identifier" : "PrismUI", "name" : "PrismUI" },
+          { "containerPath" : "container:", "identifier" : "PrismVideo", "name" : "PrismVideo" },
+          { "containerPath" : "container:", "identifier" : "PrismIntelligence", "name" : "PrismIntelligence" },
+          { "containerPath" : "container:", "identifier" : "PrismCapabilities", "name" : "PrismCapabilities" },
+          { "containerPath" : "container:", "identifier" : "PrismServer", "name" : "PrismServer" },
+          { "containerPath" : "container:", "identifier" : "PrismGamification", "name" : "PrismGamification" },
+          { "containerPath" : "container:", "identifier" : "PrismSecurity", "name" : "PrismSecurity" },
+          { "containerPath" : "container:", "identifier" : "PrismStorage", "name" : "PrismStorage" },
+          { "containerPath" : "container:", "identifier" : "Prism", "name" : "Prism" }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "PrismFoundation",
+      "name" : "PrismFoundation"
+    }
+  },
+  "testTargets" : [
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismFoundationTests", "name" : "PrismFoundationTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismNetworkTests", "name" : "PrismNetworkTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismArchitectureTests", "name" : "PrismArchitectureTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismUITests", "name" : "PrismUITests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismVideoTests", "name" : "PrismVideoTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismIntelligenceTests", "name" : "PrismIntelligenceTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismCapabilitiesTests", "name" : "PrismCapabilitiesTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismServerTests", "name" : "PrismServerTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismGamificationTests", "name" : "PrismGamificationTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismSecurityTests", "name" : "PrismSecurityTests" } },
+    { "target" : { "containerPath" : "container:", "identifier" : "PrismStorageTests", "name" : "PrismStorageTests" } }
+  ],
+  "version" : 1
+}

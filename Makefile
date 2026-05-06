@@ -89,7 +89,7 @@ test:
 
 coverage:
 	$(call header,COVERAGE)
-	@$(MAKE) --no-print-directory _coverage-summary
+	@./scripts/coverage.sh
 
 _coverage-summary:
 	@BIN=$$($(SWIFT) build --show-bin-path) && \
