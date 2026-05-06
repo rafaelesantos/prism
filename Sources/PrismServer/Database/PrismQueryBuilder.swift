@@ -6,6 +6,7 @@
         private let table: String
         private var selectColumns: [String] = ["*"]
         private var whereClauses: [(String, PrismDatabaseValue)] = []
+        private var rawWhereClauses: [String] = []
         private var orderByClause: String?
         private var limitValue: Int?
         private var offsetValue: Int?
@@ -30,6 +31,12 @@
         public func `where`(_ column: String, _ op: String, _ value: PrismDatabaseValue) -> PrismQueryBuilder {
             var copy = self
             copy.whereClauses.append(("\(column) \(op)", value))
+            return copy
+        }
+
+        public func whereRaw(_ clause: String) -> PrismQueryBuilder {
+            var copy = self
+            copy.rawWhereClauses.append(clause)
             return copy
         }
 
@@ -83,12 +90,17 @@
 
             var sql = "UPDATE \(table) SET \(setClauses.joined(separator: ", "))"
 
+            var allConditions: [String] = []
             if !whereClauses.isEmpty {
                 let conditions = whereClauses.map { clause in
                     clause.0.contains(" ") ? "\(clause.0) ?" : "\(clause.0) = ?"
                 }
-                sql += " WHERE " + conditions.joined(separator: " AND ")
+                allConditions.append(contentsOf: conditions)
                 params.append(contentsOf: whereClauses.map(\.1))
+            }
+            allConditions.append(contentsOf: rawWhereClauses)
+            if !allConditions.isEmpty {
+                sql += " WHERE " + allConditions.joined(separator: " AND ")
             }
 
             return try await db.execute(sql, parameters: params)
@@ -99,12 +111,17 @@
             var sql = "DELETE FROM \(table)"
             var params: [PrismDatabaseValue] = []
 
+            var allConditions: [String] = []
             if !whereClauses.isEmpty {
                 let conditions = whereClauses.map { clause in
                     clause.0.contains(" ") ? "\(clause.0) ?" : "\(clause.0) = ?"
                 }
-                sql += " WHERE " + conditions.joined(separator: " AND ")
+                allConditions.append(contentsOf: conditions)
                 params = whereClauses.map(\.1)
+            }
+            allConditions.append(contentsOf: rawWhereClauses)
+            if !allConditions.isEmpty {
+                sql += " WHERE " + allConditions.joined(separator: " AND ")
             }
 
             return try await db.execute(sql, parameters: params)
@@ -114,12 +131,20 @@
             var sql = "SELECT \(selectColumns.joined(separator: ", ")) FROM \(table)"
             var params: [PrismDatabaseValue] = []
 
+            var allConditions: [String] = []
+
             if !whereClauses.isEmpty {
                 let conditions = whereClauses.map { clause in
                     clause.0.contains(" ") ? "\(clause.0) ?" : "\(clause.0) = ?"
                 }
-                sql += " WHERE " + conditions.joined(separator: " AND ")
+                allConditions.append(contentsOf: conditions)
                 params = whereClauses.map(\.1)
+            }
+
+            allConditions.append(contentsOf: rawWhereClauses)
+
+            if !allConditions.isEmpty {
+                sql += " WHERE " + allConditions.joined(separator: " AND ")
             }
 
             if let orderBy = orderByClause {
