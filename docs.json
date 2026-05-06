@@ -7,7 +7,10 @@
     "dark": "#FF5C00"
   },
   "favicon": "/docs/favicon.svg",
-  "logo": "/docs/logo/light.svg",
+  "logo": {
+    "light": "/docs/logo/logo.svg",
+    "dark": "/docs/logo/logo.svg"
+  },
   "navbar": {
     "links": [
       {
@@ -279,5 +282,6 @@
         ]
       }
     ]
-  }
+  },
+  "description": "A modular Swift package — foundation, networking, architecture, adaptive UI, media, and on-device intelligence for Apple platforms."
 }
