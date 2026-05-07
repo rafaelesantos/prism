@@ -1149,8 +1149,9 @@ struct PrismCommunicationDataCoverageTests {
     @Test("PrismMessage equatable")
     func messageEquatable() {
         let id = UUID()
-        let a = PrismMessage(id: id, text: "X", sender: "A")
-        let b = PrismMessage(id: id, text: "X", sender: "A")
+        let ts = Date(timeIntervalSince1970: 1_000_000)
+        let a = PrismMessage(id: id, text: "X", sender: "A", timestamp: ts)
+        let b = PrismMessage(id: id, text: "X", sender: "A", timestamp: ts)
         #expect(a == b)
     }
 
