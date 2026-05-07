@@ -83,7 +83,7 @@ func settleTasks(iterations: Int = 40) async {
         await Task.yield()
     }
 
-    try? await Task.sleep(for: .milliseconds(500))
+    try? await Task.sleep(for: .milliseconds(100))
 
     for _ in 0..<iterations {
         await Task.yield()

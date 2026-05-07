@@ -50,8 +50,8 @@ struct PrismJobQueueTests {
     func repeatedJob() async throws {
         let counter = Counter()
         let queue = PrismJobQueue()
-        let id = await queue.enqueue(IncrementJob(counter: counter), schedule: .every(0.1))
-        try await Task.sleep(for: .milliseconds(1500))
+        let id = await queue.enqueue(IncrementJob(counter: counter), schedule: .every(0.05))
+        try await Task.sleep(for: .milliseconds(500))
         await queue.cancel(id)
         let count = await counter.value
         #expect(count >= 2)
@@ -76,9 +76,9 @@ struct PrismJobQueueTests {
         let queue = PrismJobQueue()
         _ = await queue.enqueue(
             FailingJob(counter: counter),
-            schedule: PrismJobSchedule(maxRetries: 2, retryDelay: 0.1)
+            schedule: PrismJobSchedule(maxRetries: 2, retryDelay: 0.05)
         )
-        try await Task.sleep(for: .milliseconds(2000))
+        try await Task.sleep(for: .milliseconds(800))
         let count = await counter.value
         #expect(count == 3)
     }
@@ -109,8 +109,8 @@ struct PrismSchedulerTests {
     func scheduleEvery() async throws {
         let counter = Counter()
         let scheduler = PrismScheduler()
-        let id = await scheduler.every(0.1, job: IncrementJob(counter: counter))
-        try await Task.sleep(for: .milliseconds(1500))
+        let id = await scheduler.every(0.05, job: IncrementJob(counter: counter))
+        try await Task.sleep(for: .milliseconds(500))
         await scheduler.cancel(id)
         #expect(await counter.value >= 2)
     }
@@ -119,8 +119,8 @@ struct PrismSchedulerTests {
     func scheduleAfter() async throws {
         let counter = Counter()
         let scheduler = PrismScheduler()
-        _ = await scheduler.after(0.1, job: IncrementJob(counter: counter))
-        try await Task.sleep(for: .milliseconds(1500))
+        _ = await scheduler.after(0.05, job: IncrementJob(counter: counter))
+        try await Task.sleep(for: .milliseconds(500))
         #expect(await counter.value == 1)
     }
 }

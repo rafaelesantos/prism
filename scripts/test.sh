@@ -11,6 +11,7 @@ cd "$ROOT_DIR"
 mkdir -p .build/artifacts
 
 swift test \
+    --parallel \
     --enable-code-coverage \
     --xunit-output .build/artifacts/test-results.xml \
     --explicit-target-dependency-import-check error
