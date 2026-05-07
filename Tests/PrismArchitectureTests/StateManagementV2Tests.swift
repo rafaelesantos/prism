@@ -42,6 +42,19 @@ private final class ForwardBox: @unchecked Sendable {
     }
 }
 
+private final class CountBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value = 0
+
+    var value: Int {
+        lock.withLock { _value }
+    }
+
+    func increment() {
+        lock.withLock { _value += 1 }
+    }
+}
+
 // MARK: - Time Travel Tests
 
 @Suite("PrismStateSnapshot")
@@ -168,6 +181,38 @@ struct PrismTimeTravelDebuggerTests {
 
         #expect(debugger.snapshots.count == 3)
         #expect(debugger.snapshots.first?.state.count == 1)
+    }
+
+    @Test("recording after goBack discards future snapshots")
+    func recordAfterGoBackDiscardsFuture() {
+        let debugger = PrismTimeTravelDebugger<TestState>()
+
+        debugger.record(state: TestState(count: 0), action: "s0")
+        debugger.record(state: TestState(count: 1), action: "s1")
+        debugger.record(state: TestState(count: 2), action: "s2")
+
+        debugger.goBack()
+        debugger.goBack()
+
+        debugger.record(state: TestState(count: 10), action: "branch")
+
+        #expect(debugger.snapshots.count == 2)
+        #expect(debugger.snapshots.last?.state.count == 10)
+        #expect(debugger.currentIndex == 1)
+    }
+
+    @Test("goBack at start returns nil")
+    func goBackAtStartReturnsNil() {
+        let debugger = PrismTimeTravelDebugger<TestState>()
+        debugger.record(state: TestState(count: 0), action: "s0")
+        #expect(debugger.goBack() == nil)
+    }
+
+    @Test("goForward at end returns nil")
+    func goForwardAtEndReturnsNil() {
+        let debugger = PrismTimeTravelDebugger<TestState>()
+        debugger.record(state: TestState(count: 0), action: "s0")
+        #expect(debugger.goForward() == nil)
     }
 }
 
@@ -339,6 +384,45 @@ struct PrismDerivedStoreTests {
             #expect(Bool(false), "Expected .increment action")
         }
     }
+
+    @Test("PrismStoreScope update changes local state")
+    func storeScopeUpdate() {
+        let scope = PrismStoreScope<TestState, Int, TestAction>(
+            parentState: TestState(count: 0),
+            toLocalState: { @MainActor @Sendable state in state.count },
+            sendAction: { @MainActor @Sendable _ in }
+        )
+
+        scope.update(from: TestState(count: 42))
+        #expect(scope.state == 42)
+    }
+
+    @Test("PrismStoreScope update skips when value is equal")
+    func storeScopeUpdateSkipsEqual() {
+        let scope = PrismStoreScope<TestState, Int, TestAction>(
+            parentState: TestState(count: 5),
+            toLocalState: { @MainActor @Sendable state in state.count },
+            sendAction: { @MainActor @Sendable _ in }
+        )
+
+        scope.update(from: TestState(count: 5, name: "changed"))
+        #expect(scope.state == 5)
+    }
+
+    @Test("PrismStore derive creates DerivedStore")
+    func storeDerive() {
+        let reducer = PrismReduce<TestState, TestAction> { state, action in
+            switch action {
+            case .increment:
+                state.count += 1
+                return .none
+            default: return .none
+            }
+        }
+        let store = PrismStore(initialState: TestState(count: 10), reducer: reducer)
+        let derived = store.derive { @MainActor @Sendable state in state.count }
+        #expect(derived.value == 10)
+    }
 }
 
 // MARK: - Middleware Chain Tests
@@ -396,6 +480,85 @@ struct PrismMiddlewareChainTests {
         )
 
         #expect(logBox.value.contains("increment"))
+        #expect(forwardBox.value)
+    }
+
+    @Test("PrismLoggingMiddleware default init uses os.Logger")
+    func loggingDefaultInit() async {
+        let middleware = PrismLoggingMiddleware()
+        let forwardBox = ForwardBox()
+
+        await middleware.handle(
+            state: TestState(),
+            action: TestAction.increment,
+            next: { @Sendable _ in forwardBox.set() }
+        )
+
+        #expect(forwardBox.value)
+    }
+
+    @Test("PrismThrottleMiddleware forwards first action")
+    func throttleForwardsFirst() async {
+        let throttle = PrismThrottleMiddleware(interval: .seconds(1))
+        let forwardBox = ForwardBox()
+
+        await throttle.handle(
+            state: TestState(),
+            action: TestAction.increment,
+            next: { @Sendable _ in forwardBox.set() }
+        )
+
+        #expect(forwardBox.value)
+    }
+
+    @Test("PrismThrottleMiddleware blocks rapid duplicate actions")
+    func throttleBlocksDuplicates() async {
+        let throttle = PrismThrottleMiddleware(interval: .seconds(10))
+        let counter = CountBox()
+
+        let countingNext: @Sendable (TestAction) -> Void = { _ in counter.increment() }
+
+        await throttle.handle(
+            state: TestState(), action: TestAction.increment, next: countingNext
+        )
+        await throttle.handle(
+            state: TestState(), action: TestAction.increment, next: countingNext
+        )
+        await throttle.handle(
+            state: TestState(), action: TestAction.increment, next: countingNext
+        )
+
+        #expect(counter.value == 1)
+    }
+
+    @Test("PrismThrottleMiddleware allows different action types through")
+    func throttleAllowsDifferentActions() async {
+        let throttle = PrismThrottleMiddleware(interval: .seconds(10))
+        let counter = CountBox()
+
+        let countingNext: @Sendable (TestAction) -> Void = { _ in counter.increment() }
+
+        await throttle.handle(
+            state: TestState(), action: TestAction.increment, next: countingNext
+        )
+        await throttle.handle(
+            state: TestState(), action: TestAction.decrement, next: countingNext
+        )
+
+        #expect(counter.value == 2)
+    }
+
+    @Test("PrismThrottleMiddleware default interval is 300ms")
+    func throttleDefaultInterval() async {
+        let throttle = PrismThrottleMiddleware()
+        let forwardBox = ForwardBox()
+
+        await throttle.handle(
+            state: TestState(),
+            action: TestAction.increment,
+            next: { @Sendable _ in forwardBox.set() }
+        )
+
         #expect(forwardBox.value)
     }
 }
