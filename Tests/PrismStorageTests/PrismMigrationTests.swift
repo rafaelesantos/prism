@@ -118,4 +118,41 @@ struct PrismStorageMigrationTests {
         #expect(try store.load(String.self, forKey: "first") == "a")
         #expect(try store.load(String.self, forKey: "last") == "c")
     }
+
+    @Test("Failing migration throws migrationFailed")
+    func failingMigration() {
+        let (migrator, _) = makeMigrator()
+        let steps = [
+            PrismMigrationStep(version: 1) { _ in
+                throw PrismStorageError.writeFailed("simulated")
+            }
+        ]
+        #expect(throws: PrismStorageError.self) {
+            try migrator.migrate(steps: steps)
+        }
+    }
+
+    @Test("Custom version key")
+    func customVersionKey() throws {
+        let store = PrismDefaultsStore(suite: "MigCustomKey-\(UUID().uuidString)")
+        let migrator = PrismStorageMigrator(store: store, versionKey: "_custom_ver")
+        #expect(migrator.currentVersion == 0)
+        try migrator.migrate(steps: [
+            PrismMigrationStep(version: 1) { _ in }
+        ])
+        #expect(migrator.currentVersion == 1)
+    }
+
+    @Test("Empty steps returns current version")
+    func emptySteps() throws {
+        let (migrator, _) = makeMigrator()
+        let version = try migrator.migrate(steps: [])
+        #expect(version == 0)
+    }
+
+    @Test("MigrationStep version property")
+    func stepVersion() {
+        let step = PrismMigrationStep(version: 42) { _ in }
+        #expect(step.version == 42)
+    }
 }

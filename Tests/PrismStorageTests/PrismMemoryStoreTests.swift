@@ -153,4 +153,76 @@ struct PrismMemoryStatsTests {
         let b = PrismMemoryStats()
         #expect(a == b)
     }
+
+    @Test("Hit rate calculation")
+    func hitRateCalc() {
+        var stats = PrismMemoryStats()
+        stats.hits = 3
+        stats.misses = 1
+        #expect(stats.hitRate == 0.75)
+    }
+}
+
+@Suite("MemStoreAdv")
+struct PrismMemoryStoreAdvancedTests {
+    @Test("Default TTL applies to all saves")
+    func defaultTTL() async throws {
+        let store = PrismMemoryStore(defaultTTL: 0.1)
+        try await store.save("temp", forKey: "k")
+        try await Task.sleep(for: .milliseconds(200))
+        let loaded = try await store.load(String.self, forKey: "k")
+        #expect(loaded == nil)
+    }
+
+    @Test("Expiration increments stats")
+    func expirationStats() async throws {
+        let store = PrismMemoryStore()
+        try await store.save("temp", forKey: "exp", ttl: 0.1)
+        try await Task.sleep(for: .milliseconds(200))
+        _ = try await store.load(String.self, forKey: "exp")
+        let stats = await store.statistics()
+        #expect(stats.expirations >= 1)
+    }
+
+    @Test("Exists returns false for expired entry")
+    func existsExpired() async throws {
+        let store = PrismMemoryStore()
+        try await store.save("temp", forKey: "exp", ttl: 0.1)
+        try await Task.sleep(for: .milliseconds(200))
+        #expect(try await !store.exists(forKey: "exp"))
+    }
+
+    @Test("Keys prunes expired entries")
+    func keysPrunesExpired() async throws {
+        let store = PrismMemoryStore()
+        try await store.save("alive", forKey: "a")
+        try await store.save("dead", forKey: "b", ttl: 0.1)
+        try await Task.sleep(for: .milliseconds(200))
+        let keys = try await store.keys()
+        #expect(keys.contains("a"))
+        #expect(!keys.contains("b"))
+        let stats = await store.statistics()
+        #expect(stats.expirations >= 1)
+    }
+
+    @Test("Decode error throws decodingFailed")
+    func decodeError() async throws {
+        let store = PrismMemoryStore()
+        try await store.save("not-an-int", forKey: "typed")
+        await #expect(throws: PrismStorageError.self) {
+            _ = try await store.load(Int.self, forKey: "typed")
+        }
+    }
+
+    @Test("Multiple evictions")
+    func multipleEvictions() async throws {
+        let store = PrismMemoryStore(maxEntries: 2)
+        try await store.save(1, forKey: "a")
+        try await store.save(2, forKey: "b")
+        try await store.save(3, forKey: "c")
+        try await store.save(4, forKey: "d")
+        let stats = await store.statistics()
+        #expect(stats.evictions == 2)
+        #expect(await store.count() == 2)
+    }
 }

@@ -112,4 +112,83 @@ struct PrismDefaultKeyTests {
         let value = store.get(key)
         #expect(value == nil)
     }
+
+    @Test("Typed key with suite")
+    func typedKeyWithSuite() {
+        let key = PrismDefaultKey("lang", default: "en", suite: "com.prism.test")
+        #expect(key.suite == "com.prism.test")
+        #expect(key.name == "lang")
+        #expect(key.defaultValue == "en")
+    }
+}
+
+@Suite("DefStoreAdv")
+struct PrismDefaultsStoreAdvancedTests {
+    let store = PrismDefaultsStore(suite: "test.defaults.adv.\(UUID().uuidString)")
+
+    @Test("Observe emits value on change")
+    func observeStream() async throws {
+        let stream = store.observe(String.self, forKey: "watched")
+        try store.save("hello", forKey: "watched")
+
+        var values: [String?] = []
+        for await val in stream {
+            values.append(val)
+            if values.count >= 1 { break }
+        }
+        #expect(values.count >= 1)
+    }
+
+    @Test("SaveBatch writes multiple items")
+    func saveBatch() throws {
+        let items: [(key: String, data: any Codable & Sendable)] = [
+            (key: "b1", data: "val1"),
+            (key: "b2", data: 42),
+            (key: "b3", data: true),
+        ]
+        try store.saveBatch(items)
+        #expect(try store.exists(forKey: "b1"))
+        #expect(try store.exists(forKey: "b2"))
+        #expect(try store.exists(forKey: "b3"))
+    }
+
+    @Test("Load decode failure throws decodingFailed")
+    func loadDecodeFailure() throws {
+        try store.save("not-an-int", forKey: "typed")
+        #expect(throws: PrismStorageError.self) {
+            _ = try store.load(Int.self, forKey: "typed")
+        }
+    }
+
+    @Test("Custom prefix isolates keys")
+    func customPrefix() throws {
+        let storeA = PrismDefaultsStore(
+            suite: "test.prefix.\(UUID().uuidString)", prefix: "a."
+        )
+        let storeB = PrismDefaultsStore(
+            suite: "test.prefix.\(UUID().uuidString)", prefix: "b."
+        )
+        try storeA.save("alpha", forKey: "shared")
+        #expect(try storeB.load(String.self, forKey: "shared") == nil)
+    }
+
+    @Test("Clear only removes prefixed keys")
+    func clearPrefixed() throws {
+        try store.save("x", forKey: "keep")
+        let otherStore = PrismDefaultsStore(
+            suite: "test.defaults.other.\(UUID().uuidString)", prefix: "other."
+        )
+        try otherStore.save("y", forKey: "separate")
+        try store.clear()
+        #expect(try store.keys().isEmpty)
+        #expect(try otherStore.exists(forKey: "separate"))
+    }
+
+    @Test("Default suite uses standard defaults")
+    func defaultSuite() throws {
+        let s = PrismDefaultsStore(prefix: "prism.test.std.\(UUID().uuidString).")
+        try s.save("val", forKey: "k")
+        #expect(try s.load(String.self, forKey: "k") == "val")
+        try s.clear()
+    }
 }

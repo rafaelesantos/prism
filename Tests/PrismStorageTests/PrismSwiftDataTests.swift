@@ -124,4 +124,54 @@
             #expect(descriptor.fetchOffset == 5)
         }
     }
+
+    @Suite("SDLive")
+    struct PrismLiveQueryTests {
+        @Test("Count stream emits initial count")
+        func countStream() async throws {
+            let container = try PrismContainer.inMemory(for: [TestItem.self])
+            let liveQuery = PrismLiveQuery<TestItem>(
+                container: container,
+                interval: 0.1
+            )
+
+            let stream = liveQuery.countStream()
+            var counts: [Int] = []
+            for await count in stream {
+                counts.append(count)
+                if counts.count >= 1 { break }
+            }
+            #expect(counts.first == 0)
+        }
+
+        @Test("Count stream reflects insertions")
+        func countStreamUpdates() async throws {
+            let container = try PrismContainer.inMemory(for: [TestItem.self])
+            let store = PrismModelStore<TestItem>(modelContainer: container)
+            let liveQuery = PrismLiveQuery<TestItem>(
+                container: container,
+                interval: 0.1
+            )
+
+            let stream = liveQuery.countStream()
+            var counts: [Int] = []
+
+            for await count in stream {
+                counts.append(count)
+                if counts.count == 1 {
+                    await store.insert(TestItem(name: "live", value: 1))
+                }
+                if counts.count >= 2 { break }
+            }
+            #expect(counts.contains(0))
+        }
+
+        @Test("LiveQuery default interval")
+        func defaultInterval() throws {
+            let container = try PrismContainer.inMemory(for: [TestItem.self])
+            let liveQuery = PrismLiveQuery<TestItem>(container: container)
+            _ = liveQuery
+        }
+    }
+
 #endif

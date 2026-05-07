@@ -140,4 +140,74 @@ struct PrismDiskStoreTests {
             try await store.save("this string is way too long for the quota", forKey: "big")
         }
     }
+
+    @Test("Default TTL writes meta on save")
+    func defaultTTLSave() async throws {
+        let store = makeStore(ttl: 3600)
+        try await store.save("value", forKey: "ttlkey")
+        #expect(try await store.exists(forKey: "ttlkey"))
+        let loaded = try await store.load(String.self, forKey: "ttlkey")
+        #expect(loaded == "value")
+        try await store.clear()
+    }
+
+    @Test("Default TTL expiration")
+    func defaultTTLExpiry() async throws {
+        let store = makeStore(ttl: 0.1)
+        try await store.save("temp", forKey: "expiring")
+        try await Task.sleep(for: .milliseconds(200))
+        let loaded = try await store.load(String.self, forKey: "expiring")
+        #expect(loaded == nil)
+    }
+
+    @Test("Delete non-existent does not throw")
+    func deleteNonExistent() async throws {
+        let store = makeStore()
+        try await store.delete(forKey: "never-existed")
+    }
+
+    @Test("Total size empty directory is zero")
+    func totalSizeEmpty() async throws {
+        let store = makeStore()
+        let size = try await store.totalSize()
+        #expect(size == 0)
+    }
+
+    @Test("Exists returns false for expired key")
+    func existsExpired() async throws {
+        let store = makeStore()
+        try await store.save("temp", forKey: "exp", ttl: 0.1)
+        try await Task.sleep(for: .milliseconds(200))
+        #expect(try await !store.exists(forKey: "exp"))
+    }
+
+    @Test("Directory types resolve URLs")
+    func directoryTypes() {
+        let docs = PrismDiskStore.Directory.documents.url
+        let caches = PrismDiskStore.Directory.caches.url
+        let appSupport = PrismDiskStore.Directory.applicationSupport.url
+        let temp = PrismDiskStore.Directory.temporary.url
+        let custom = PrismDiskStore.Directory.custom(URL(fileURLWithPath: "/tmp")).url
+        #expect(docs.path.contains("Documents"))
+        #expect(caches.path.contains("Caches"))
+        #expect(appSupport.path.contains("Application Support"))
+        #expect(!temp.path.isEmpty)
+        #expect(custom.path == "/tmp")
+    }
+
+    @Test("Keys returns empty for nonexistent directory")
+    func keysEmptyDir() async throws {
+        let store = PrismDiskStore(
+            directory: .custom(
+                FileManager.default.temporaryDirectory
+                    .appendingPathComponent("PrismDiskNonExist-\(UUID().uuidString)")
+            ),
+            subdirectory: "nonexistent-\(UUID().uuidString)"
+        )
+        try await store.clear()
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PrismDiskNonExist-\(UUID().uuidString)")
+            .appendingPathComponent("nonexistent-\(UUID().uuidString)")
+        try? FileManager.default.removeItem(at: url)
+    }
 }

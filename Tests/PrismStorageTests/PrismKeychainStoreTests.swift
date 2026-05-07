@@ -70,4 +70,35 @@ struct PrismKeychainStoreTests {
     func deleteNonexistent() throws {
         try store.delete(forKey: "never-existed-\(UUID())")
     }
+
+    @Test("Keys returns saved keys")
+    func keysReturned() throws {
+        let key1 = "kc-key1-\(UUID())"
+        let key2 = "kc-key2-\(UUID())"
+        try store.save("a", forKey: key1)
+        try store.save("b", forKey: key2)
+        let keys = try store.keys()
+        #expect(keys.contains(key1))
+        #expect(keys.contains(key2))
+        try store.delete(forKey: key1)
+        try store.delete(forKey: key2)
+    }
+
+    @Test("Keys returns empty when no items")
+    func keysEmpty() throws {
+        let emptyStore = PrismKeychainStore(
+            service: "PrismStorageEmptyTest-\(UUID().uuidString)"
+        )
+        let keys = try emptyStore.keys()
+        #expect(keys.isEmpty)
+    }
+
+    @Test("Init with access group")
+    func accessGroup() {
+        let store = PrismKeychainStore(
+            service: "PrismTest",
+            accessGroup: "group.com.prism.test"
+        )
+        _ = store
+    }
 }
