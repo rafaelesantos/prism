@@ -116,6 +116,61 @@ struct PrismSecurityAuditLogTests {
         let log = PrismSecurityAuditLog()
         #expect(log.verifyIntegrity())
     }
+
+    @Test("Entries filtered by date range")
+    func entriesByDateRange() {
+        let log = PrismSecurityAuditLog()
+        let now = Date.now
+        let e1 = PrismSecurityEvent(kind: .keychainRead, detail: "a", timestamp: now.addingTimeInterval(-3600))
+        let e2 = PrismSecurityEvent(kind: .keychainWrite, detail: "b", timestamp: now.addingTimeInterval(-1800))
+        let e3 = PrismSecurityEvent(kind: .biometricSuccess, detail: "c", timestamp: now)
+        log.record(e1)
+        log.record(e2)
+        log.record(e3)
+
+        let ranged = log.entries(
+            from: now.addingTimeInterval(-2000),
+            to: now.addingTimeInterval(-1000)
+        )
+        #expect(ranged.count == 1)
+        #expect(ranged.first?.event.detail == "b")
+    }
+
+    @Test("Prune removes old entries")
+    func prune() {
+        let log = PrismSecurityAuditLog(retentionDays: 7)
+        let old = PrismSecurityEvent(
+            kind: .keychainRead, detail: "old",
+            timestamp: Date.now.addingTimeInterval(-86400 * 10)
+        )
+        let recent = PrismSecurityEvent(kind: .keychainWrite, detail: "recent")
+        log.record(old)
+        log.record(recent)
+        log.prune()
+        #expect(log.count == 1)
+        #expect(log.allEntries.first?.event.detail == "recent")
+    }
+
+    @Test("Prune no-ops without retention days")
+    func pruneWithoutRetention() {
+        let log = PrismSecurityAuditLog()
+        log.record(PrismSecurityEvent(kind: .keychainRead, detail: "keep"))
+        log.prune()
+        #expect(log.count == 1)
+    }
+
+    @Test("Recent entries from empty log returns empty")
+    func recentEmpty() {
+        let log = PrismSecurityAuditLog()
+        #expect(log.recentEntries(5).isEmpty)
+    }
+
+    @Test("Filter by kind returns empty for no matches")
+    func filterNoMatch() {
+        let log = PrismSecurityAuditLog()
+        log.record(PrismSecurityEvent(kind: .keychainRead, detail: "r"))
+        #expect(log.entries(ofKind: .biometricSuccess).isEmpty)
+    }
 }
 
 @Suite("AuditExp")

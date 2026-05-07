@@ -188,6 +188,59 @@ struct PrismHasherTests {
     func algorithms() {
         #expect(PrismHasher.Algorithm.allCases.count == 3)
     }
+
+    @Test("SHA384 HMAC generation and verification")
+    func hmacSHA384() {
+        let hasher = PrismHasher(algorithm: .sha384)
+        let key = SymmetricKey(size: .bits256)
+        let data = Data("sha384 hmac".utf8)
+        let mac = hasher.hmac(data, key: key)
+        #expect(hasher.verifyHMAC(mac, for: data, key: key))
+        #expect(!hasher.verifyHMAC(mac, for: Data("wrong".utf8), key: key))
+    }
+
+    @Test("SHA512 HMAC generation and verification")
+    func hmacSHA512() {
+        let hasher = PrismHasher(algorithm: .sha512)
+        let key = SymmetricKey(size: .bits256)
+        let data = Data("sha512 hmac".utf8)
+        let mac = hasher.hmac(data, key: key)
+        #expect(hasher.verifyHMAC(mac, for: data, key: key))
+        let wrongKey = SymmetricKey(size: .bits256)
+        #expect(!hasher.verifyHMAC(mac, for: data, key: wrongKey))
+    }
+
+    @Test("HashHex with Data input")
+    func hashHexData() {
+        let hasher = PrismHasher()
+        let data = Data("test".utf8)
+        let hex = hasher.hashHex(data)
+        #expect(hex.count == 64)
+        #expect(hex.allSatisfy { "0123456789abcdef".contains($0) })
+    }
+
+    @Test("SHA384 hex hash has correct length")
+    func sha384Hex() {
+        let hasher = PrismHasher(algorithm: .sha384)
+        let hex = hasher.hashHex("test")
+        #expect(hex.count == 96)
+    }
+
+    @Test("SHA512 hex hash has correct length")
+    func sha512Hex() {
+        let hasher = PrismHasher(algorithm: .sha512)
+        let hex = hasher.hashHex("test")
+        #expect(hex.count == 128)
+    }
+
+    @Test("Hash Data input matches String input")
+    func hashDataMatchesString() {
+        let hasher = PrismHasher()
+        let str = "hello"
+        let h1 = hasher.hash(str)
+        let h2 = hasher.hash(Data(str.utf8))
+        #expect(h1 == h2)
+    }
 }
 
 @Suite("KeyDeriv")

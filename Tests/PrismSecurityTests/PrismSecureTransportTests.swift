@@ -46,6 +46,59 @@ struct PrismKeyAgreementTests {
             try ka.deriveSharedSecret(with: Data("bad".utf8))
         }
     }
+
+    @Test("Derive with PublicKey type directly")
+    func deriveWithPublicKeyType() throws {
+        let alice = PrismKeyAgreement()
+        let bob = PrismKeyAgreement()
+
+        let key = try alice.deriveSharedSecret(with: bob.publicKey)
+        let exported = key.withUnsafeBytes { Data($0) }
+        #expect(exported.count == 32)
+    }
+
+    @Test("Custom output byte count")
+    func customOutputByteCount() throws {
+        let alice = PrismKeyAgreement()
+        let bob = PrismKeyAgreement()
+
+        let key = try alice.deriveSharedSecret(with: bob.publicKeyData, outputByteCount: 64)
+        let exported = key.withUnsafeBytes { Data($0) }
+        #expect(exported.count == 64)
+    }
+
+    @Test("Init with existing private key")
+    func initWithPrivateKey() throws {
+        let rawKey = P256.KeyAgreement.PrivateKey()
+        let ka = PrismKeyAgreement(privateKey: rawKey)
+        #expect(ka.publicKeyData == rawKey.publicKey.rawRepresentation)
+    }
+
+    @Test("Nil salt path exercises default")
+    func nilSalt() throws {
+        let alice = PrismKeyAgreement()
+        let bob = PrismKeyAgreement()
+
+        let withNilSalt = try alice.deriveSharedSecret(with: bob.publicKeyData, salt: nil)
+        let withEmptySalt = try alice.deriveSharedSecret(with: bob.publicKeyData)
+
+        let d1 = withNilSalt.withUnsafeBytes { Data($0) }
+        let d2 = withEmptySalt.withUnsafeBytes { Data($0) }
+        #expect(d1 == d2)
+    }
+
+    @Test("Derive with PublicKey type matches Data overload")
+    func derivePublicKeyMatchesData() throws {
+        let alice = PrismKeyAgreement()
+        let bob = PrismKeyAgreement()
+
+        let k1 = try alice.deriveSharedSecret(with: bob.publicKey)
+        let k2 = try alice.deriveSharedSecret(with: bob.publicKeyData)
+
+        let d1 = k1.withUnsafeBytes { Data($0) }
+        let d2 = k2.withUnsafeBytes { Data($0) }
+        #expect(d1 == d2)
+    }
 }
 
 @Suite("Envelope")

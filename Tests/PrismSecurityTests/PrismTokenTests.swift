@@ -84,6 +84,85 @@ struct PrismAccessTokenTests {
         let t2 = try PrismAccessToken.decode(jwt)
         #expect(t1 == t2)
     }
+
+    @Test("TimeUntilExpiry returns positive for future token")
+    func timeUntilExpiryFuture() throws {
+        let jwt = Self.makeJWT(exp: Int(Date.now.addingTimeInterval(3600).timeIntervalSince1970))
+        let token = try PrismAccessToken.decode(jwt)
+        let ttl = token.timeUntilExpiry
+        #expect(ttl != nil)
+        #expect(ttl! > 3500)
+    }
+
+    @Test("TimeUntilExpiry returns negative for expired token")
+    func timeUntilExpiryPast() throws {
+        let jwt = Self.makeJWT(exp: Int(Date.now.addingTimeInterval(-100).timeIntervalSince1970))
+        let token = try PrismAccessToken.decode(jwt)
+        let ttl = token.timeUntilExpiry
+        #expect(ttl != nil)
+        #expect(ttl! < 0)
+    }
+
+    @Test("TimeUntilExpiry returns nil when no exp")
+    func timeUntilExpiryNil() throws {
+        let header = #"{"alg":"HS256","typ":"JWT"}"#
+        let payload = #"{"sub":"user"}"#
+
+        func base64URL(_ s: String) -> String {
+            Data(s.utf8).base64EncodedString()
+                .replacingOccurrences(of: "+", with: "-")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "=", with: "")
+        }
+
+        let jwt = "\(base64URL(header)).\(base64URL(payload)).sig"
+        let token = try PrismAccessToken.decode(jwt)
+        #expect(token.timeUntilExpiry == nil)
+        #expect(!token.isExpired)
+        #expect(!token.expiresWithin(9999))
+    }
+
+    @Test("Claims dictionary contains all payload fields")
+    func claimsDict() throws {
+        let jwt = Self.makeJWT(sub: "u1", iss: "prism")
+        let token = try PrismAccessToken.decode(jwt)
+        let claims = token.claims
+        #expect(claims["sub"] as? String == "u1")
+        #expect(claims["iss"] as? String == "prism")
+        #expect(claims["exp"] != nil)
+        #expect(claims["iat"] != nil)
+    }
+
+    @Test("Claim returns nil for missing key")
+    func claimMissing() throws {
+        let jwt = Self.makeJWT()
+        let token = try PrismAccessToken.decode(jwt)
+        let missing: String? = token.claim("nonexistent")
+        #expect(missing == nil)
+    }
+
+    @Test("Header is parsed")
+    func headerParsed() throws {
+        let jwt = Self.makeJWT()
+        let token = try PrismAccessToken.decode(jwt)
+        #expect(token.header["alg"] == "HS256")
+        #expect(token.header["typ"] == "JWT")
+    }
+
+    @Test("IssuedAt is parsed")
+    func issuedAt() throws {
+        let now = Int(Date.now.timeIntervalSince1970)
+        let jwt = Self.makeJWT(iat: now)
+        let token = try PrismAccessToken.decode(jwt)
+        #expect(token.issuedAt != nil)
+    }
+
+    @Test("Invalid base64 in JWT throws")
+    func invalidBase64() {
+        #expect(throws: PrismSecurityError.invalidData) {
+            try PrismAccessToken.decode("!!!.@@@.sig")
+        }
+    }
 }
 
 @Suite("TokConfig")

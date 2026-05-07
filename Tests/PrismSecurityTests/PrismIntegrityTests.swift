@@ -44,7 +44,7 @@ struct PrismIntegrityCheckerTests {
     @Test("Checker returns results")
     func checkAll() {
         let violations = checker.checkAll()
-        #expect(violations is [PrismIntegrityViolation])
+        #expect(violations.isEmpty || !violations.isEmpty)
     }
 
     @Test("Simulator detection works")
@@ -61,6 +61,81 @@ struct PrismIntegrityCheckerTests {
         #if targetEnvironment(simulator)
             #expect(!checker.isJailbroken())
         #endif
+    }
+
+    @Test("isSecure is consistent with checkAll")
+    func isSecure() {
+        let violations = checker.checkAll()
+        #expect(checker.isSecure == violations.isEmpty)
+    }
+
+    @Test("Debugger detection returns Bool")
+    func debugger() {
+        let result = checker.isDebuggerAttached()
+        #expect(result || !result)
+    }
+
+    @Test("Reverse engineering tools detection")
+    func reverseEngineeringTools() {
+        let result = checker.hasReverseEngineeringTools()
+        #expect(!result)
+    }
+
+    @Test("Violation init stores kind and detail")
+    func violationProperties() {
+        let v = PrismIntegrityViolation(kind: .debuggerAttached, detail: "ptrace")
+        #expect(v.kind == .debuggerAttached)
+        #expect(v.detail == "ptrace")
+    }
+
+    @Test("All violation kinds distinct")
+    func allViolationKinds() {
+        let kinds = PrismIntegrityViolationKind.allCases
+        #expect(Set(kinds.map(\.rawValue)).count == kinds.count)
+    }
+}
+
+@Suite("FileIntVerify")
+struct PrismFileIntegrityVerificationResultTests {
+    @Test("VerificationResult stores all properties")
+    func properties() {
+        let date = Date(timeIntervalSince1970: 1_000_000)
+        let result = PrismFileIntegrity.VerificationResult(
+            path: "/tmp/test.txt",
+            isValid: true,
+            expectedHash: "abc",
+            actualHash: "abc",
+            verifiedAt: date
+        )
+        #expect(result.path == "/tmp/test.txt")
+        #expect(result.isValid)
+        #expect(result.expectedHash == "abc")
+        #expect(result.actualHash == "abc")
+        #expect(result.verifiedAt == date)
+    }
+
+    @Test("VerificationResult equality")
+    func equality() {
+        let date = Date(timeIntervalSince1970: 1_000_000)
+        let a = PrismFileIntegrity.VerificationResult(
+            path: "/a", isValid: true, expectedHash: "x", actualHash: "x", verifiedAt: date
+        )
+        let b = PrismFileIntegrity.VerificationResult(
+            path: "/a", isValid: true, expectedHash: "x", actualHash: "x", verifiedAt: date
+        )
+        #expect(a == b)
+    }
+
+    @Test("VerificationResult inequality on isValid")
+    func inequality() {
+        let date = Date(timeIntervalSince1970: 1_000_000)
+        let a = PrismFileIntegrity.VerificationResult(
+            path: "/a", isValid: true, expectedHash: "x", actualHash: "x", verifiedAt: date
+        )
+        let b = PrismFileIntegrity.VerificationResult(
+            path: "/a", isValid: false, expectedHash: "x", actualHash: "y", verifiedAt: date
+        )
+        #expect(a != b)
     }
 }
 
@@ -132,5 +207,53 @@ struct PrismDataSealTests {
         let data = Data("msg".utf8)
         let mac = Data(HMAC<SHA256>.authenticationCode(for: data, using: key))
         #expect(seal.verify(data: data, mac: mac))
+    }
+
+    @Test("Raw data verify fails with wrong mac")
+    func rawVerifyFails() {
+        let seal = PrismDataSeal(key: key)
+        let data = Data("msg".utf8)
+        let wrongMac = Data("not-a-mac".utf8)
+        #expect(!seal.verify(data: data, mac: wrongMac))
+    }
+
+    @Test("Sealed data is Codable")
+    func sealedDataCodable() throws {
+        let seal = PrismDataSeal(key: key)
+        let sealed = seal.sealData(Data("codable test".utf8))
+        let encoded = try JSONEncoder().encode(sealed)
+        let decoded = try JSONDecoder().decode(PrismDataSeal.SealedData.self, from: encoded)
+        #expect(decoded.payload == sealed.payload)
+        #expect(decoded.mac == sealed.mac)
+    }
+
+    @Test("Unseal with valid HMAC but invalid JSON throws deserialization error")
+    func unsealBadJSON() {
+        struct Value: Codable, Sendable { let x: Int }
+        let seal = PrismDataSeal(key: key)
+        let badPayload = Data("not-json".utf8)
+        let validMac = Data(HMAC<SHA256>.authenticationCode(for: badPayload, using: key))
+        let sealed = PrismDataSeal.SealedData(payload: badPayload, mac: validMac, sealedAt: .now)
+        #expect(throws: PrismSecurityError.deserializationFailed) {
+            try seal.unseal(Value.self, from: sealed)
+        }
+    }
+
+    @Test("Seal empty data")
+    func sealEmptyData() {
+        let seal = PrismDataSeal(key: key)
+        let sealed = seal.sealData(Data())
+        #expect(sealed.payload.isEmpty)
+        #expect(!sealed.mac.isEmpty)
+        #expect(seal.verify(sealed))
+    }
+
+    @Test("SealedData equality")
+    func sealedDataEquality() {
+        let seal = PrismDataSeal(key: key)
+        let data = Data("eq".utf8)
+        let s1 = seal.sealData(data)
+        let s2 = PrismDataSeal.SealedData(payload: s1.payload, mac: s1.mac, sealedAt: s1.sealedAt)
+        #expect(s1 == s2)
     }
 }

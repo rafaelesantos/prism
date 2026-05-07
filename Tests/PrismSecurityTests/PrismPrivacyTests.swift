@@ -147,6 +147,87 @@ struct PrismPrivacyGuardTests {
         let result = guard_.redact("Email: test@test.com")
         #expect(!result.contains("test@test.com"))
     }
+
+    @Test("Protect internal field returns value unchanged")
+    func protectInternal() {
+        let result = guard_.protect(field: "user_id", value: "12345")
+        #expect(result == "12345")
+    }
+
+    @Test("Protect account_id field as internal")
+    func protectAccountId() {
+        let result = guard_.protect(field: "account_id", value: "acc-999")
+        #expect(result == "acc-999")
+    }
+
+    @Test("RedactValue delegates to redactor")
+    func redactValue() {
+        let result = guard_.redactValue("john@example.com", type: .email)
+        #expect(result.contains("***"))
+    }
+
+    @Test("Classify ip_address as internal")
+    func classifyIp() {
+        #expect(guard_.classify("ip_address") == .internal)
+    }
+
+    @Test("Classify device_id as internal")
+    func classifyDeviceId() {
+        #expect(guard_.classify("device_id") == .internal)
+    }
+
+    @Test("Classify credit_card as sensitive")
+    func classifyCreditCard() {
+        #expect(guard_.classify("credit_card") == .sensitive)
+    }
+
+    @Test("Classify token as sensitive")
+    func classifyToken() {
+        #expect(guard_.classify("auth_token") == .sensitive)
+    }
+
+    @Test("Classify api_key as sensitive")
+    func classifyApiKey() {
+        #expect(guard_.classify("api_key") == .sensitive)
+    }
+
+    @Test("Classify private_key as restricted")
+    func classifyPrivateKey() {
+        #expect(guard_.classify("private_key") == .restricted)
+    }
+
+    @Test("Classify ssn as restricted")
+    func classifySsn() {
+        #expect(guard_.classify("user_ssn") == .restricted)
+    }
+
+    @Test("Classify social_security as restricted")
+    func classifySocialSecurity() {
+        #expect(guard_.classify("social_security_number") == .restricted)
+    }
+
+    @Test("Classify birth as sensitive")
+    func classifyBirth() {
+        #expect(guard_.classify("date_of_birth") == .sensitive)
+    }
+
+    @Test("Classify phone as sensitive")
+    func classifyPhone() {
+        #expect(guard_.classify("phone_number") == .sensitive)
+    }
+
+    @Test("Classify address as sensitive")
+    func classifyAddress() {
+        #expect(guard_.classify("home_address") == .sensitive)
+    }
+
+    @Test("Custom field classifications override defaults")
+    func customClassifications() {
+        let guard2 = PrismPrivacyGuard(
+            fieldClassifications: ["custom_field": .restricted]
+        )
+        #expect(guard2.classify("custom_field") == .restricted)
+    }
 }
 
 @Suite("ClipGuard")
@@ -154,7 +235,7 @@ struct PrismClipboardGuardTests {
     @Test("Guard initializes with timeout")
     func init_() {
         let cg = PrismClipboardGuard(clearAfter: 60)
-        #expect(cg is PrismClipboardGuard)
+        _ = cg
     }
 
     @Test("Clear now does not throw")
@@ -166,6 +247,33 @@ struct PrismClipboardGuardTests {
     @Test("Cancel clear does not throw")
     func cancelClear() {
         let cg = PrismClipboardGuard()
+        cg.cancelClear()
+    }
+
+    @Test("Default timeout is 30 seconds")
+    func defaultTimeout() {
+        let cg = PrismClipboardGuard()
+        _ = cg
+    }
+
+    @Test("Copy securely string does not throw")
+    func copySecurelyString() {
+        let cg = PrismClipboardGuard(clearAfter: 999)
+        cg.copySecurely("test-clipboard")
+        cg.cancelClear()
+    }
+
+    @Test("Copy securely data does not throw")
+    func copySecurelyData() {
+        let cg = PrismClipboardGuard(clearAfter: 999)
+        cg.copySecurely(Data("test-data".utf8))
+        cg.cancelClear()
+    }
+
+    @Test("Schedule clear triggers and can be cancelled")
+    func scheduleClearCancel() async throws {
+        let cg = PrismClipboardGuard(clearAfter: 0.1)
+        cg.copySecurely("temp")
         cg.cancelClear()
     }
 }

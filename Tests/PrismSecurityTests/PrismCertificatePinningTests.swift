@@ -178,4 +178,60 @@ struct PrismPinningValidatorTests {
         _ = await validator.validate(publicKeyHash: "wrong", forHost: "api.com")
         #expect(called.withLock { $0 })
     }
+
+    @Test("Report-only policy allows wrong hash")
+    func reportOnlyAllows() async {
+        let pin = PrismCertificatePin(host: "api.com", publicKeyHash: "correct")
+        let validator = PrismPinningValidator(pins: [pin], policy: .reportOnly)
+        let result = await validator.validate(publicKeyHash: "wrong", forHost: "api.com")
+        #expect(!result.isValid)
+    }
+
+    @Test("Report-only policy validates matching hash")
+    func reportOnlyMatching() async {
+        let pin = PrismCertificatePin(host: "api.com", publicKeyHash: "correct")
+        let validator = PrismPinningValidator(pins: [pin], policy: .reportOnly)
+        let result = await validator.validate(publicKeyHash: "correct", forHost: "api.com")
+        #expect(result.isValid)
+        #expect(result.matchedHash == "correct")
+    }
+
+    @Test("TOFU violation handler called on mismatch")
+    func tofuViolationHandler() async {
+        let called = OSAllocatedUnfairLock(initialState: false)
+        let validator = PrismPinningValidator(policy: .trustFirstUse) { _ in
+            called.withLock { $0 = true }
+        }
+        _ = await validator.validate(publicKeyHash: "first", forHost: "tofu.com")
+        _ = await validator.validate(publicKeyHash: "second", forHost: "tofu.com")
+        #expect(called.withLock { $0 })
+    }
+
+    @Test("TOFU violation handler not called on match")
+    func tofuNoViolation() async {
+        let called = OSAllocatedUnfairLock(initialState: false)
+        let validator = PrismPinningValidator(policy: .trustFirstUse) { _ in
+            called.withLock { $0 = true }
+        }
+        _ = await validator.validate(publicKeyHash: "same", forHost: "tofu.com")
+        _ = await validator.validate(publicKeyHash: "same", forHost: "tofu.com")
+        #expect(!called.withLock { $0 })
+    }
+
+    @Test("Strict violation handler not called when no pin exists")
+    func noPinNoViolation() async {
+        let called = OSAllocatedUnfairLock(initialState: false)
+        let validator = PrismPinningValidator(pins: [], policy: .strict) { _ in
+            called.withLock { $0 = true }
+        }
+        _ = await validator.validate(publicKeyHash: "any", forHost: "no-pin.com")
+        #expect(!called.withLock { $0 })
+    }
+
+    @Test("Pinning result stores server hash")
+    func resultServerHash() async {
+        let validator = PrismPinningValidator(policy: .strict)
+        let result = await validator.validate(publicKeyHash: "myHash", forHost: "test.com")
+        #expect(result.serverHash == "myHash")
+    }
 }
