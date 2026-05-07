@@ -130,6 +130,7 @@ struct PrismNetworkSocketAdapterTests {
         mockConnection.emit(.ready)
 
         let frames = await collect(from: stream)
+        try await Task.sleep(for: .milliseconds(200))
 
         #expect(frames.isEmpty)
         #expect(mockConnection.cancelCount == 1)
