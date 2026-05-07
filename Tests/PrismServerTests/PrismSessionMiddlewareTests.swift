@@ -46,7 +46,8 @@ struct PrismSessionMiddlewareTests {
         }
 
         let setCookie = firstResponse.headers.values(for: "Set-Cookie").first ?? ""
-        let cookieValue = setCookie.split(separator: "=", maxSplits: 1).last?
+        let cookieValue =
+            setCookie.split(separator: "=", maxSplits: 1).last?
             .split(separator: ";").first.map(String.init) ?? ""
 
         var headers = PrismHTTPHeaders()

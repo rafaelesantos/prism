@@ -148,7 +148,8 @@ struct PrismGraphQLParserExtendedTests {
     @Test("Parses comments")
     func comments() throws {
         let parser = PrismGraphQLParser()
-        let doc = try parser.parse("""
+        let doc = try parser.parse(
+            """
             # This is a comment
             {
                 # Another comment

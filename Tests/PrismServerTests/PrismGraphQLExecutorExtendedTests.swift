@@ -195,9 +195,11 @@ struct PrismGraphQLExecutorExtendedTests {
     @Test("Resolver error produces GraphQL error")
     func resolverError() async throws {
         let schema = makeSimpleSchema(queryFields: [
-            PrismGraphQLField(name: "fail", type: .string, resolve: { _ in
-                throw PrismGraphQLExecutionError.fieldNotFound("fail")
-            })
+            PrismGraphQLField(
+                name: "fail", type: .string,
+                resolve: { _ in
+                    throw PrismGraphQLExecutionError.fieldNotFound("fail")
+                })
         ])
         let parser = PrismGraphQLParser()
         let doc = try parser.parse("{ fail }")
@@ -241,7 +243,8 @@ struct PrismGraphQLExecutorExtendedTests {
             subscriptionFields: [PrismGraphQLField(name: "s", type: .string, resolve: { _ in "s" })]
         )
         let parser = PrismGraphQLParser()
-        let doc = try parser.parse("{ __schema { queryType { name } mutationType { name } subscriptionType { name } } }")
+        let doc = try parser.parse(
+            "{ __schema { queryType { name } mutationType { name } subscriptionType { name } } }")
         let executor = PrismGraphQLExecutor()
         let result = await executor.execute(document: doc, schema: schema)
         let schemaData = result.data?["__schema"] as? [String: Any]
@@ -272,7 +275,8 @@ struct PrismGraphQLExecutorExtendedTests {
             PrismGraphQLField(name: "hello", type: .string, description: "Greeting", resolve: { _ in "world" })
         ])
         let parser = PrismGraphQLParser()
-        let doc = try parser.parse("{ __type(name: \"Query\") { name kind fields { name description type { name } } } }")
+        let doc = try parser.parse(
+            "{ __type(name: \"Query\") { name kind fields { name description type { name } } } }")
         let executor = PrismGraphQLExecutor()
         let result = await executor.execute(document: doc, schema: schema)
         let typeData = result.data?["__type"] as? [String: Any]
@@ -355,9 +359,11 @@ struct PrismGraphQLExecutorExtendedTests {
     @Test("Context is passed to resolver")
     func contextPassedToResolver() async throws {
         let schema = makeSimpleSchema(queryFields: [
-            PrismGraphQLField(name: "whoami", type: .string, resolve: { info in
-                info.context as? String
-            })
+            PrismGraphQLField(
+                name: "whoami", type: .string,
+                resolve: { info in
+                    info.context as? String
+                })
         ])
         let parser = PrismGraphQLParser()
         let doc = try parser.parse("{ whoami }")

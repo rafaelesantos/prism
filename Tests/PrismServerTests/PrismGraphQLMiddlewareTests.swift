@@ -39,10 +39,11 @@ struct PrismGraphQLMiddlewareTests {
         )
         let schema = PrismGraphQLSchema(query: PrismGraphQLObjectType(name: "Query", fields: [field]))
         let middleware = PrismGraphQLMiddleware(schema: schema)
-        let body = try JSONSerialization.data(withJSONObject: [
-            "query": "query($n: String) { greet(name: $n) }",
-            "variables": ["n": "Alice"],
-        ] as [String: Any])
+        let body = try JSONSerialization.data(
+            withJSONObject: [
+                "query": "query($n: String) { greet(name: $n) }",
+                "variables": ["n": "Alice"],
+            ] as [String: Any])
         let request = PrismHTTPRequest(method: .POST, uri: "/graphql", body: body)
         let response = try await middleware.handle(request) { _ in .text("fallback") }
         let json = try JSONSerialization.jsonObject(with: response.body.data) as? [String: Any]

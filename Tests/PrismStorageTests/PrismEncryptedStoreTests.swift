@@ -106,10 +106,13 @@ struct PrismEncryptedStoreTests {
             key: SymmetricKey(size: .bits256)
         )
         let innerDefaults = PrismDefaultsStore(suite: "EncTest-\(UUID().uuidString)")
-        let raw: Data? = try store.keys().isEmpty ? nil : {
-            let d = PrismDefaultsStore(suite: "EncTest-\(UUID().uuidString)")
-            return try d.load(Data.self, forKey: "k")
-        }()
+        let raw: Data? =
+            try store.keys().isEmpty
+            ? nil
+            : {
+                let d = PrismDefaultsStore(suite: "EncTest-\(UUID().uuidString)")
+                return try d.load(Data.self, forKey: "k")
+            }()
         _ = wrongStore
         _ = innerDefaults
         _ = raw

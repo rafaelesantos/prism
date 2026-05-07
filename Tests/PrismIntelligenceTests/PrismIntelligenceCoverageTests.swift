@@ -836,7 +836,8 @@ struct PrismRemoteIntelligenceProviderExtraTests {
             _ = try await provider.generate(.init(prompt: "test"))
             Issue.record("Expected error")
         } catch let error as PrismIntelligenceError {
-            if case .invalidResponse = error {} else {
+            if case .invalidResponse = error {
+            } else {
                 Issue.record("Expected invalidResponse, got \(error)")
             }
         } catch {
@@ -874,7 +875,8 @@ struct PrismTabularIntelligenceExtraTests {
             ]
         )
         let result = await intelligence.trainingRegressor(id: "r", name: "R")
-        if case .failure = result {} else {
+        if case .failure = result {
+        } else {
             Issue.record("Expected failure for invalid rows")
         }
     }
@@ -928,7 +930,8 @@ struct PrismCodableTrainingDataExtraTests {
             text: \SampleData.text,
             label: \SampleData.label
         )
-        if case .failure = result {} else {
+        if case .failure = result {
+        } else {
             Issue.record("Expected failure for empty data")
         }
     }
@@ -941,7 +944,8 @@ struct PrismCodableTrainingDataExtraTests {
             name: "C",
             target: \SampleData.text
         )
-        if case .failure = result {} else {
+        if case .failure = result {
+        } else {
             Issue.record("Expected failure for unresolvable target")
         }
     }
@@ -954,7 +958,8 @@ struct PrismCodableTrainingDataExtraTests {
             name: "R",
             target: \SampleData.text
         )
-        if case .failure = result {} else {
+        if case .failure = result {
+        } else {
             Issue.record("Expected failure for unresolvable target")
         }
     }
@@ -1212,7 +1217,8 @@ struct PrismIntelligenceClientFactoryTests {
             _ = try await client.regress(features: ["x": .double(1.0)])
             Issue.record("Expected unsupported operation")
         } catch let error as PrismIntelligenceError {
-            if case .unsupportedOperation = error {} else {
+            if case .unsupportedOperation = error {
+            } else {
                 Issue.record("Expected unsupportedOperation")
             }
         } catch {
@@ -1231,7 +1237,8 @@ struct PrismIntelligenceClientFactoryTests {
             _ = try await client.classify(features: ["x": .double(1.0)])
             Issue.record("Expected unsupported operation")
         } catch let error as PrismIntelligenceError {
-            if case .unsupportedOperation = error {} else {
+            if case .unsupportedOperation = error {
+            } else {
                 Issue.record("Expected unsupportedOperation")
             }
         } catch {
@@ -1250,7 +1257,8 @@ struct PrismIntelligenceClientFactoryTests {
             _ = try await client.regress(features: ["bad": Date()])
             Issue.record("Expected unsupported input")
         } catch let error as PrismIntelligenceError {
-            if case .unsupportedInput = error {} else {
+            if case .unsupportedInput = error {
+            } else {
                 Issue.record("Expected unsupportedInput")
             }
         } catch {
@@ -1578,15 +1586,21 @@ struct PrismTextChunkerEdgeCaseTests {
 
 private struct StubPredictionRuntime: PrismIntelligencePredictionRuntime {
     func regressionPrediction(modelURL: URL, features: PrismIntelligenceFeatureRow) async throws -> Double { 7.5 }
-    func classifierPrediction(modelURL: URL, features: PrismIntelligenceFeatureRow) async throws -> [String: Double] { ["positive": 0.9] }
+    func classifierPrediction(modelURL: URL, features: PrismIntelligenceFeatureRow) async throws -> [String: Double] {
+        ["positive": 0.9]
+    }
     func textPrediction(modelURL: URL, text: String) async throws -> String { "positive" }
 }
 
 private struct StubAppleGateway: PrismAppleIntelligenceGateway {
     func status(configuration: PrismAppleIntelligenceConfiguration) async -> PrismLanguageIntelligenceStatus {
-        PrismLanguageIntelligenceStatus(provider: .apple, isAvailable: true, supportsStreaming: true, supportsCustomInstructions: true, supportsModelAdapters: true)
+        PrismLanguageIntelligenceStatus(
+            provider: .apple, isAvailable: true, supportsStreaming: true, supportsCustomInstructions: true,
+            supportsModelAdapters: true)
     }
-    func generate(request: PrismLanguageIntelligenceRequest, configuration: PrismAppleIntelligenceConfiguration) async throws -> PrismLanguageIntelligenceResponse {
+    func generate(request: PrismLanguageIntelligenceRequest, configuration: PrismAppleIntelligenceConfiguration)
+        async throws -> PrismLanguageIntelligenceResponse
+    {
         PrismLanguageIntelligenceResponse(provider: .apple, model: "apple.stub", content: "Apple stub response")
     }
 }
@@ -1633,7 +1647,9 @@ private struct StubLanguageProvider: PrismLanguageIntelligenceProvider {
 
 private actor StubLocalService: PrismIntelligenceLocalServing {
     func predictText(from text: String) async throws -> String { "positive" }
-    func predictClassifier(from features: PrismIntelligenceFeatureRow) async throws -> [String: Double] { ["positive": 0.9, "negative": 0.1] }
+    func predictClassifier(from features: PrismIntelligenceFeatureRow) async throws -> [String: Double] {
+        ["positive": 0.9, "negative": 0.1]
+    }
     func predictRegression(from features: PrismIntelligenceFeatureRow) async throws -> Double { 7.5 }
 }
 
@@ -1647,15 +1663,21 @@ private actor StubLanguageService: PrismLanguageIntelligenceServing {
 }
 
 private actor StubTrainingRuntime: PrismIntelligenceTrainingRuntime {
-    func trainTextClassifier(data: [PrismTextTrainingSample], configuration: PrismTextTrainingConfiguration, destination: URL) async throws -> PrismIntelligenceModelMetrics {
+    func trainTextClassifier(
+        data: [PrismTextTrainingSample], configuration: PrismTextTrainingConfiguration, destination: URL
+    ) async throws -> PrismIntelligenceModelMetrics {
         try Data("text".utf8).write(to: destination)
         return PrismIntelligenceModelMetrics(accuracy: 0.9)
     }
-    func trainTabularRegressor(data: [PrismIntelligenceFeatureRow], configuration: PrismTabularTrainingConfiguration, destination: URL) async throws -> PrismIntelligenceModelMetrics {
+    func trainTabularRegressor(
+        data: [PrismIntelligenceFeatureRow], configuration: PrismTabularTrainingConfiguration, destination: URL
+    ) async throws -> PrismIntelligenceModelMetrics {
         try Data("reg".utf8).write(to: destination)
         return PrismIntelligenceModelMetrics(accuracy: 0.85, rootMeanSquaredError: 1.0)
     }
-    func trainTabularClassifier(data: [PrismIntelligenceFeatureRow], configuration: PrismTabularTrainingConfiguration, destination: URL) async throws -> PrismIntelligenceModelMetrics {
+    func trainTabularClassifier(
+        data: [PrismIntelligenceFeatureRow], configuration: PrismTabularTrainingConfiguration, destination: URL
+    ) async throws -> PrismIntelligenceModelMetrics {
         try Data("cls".utf8).write(to: destination)
         return PrismIntelligenceModelMetrics(accuracy: 0.88)
     }
