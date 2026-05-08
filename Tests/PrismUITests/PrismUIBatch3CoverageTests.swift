@@ -3,6 +3,7 @@ import Foundation
 import SwiftUI
 import Testing
 
+@testable import PrismStorage
 @testable import PrismUI
 
 // MARK: - Charts: PrismCandlestick

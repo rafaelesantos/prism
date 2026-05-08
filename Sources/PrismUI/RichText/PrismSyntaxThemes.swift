@@ -9,6 +9,18 @@ public enum PrismSyntaxLanguage: String, Sendable, CaseIterable {
     case python
     case plainText
 
+    public init(markdownIdentifier: String) {
+        switch markdownIdentifier.lowercased() {
+        case "swift": self = .swift
+        case "json", "jsonc": self = .json
+        case "html", "xml", "xhtml": self = .html
+        case "css", "scss", "sass", "less": self = .css
+        case "javascript", "js", "jsx", "typescript", "ts", "tsx", "mjs", "cjs": self = .javascript
+        case "python", "py", "python3": self = .python
+        default: self = .plainText
+        }
+    }
+
     public var fileExtension: String {
         switch self {
         case .swift: "swift"

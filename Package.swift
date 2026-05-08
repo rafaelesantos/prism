@@ -107,6 +107,7 @@ let package = Package(
             dependencies: [
                 "PrismFoundation",
                 "PrismArchitecture",
+                "PrismStorage",
             ],
             resources: [
                 .process("Resources/Localizable.xcstrings"),
@@ -176,6 +177,7 @@ let package = Package(
             dependencies: [
                 "PrismUI",
                 "PrismArchitecture",
+                "PrismStorage",
             ],
         ),
         .testTarget(

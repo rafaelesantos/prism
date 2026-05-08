@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 
+@testable import PrismStorage
 @testable import PrismUI
 
 // MARK: - PrismSyntaxHighlighter deep coverage

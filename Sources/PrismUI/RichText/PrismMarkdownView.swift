@@ -15,8 +15,27 @@ package enum MarkdownBlock: Sendable {
     case blockquote(text: String)
     case unorderedList(items: [String])
     case orderedList(items: [String])
+    case taskList(items: [PrismTaskItem])
+    case table(header: [String], alignments: [PrismTableAlignment], rows: [[String]])
     case horizontalRule
     case image(alt: String, url: String)
+}
+
+package enum PrismTableAlignment: Sendable {
+    case left
+    case center
+    case right
+    case none
+}
+
+package struct PrismTaskItem: Sendable {
+    package let text: String
+    package let isChecked: Bool
+
+    package init(text: String, isChecked: Bool) {
+        self.text = text
+        self.isChecked = isChecked
+    }
 }
 
 @MainActor
@@ -49,9 +68,9 @@ public struct PrismMarkdownView: View {
 
     private var blockSpacing: CGFloat {
         switch style {
-        case .default: SpacingToken.md.rawValue
+        case .default: SpacingToken.lg.rawValue
         case .compact: SpacingToken.sm.rawValue
-        case .documentation: SpacingToken.lg.rawValue
+        case .documentation: SpacingToken.xl.rawValue
         }
     }
 
@@ -116,7 +135,26 @@ public struct PrismMarkdownView: View {
                     quoteLines.append(String(quoteLine.dropFirst(1)).trimmingCharacters(in: .whitespaces))
                     index += 1
                 }
-                blocks.append(.blockquote(text: quoteLines.joined(separator: " ")))
+                blocks.append(.blockquote(text: quoteLines.joined(separator: "\n")))
+                continue
+            }
+
+            // Task list (must check before unordered list)
+            if trimmed.hasPrefix("- [ ] ") || trimmed.hasPrefix("- [x] ") || trimmed.hasPrefix("- [X] ") {
+                var items: [PrismTaskItem] = []
+                while index < lines.count {
+                    let itemLine = lines[index].trimmingCharacters(in: .whitespaces)
+                    if itemLine.hasPrefix("- [ ] ") {
+                        items.append(PrismTaskItem(text: String(itemLine.dropFirst(6)), isChecked: false))
+                        index += 1
+                    } else if itemLine.hasPrefix("- [x] ") || itemLine.hasPrefix("- [X] ") {
+                        items.append(PrismTaskItem(text: String(itemLine.dropFirst(6)), isChecked: true))
+                        index += 1
+                    } else {
+                        break
+                    }
+                }
+                blocks.append(.taskList(items: items))
                 continue
             }
 
@@ -162,6 +200,27 @@ public struct PrismMarkdownView: View {
                 continue
             }
 
+            // Table
+            if trimmed.contains("|") && index + 1 < lines.count {
+                let nextLine = lines[index + 1].trimmingCharacters(in: .whitespaces)
+                if nextLine.contains("|") && nextLine.contains("-")
+                    && nextLine.allSatisfy({ $0 == "|" || $0 == "-" || $0 == ":" || $0 == " " })
+                {
+                    let header = parseTableRow(trimmed)
+                    let alignments = parseTableAlignments(nextLine, columnCount: header.count)
+                    index += 2
+                    var rows: [[String]] = []
+                    while index < lines.count {
+                        let rowLine = lines[index].trimmingCharacters(in: .whitespaces)
+                        guard rowLine.contains("|") && !rowLine.isEmpty else { break }
+                        rows.append(parseTableRow(rowLine))
+                        index += 1
+                    }
+                    blocks.append(.table(header: header, alignments: alignments, rows: rows))
+                    continue
+                }
+            }
+
             // Empty line — skip
             if trimmed.isEmpty {
                 index += 1
@@ -195,5 +254,27 @@ public struct PrismMarkdownView: View {
             let closeRange = text.range(of: close, range: openRange.upperBound..<text.endIndex)
         else { return "" }
         return String(text[openRange.upperBound..<closeRange.lowerBound])
+    }
+
+    // MARK: - Table Helpers
+
+    private func parseTableRow(_ line: String) -> [String] {
+        line.split(separator: "|", omittingEmptySubsequences: false)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+    }
+
+    private func parseTableAlignments(_ line: String, columnCount: Int) -> [PrismTableAlignment] {
+        let cells = parseTableRow(line)
+        return (0..<columnCount).map { i in
+            guard i < cells.count else { return .none }
+            let cell = cells[i].trimmingCharacters(in: .whitespaces)
+            let left = cell.hasPrefix(":")
+            let right = cell.hasSuffix(":")
+            if left && right { return .center }
+            if right { return .right }
+            if left { return .left }
+            return .none
+        }
     }
 }

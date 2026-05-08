@@ -1,6 +1,7 @@
 import SwiftUI
 import Testing
 
+@testable import PrismStorage
 @testable import PrismUI
 
 // MARK: - Markdown Parser (parseBlocks)
@@ -80,7 +81,7 @@ struct MarkdownParserBlockTests {
         let blocks = parse(md)
         #expect(blocks.count == 1)
         if case .blockquote(let text) = blocks[0] {
-            #expect(text == "first line second line")
+            #expect(text == "first line\nsecond line")
         } else {
             Issue.record("Expected blockquote")
         }
@@ -1132,5 +1133,304 @@ struct MarkdownBlockEdgeCaseTests {
             #expect(level == 1)
             #expect(text == "Spaced")
         }
+    }
+}
+
+// MARK: - Task List Parsing
+
+@Suite("PrismMarkdownView task list parsing")
+@MainActor
+struct TaskListParsingTests {
+
+    private func parse(_ md: String) -> [MarkdownBlock] {
+        PrismMarkdownView(md).parseBlocks()
+    }
+
+    @Test("parses unchecked task items")
+    func uncheckedItems() {
+        let blocks = parse("- [ ] Buy milk\n- [ ] Clean house")
+        #expect(blocks.count == 1)
+        if case .taskList(let items) = blocks[0] {
+            #expect(items.count == 2)
+            #expect(items[0].text == "Buy milk")
+            #expect(items[0].isChecked == false)
+            #expect(items[1].text == "Clean house")
+            #expect(items[1].isChecked == false)
+        } else {
+            Issue.record("Expected taskList")
+        }
+    }
+
+    @Test("parses checked task items")
+    func checkedItems() {
+        let blocks = parse("- [x] Done task\n- [X] Also done")
+        #expect(blocks.count == 1)
+        if case .taskList(let items) = blocks[0] {
+            #expect(items.count == 2)
+            #expect(items[0].isChecked == true)
+            #expect(items[1].isChecked == true)
+        } else {
+            Issue.record("Expected taskList")
+        }
+    }
+
+    @Test("parses mixed checked and unchecked")
+    func mixedItems() {
+        let md = "- [x] Done\n- [ ] Pending\n- [x] Also done"
+        let blocks = parse(md)
+        #expect(blocks.count == 1)
+        if case .taskList(let items) = blocks[0] {
+            #expect(items.count == 3)
+            #expect(items[0].isChecked == true)
+            #expect(items[1].isChecked == false)
+            #expect(items[2].isChecked == true)
+        } else {
+            Issue.record("Expected taskList")
+        }
+    }
+
+    @Test("task list stops at non-task line")
+    func taskListStopsAtRegularLine() {
+        let md = "- [x] Task\nRegular paragraph"
+        let blocks = parse(md)
+        #expect(blocks.count == 2)
+        if case .taskList(let items) = blocks[0] {
+            #expect(items.count == 1)
+        } else {
+            Issue.record("Expected taskList first")
+        }
+        if case .paragraph = blocks[1] {
+        } else {
+            Issue.record("Expected paragraph second")
+        }
+    }
+
+    @Test("task list before regular list stays separate")
+    func taskListThenRegularList() {
+        let md = "- [x] Task item\n- Regular list item"
+        let blocks = parse(md)
+        #expect(blocks.count == 2)
+        if case .taskList = blocks[0] {
+        } else {
+            Issue.record("Expected taskList")
+        }
+        if case .unorderedList = blocks[1] {
+        } else {
+            Issue.record("Expected unorderedList")
+        }
+    }
+}
+
+// MARK: - Table Parsing
+
+@Suite("PrismMarkdownView table parsing")
+@MainActor
+struct TableParsingTests {
+
+    private func parse(_ md: String) -> [MarkdownBlock] {
+        PrismMarkdownView(md).parseBlocks()
+    }
+
+    @Test("parses basic table")
+    func basicTable() {
+        let md = "| Name | Age |\n| --- | --- |\n| Alice | 30 |\n| Bob | 25 |"
+        let blocks = parse(md)
+        #expect(blocks.count == 1)
+        if case .table(let header, let alignments, let rows) = blocks[0] {
+            #expect(header == ["Name", "Age"])
+            #expect(alignments.count == 2)
+            #expect(rows.count == 2)
+            #expect(rows[0] == ["Alice", "30"])
+            #expect(rows[1] == ["Bob", "25"])
+        } else {
+            Issue.record("Expected table")
+        }
+    }
+
+    @Test("parses table alignment markers")
+    func tableAlignments() {
+        let md = "| L | C | R | N |\n| :--- | :---: | ---: | --- |\n| a | b | c | d |"
+        let blocks = parse(md)
+        if case .table(_, let alignments, _) = blocks[0] {
+            #expect(alignments[0] == .left)
+            #expect(alignments[1] == .center)
+            #expect(alignments[2] == .right)
+            #expect(alignments[3] == .none)
+        } else {
+            Issue.record("Expected table")
+        }
+    }
+
+    @Test("table with no body rows")
+    func headerOnlyTable() {
+        let md = "| H1 | H2 |\n| --- | --- |"
+        let blocks = parse(md)
+        if case .table(let header, _, let rows) = blocks[0] {
+            #expect(header == ["H1", "H2"])
+            #expect(rows.isEmpty)
+        } else {
+            Issue.record("Expected table")
+        }
+    }
+
+    @Test("table stops at non-pipe line")
+    func tableStopsAtParagraph() {
+        let md = "| A | B |\n| --- | --- |\n| 1 | 2 |\nNot a table"
+        let blocks = parse(md)
+        #expect(blocks.count == 2)
+        if case .table = blocks[0] {
+        } else {
+            Issue.record("Expected table first")
+        }
+        if case .paragraph = blocks[1] {
+        } else {
+            Issue.record("Expected paragraph second")
+        }
+    }
+}
+
+// MARK: - Strikethrough Inline Parsing
+
+@Suite("PrismMarkdownView strikethrough")
+@MainActor
+struct StrikethroughParsingTests {
+
+    private func view() -> PrismMarkdownView {
+        PrismMarkdownView("")
+    }
+
+    @Test("parses strikethrough text")
+    func strikethrough() {
+        let _: Text = view().parseInlineElements("Hello ~~world~~")
+    }
+
+    @Test("parses strikethrough with other formatting")
+    func strikethroughMixed() {
+        let _: Text = view().parseInlineElements("**bold** and ~~struck~~ and *italic*")
+    }
+
+    @Test("parses only strikethrough")
+    func onlyStrikethrough() {
+        let _: Text = view().parseInlineElements("~~all struck~~")
+    }
+}
+
+// MARK: - Language Mapping
+
+@Suite("PrismSyntaxLanguage markdownIdentifier")
+struct LanguageMappingTests {
+
+    @Test("maps swift")
+    func swift() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "swift") == .swift)
+    }
+
+    @Test("maps js to javascript")
+    func js() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "js") == .javascript)
+    }
+
+    @Test("maps jsx to javascript")
+    func jsx() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "jsx") == .javascript)
+    }
+
+    @Test("maps typescript to javascript")
+    func typescript() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "typescript") == .javascript)
+    }
+
+    @Test("maps ts to javascript")
+    func ts() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "ts") == .javascript)
+    }
+
+    @Test("maps py to python")
+    func py() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "py") == .python)
+    }
+
+    @Test("maps python3 to python")
+    func python3() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "python3") == .python)
+    }
+
+    @Test("maps xml to html")
+    func xml() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "xml") == .html)
+    }
+
+    @Test("maps scss to css")
+    func scss() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "scss") == .css)
+    }
+
+    @Test("maps jsonc to json")
+    func jsonc() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "jsonc") == .json)
+    }
+
+    @Test("maps unknown to plainText")
+    func unknown() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "brainfuck") == .plainText)
+    }
+
+    @Test("maps empty to plainText")
+    func empty() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "") == .plainText)
+    }
+
+    @Test("case insensitive mapping")
+    func caseInsensitive() {
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "SWIFT") == .swift)
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "Python") == .python)
+        #expect(PrismSyntaxLanguage(markdownIdentifier: "JavaScript") == .javascript)
+    }
+}
+
+// MARK: - PrismTaskItem
+
+@Suite("PrismTaskItem")
+struct PrismTaskItemTests {
+
+    @Test("stores text and checked state")
+    func properties() {
+        let item = PrismTaskItem(text: "Buy milk", isChecked: true)
+        #expect(item.text == "Buy milk")
+        #expect(item.isChecked == true)
+    }
+
+    @Test("unchecked by default via init")
+    func unchecked() {
+        let item = PrismTaskItem(text: "Task", isChecked: false)
+        #expect(item.isChecked == false)
+    }
+
+    @Test("conforms to Sendable")
+    func sendable() {
+        let item: any Sendable = PrismTaskItem(text: "T", isChecked: false)
+        #expect(type(of: item) is PrismTaskItem.Type)
+    }
+}
+
+// MARK: - PrismTableAlignment
+
+@Suite("PrismTableAlignment")
+struct PrismTableAlignmentTests {
+
+    @Test("has four cases")
+    func cases() {
+        let left = PrismTableAlignment.left
+        let center = PrismTableAlignment.center
+        let right = PrismTableAlignment.right
+        let none = PrismTableAlignment.none
+        #expect(left != center)
+        #expect(right != none)
+    }
+
+    @Test("conforms to Sendable")
+    func sendable() {
+        let alignment: any Sendable = PrismTableAlignment.center
+        #expect(type(of: alignment) is PrismTableAlignment.Type)
     }
 }

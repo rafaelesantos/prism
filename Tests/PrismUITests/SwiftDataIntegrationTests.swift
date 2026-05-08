@@ -1,6 +1,7 @@
 import SwiftUI
 import Testing
 
+@testable import PrismStorage
 @testable import PrismUI
 
 #if canImport(SwiftData)
